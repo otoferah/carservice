@@ -1,7 +1,6 @@
 "use client";
 import {useState,type FormEvent} from "react";
 import {useRouter} from "next/navigation";
-import {useRouter} from "next/navigation";
 import {Activity,Clock3,Send,Save,Pencil,X} from "lucide-react";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
 type Update={id:string;status:ServiceStatus;note:string;created_at:string;edited_at?:string|null;profiles:{full_name:string;role:string}|null};
@@ -23,7 +22,7 @@ export default function ServiceProgress({recordId,currentStatus,updates,canUpdat
  }
  return <section className="detail-panel progress-panel"><h2><Activity size={17}/> Servis gelişmeleri</h2>
   {canUpdate?<form className="update-form" onSubmit={submit}>
-   <label className="field">Yeni servis aşaması<select value={status} onChange={e=>setStatus(e.target.value as ServiceStatus)}>{stages.map(s=><option key={s} value={s}>{statusLabels[s]}</option>)}{currentStatus==="delivered"&&<option value="delivered" disabled>Teslim edildi</option>}</select></label>
+   <label className="field">Yeni servis aşaması<select value={status} onChange={e=>setStatus(e.target.value as ServiceStatus)}>{stages.map(s=><option key={s} value={s}>{statusLabels[s]}</option>)}</select></label>
    <label className="field">Gelişme notu<textarea required value={note} onChange={e=>setNote(e.target.value)} placeholder="Yapılan işlemi ve tespitleri açıklayın..." rows={3}/></label>
    {error&&<p className="form-error">{error}</p>}<button className="primary-button" disabled={busy||!note.trim()}><Send size={15}/>{busy?"Kaydediliyor...":"Gelişmeyi kaydet"}</button>
   </form>:<p className="muted small-copy">Bu servis kaydına atanmış değilsiniz. Not eklemek için yöneticiyle görüşün.</p>}
