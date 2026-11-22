@@ -5,7 +5,7 @@ import {createClient} from "@/lib/supabase/server";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
 import ServiceProgress from "./service-progress";
 type Person={full_name:string;role:string};
-type Update={id:string;status:ServiceStatus;note:string;created_at:string;profiles:Person|null};
+type Update={id:string;status:ServiceStatus;note:string;created_at:string;edited_at:string|null;profiles:Person|null};
 type Part={id:string;part_name:string;quantity:number;unit_price:number;line_total:number};
 type ImageRow={id:string;storage_path:string;caption:string|null};
 export default async function ServiceDetailPage({params}:{params:Promise<{id:string}>}){
@@ -13,7 +13,7 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
  const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
  const {data:profile}=await supabase.from("profiles").select("role,is_active,full_name").eq("id",user.id).maybeSingle();
  if(!profile?.is_active)redirect("/login");
- const {data:raw}=await supabase.from("service_records").select("id,status,quote_date,quote_total,tracking_token,quote_provider,customer_signature_path,created_at,customers(full_name),vehicles(plate,brand,model),service_images(id,storage_path,caption),service_parts(id,part_name,quantity,unit_price,line_total),service_team(profile_id,assignment_role,profiles(full_name,role)),service_updates(id,status,note,created_at,profiles(full_name,role))").eq("id",id).maybeSingle();
+ const {data:raw}=await supabase.from("service_records").select("id,status,quote_date,quote_total,tracking_token,quote_provider,customer_signature_path,created_at,customers(full_name),vehicles(plate,brand,model),service_images(id,storage_path,caption),service_parts(id,part_name,quantity,unit_price,line_total),service_team(profile_id,assignment_role,profiles(full_name,role)),service_updates(id,status,note,created_at,edited_at,profiles(full_name,role))").eq("id",id).maybeSingle();
  if(!raw)notFound();
  const record=raw as unknown as {id:string;status:ServiceStatus;quote_date:string;quote_total:number;tracking_token:string;quote_provider:string|null;customer_signature_path:string|null;customers:{full_name:string}|null;vehicles:{plate:string;brand:string;model:string}|null;service_images:ImageRow[];service_parts:Part[];service_team:{profile_id:string;assignment_role:string;profiles:Person|null}[];service_updates:Update[]};
  const manager=["admin","supervisor"].includes(profile.role);
@@ -30,7 +30,7 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
     <section className="detail-panel"><h2><ClipboardList size={17}/> Kullanılan parçalar / işlemler</h2><div className="table-scroll"><table><thead><tr><th>AÇIKLAMA</th><th>ADET</th><th>BİRİM FİYAT</th><th>TOPLAM</th></tr></thead><tbody>{record.service_parts.map(p=><tr key={p.id}><td>{p.part_name}</td><td>{p.quantity}</td><td>{Number(p.unit_price).toLocaleString("tr-TR")} ₺</td><td>{Number(p.line_total).toLocaleString("tr-TR")} ₺</td></tr>)}{!record.service_parts.length&&<tr><td colSpan={4}>Parça kalemi eklenmemiş.</td></tr>}</tbody></table></div></section>
     {(photos.length>0||signatureUrl)&&<section className="detail-panel"><h2><CarFront size={17}/> Araç görselleri ve müşteri imzası</h2><div className="service-photo-grid">{photos.map((photo,i)=><a href={photo.url} target="_blank" rel="noreferrer" key={i}><img src={photo.url} alt={photo.caption||"Araç görseli"}/><small>{photo.caption||"Araç görseli"}</small></a>)}</div>{signatureUrl&&<div className="service-signature"><small>Müşteri imzası</small><img src={signatureUrl} alt="Müşteri imzası"/></div>}</section>}
     <section className="detail-panel"><h2><Users size={17}/> İlgilenen ekip</h2><div className="detail-team">{record.service_team.map((m,i)=><div className="detail-team-item" key={i}><span className="avatar">{(m.profiles?.full_name||"P").slice(0,1)}</span><div><b>{m.profiles?.full_name||"Personel"}</b><small>{m.assignment_role==="admin"?"Yönetici":m.assignment_role==="supervisor"?"Supervisor":"Usta"}</small></div></div>)}</div></section>
-    <ServiceProgress recordId={id} currentStatus={record.status} updates={updates} canUpdate={manager||assigned} canDeliver={manager} viewerName={profile.full_name}/>
+    <ServiceProgress recordId={id} currentStatus={record.status} updates={updates} canUpdate={manager||assigned} canDeliver={manager} canEditHistory={manager} viewerName={profile.full_name}/>
    </div><aside className="detail-aside"><div className="detail-panel"><h2><CarFront size={17}/> Araç özeti</h2><dl><dt>Plaka</dt><dd>{record.vehicles?.plate}</dd><dt>Marka / Model</dt><dd>{record.vehicles?.brand} {record.vehicles?.model}</dd><dt>Müşteri</dt><dd>{record.customers?.full_name}</dd><dt>Teklif tarihi</dt><dd>{new Date(record.quote_date+"T12:00:00").toLocaleDateString("tr-TR")}</dd><dt>Teklifi veren</dt><dd>{record.quote_provider||"—"}</dd></dl></div><div className="detail-panel"><h2><Wrench size={17}/> Müşteri takip bağlantısı</h2><p className="muted small-copy">Bu kayıt için oluşturulmuş tekil takip bağlantısı.</p><Link className="outline-button" href={trackingUrl} target="_blank">Müşteri görünümünü aç ↗</Link><p className="token-text">{record.tracking_token}</p></div></aside></div>
   </section></main>;
 }
