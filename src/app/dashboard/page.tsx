@@ -3,8 +3,7 @@ import {redirect} from "next/navigation";
 import {Activity,ArrowUpRight,CarFront,ClipboardList,LogOut,Plus,Search,ShieldCheck,Users,Wrench} from "lucide-react";
 import {createClient} from "@/lib/supabase/server";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
-type ServiceRow={id:string;status:ServiceStatus;quote_total:number;quote_date:string;created_at:string;
- vehicles:{plate:string;brand:string;model:string;customers:{full_name:string}|null}|null};
+type ServiceRow={id:string;status:ServiceStatus;quote_total:number;quote_date:string;created_at:string;customers:{full_name:string}|null;vehicles:{plate:string;brand:string;model:string}|null};
 export default async function DashboardPage(){
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
  const [{data:profile},{data:records},{count:staffCount}]=await Promise.all([
