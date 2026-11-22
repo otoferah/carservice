@@ -24,7 +24,7 @@ export default function UserManager({users}:{users:Member[]}){
  return <div className="user-manager"><section className="detail-panel"><h2><UserPlus size={17}/> Yeni personel hesabı</h2><form className="user-create-form" onSubmit={createUser}>
   <label className="field">Adı soyadı<input required value={name} onChange={e=>setName(e.target.value)} placeholder="Personel adı soyadı"/></label>
   <label className="field">E-posta<input type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="personel@ferahotomotiv.com"/></label>
-  <label className="field">İlk şifre (en az 10 karakter)<input type="password" minLength={10} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="Güvenli bir şifre"/></label>
+  <label className="field">İlk şifre (en az 12 karakter)<input type="password" minLength={12} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="Güvenli bir şifre"/></label>
   <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option><option value="admin">Yönetici</option></select></label>
   <button className="primary-button" disabled={busy}><UserPlus size={15}/>{busy?"Hesap oluşturuluyor...":"Personel oluştur"}</button>
  </form>{error&&<p className="form-error user-message">{error}</p>}{message&&<p className="success-message">{message}</p>}</section>
