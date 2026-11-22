@@ -9,7 +9,7 @@ export default async function DashboardPage(){
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
  const [{data:profile},{data:records},{count:staffCount}]=await Promise.all([
   supabase.from("profiles").select("full_name,role,is_active").eq("id",user.id).maybeSingle(),
-  supabase.from("service_records").select("id,status,quote_total,quote_date,created_at,vehicles(plate,brand,model,customers(full_name))").order("created_at",{ascending:false}).limit(30),
+  supabase.from("service_records").select("id,status,quote_total,quote_date,created_at,customers(full_name),vehicles(plate,brand,model)").order("created_at",{ascending:false}).limit(30),
   supabase.from("profiles").select("*",{count:"exact",head:true}).eq("is_active",true)
  ]);
  if(!profile?.is_active)redirect("/login");
@@ -40,7 +40,7 @@ export default async function DashboardPage(){
     </div>
     <section className="panel"><div className="panel-heading"><div><h2>Son servis kayıtları</h2><p>En son oluşturulan araçlar</p></div><Link href="/dashboard/new" className="subtle-link">Kayıt oluştur <ArrowUpRight size={15}/></Link></div>
      <div className="table-scroll"><table><thead><tr><th>ARAÇ</th><th>MÜŞTERİ</th><th>TEKLİF TARİHİ</th><th>DURUM</th><th>TUTAR</th></tr></thead><tbody>
-      {rows.length?rows.map(r=><tr key={r.id}><td><b>{r.vehicles?.plate||"—"}</b><small>{r.vehicles?.brand} {r.vehicles?.model}</small></td><td>{r.vehicles?.customers?.full_name||"—"}</td><td>{new Date(r.quote_date).toLocaleDateString("tr-TR")}</td><td><span className={"status-tag status-"+r.status}>{statusLabels[r.status]||r.status}</span></td><td>{Number(r.quote_total).toLocaleString("tr-TR")} ₺</td></tr>):<tr><td colSpan={5} className="empty-cell">Henüz servis kaydı bulunmuyor. İlk kaydı oluşturarak başlayın.</td></tr>}
+      {rows.length?rows.map(r=><tr key={r.id}><td><b>{r.vehicles?.plate||"—"}</b><small>{r.vehicles?.brand} {r.vehicles?.model}</small></td><td>{r.customers?.full_name||"—"}</td><td>{new Date(r.quote_date).toLocaleDateString("tr-TR")}</td><td><span className={"status-tag status-"+r.status}>{statusLabels[r.status]||r.status}</span></td><td>{Number(r.quote_total).toLocaleString("tr-TR")} ₺</td></tr>):<tr><td colSpan={5} className="empty-cell">Henüz servis kaydı bulunmuyor. İlk kaydı oluşturarak başlayın.</td></tr>}
      </tbody></table></div>
     </section>
     <div className="bottom-hint"><Wrench size={16}/> Teklif, servis aşamaları, ekip görevlendirme ve QR takip akışı tek platformda.</div>
