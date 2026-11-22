@@ -1,22 +1,29 @@
 "use client";
 import Link from "next/link";
 import {useEffect,useState,type FormEvent} from "react";
-import {ArrowLeft,CarFront,CheckCircle2,Clock3,Search,ShieldCheck,Wrench} from "lucide-react";
+import {ArrowLeft,CarFront,CheckCircle2,Clock3,Search,ShieldCheck,Wrench,History} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
 type TrackingResult={plate:string;brand:string;model:string;status:ServiceStatus;quote_date:string;updated_at:string;latest_note:string|null;latest_note_at:string|null};
+type HistoryItem={note:string|null;note_status:ServiceStatus|null;note_created_at:string|null};
+const isToken=(value:string)=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 export default function TrackingPage(){
  const [query,setQuery]=useState("");const [result,setResult]=useState<TrackingResult|null>(null);
+ const [history,setHistory]=useState<HistoryItem[]>([]);const [resolvedQuery,setResolvedQuery]=useState("");
  const [busy,setBusy]=useState(false);const [message,setMessage]=useState("");
+
  async function lookup(value:string){
-  setBusy(true);setMessage("");setResult(null);
+  setBusy(true);setMessage("");setResult(null);setHistory([]);setResolvedQuery("");
   try{
    const v=value.trim();if(!v)throw new Error("QR takip kodunu veya plakanızı girin.");
-   const token=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
-   const {data,error}=await createClient().rpc("get_public_vehicle_tracking",{p_token:token?v:null,p_plate:token?null:v});
+   const token=isToken(v);const params={p_token:token?v:null,p_plate:token?null:v};const supabase=createClient();
+   const {data,error}=await supabase.rpc("get_public_vehicle_tracking",params);
    if(error)throw error;const row=Array.isArray(data)?data[0]:null;
    if(!row)throw new Error("Bu plaka veya takip kodu için servis kaydı bulunamadı.");
    setResult(row as TrackingResult);
+   const {data:historyRows}=await supabase.rpc("get_public_vehicle_tracking_history",params);
+   setHistory(Array.isArray(historyRows)?historyRows.filter((item:HistoryItem)=>!!item.note):[]);
+   setResolvedQuery(v);
   }catch(err){setMessage(err instanceof Error?err.message:"Sorgulama yapılamadı.");}
   finally{setBusy(false);}
  }
@@ -25,6 +32,19 @@ export default function TrackingPage(){
   const token=new URLSearchParams(window.location.search).get("token");
   if(token){setQuery(token);void lookup(token);}
  },[]);
+ useEffect(()=>{
+  if(!resolvedQuery)return;
+  const timer=window.setInterval(async()=>{
+   const token=isToken(resolvedQuery);const params={p_token:token?resolvedQuery:null,p_plate:token?null:resolvedQuery};
+   const supabase=createClient();
+   const {data,error}=await supabase.rpc("get_public_vehicle_tracking",params);
+   const row=Array.isArray(data)?data[0]:null;
+   if(!error&&row)setResult(row as TrackingResult);
+   const {data:historyRows}=await supabase.rpc("get_public_vehicle_tracking_history",params);
+   if(Array.isArray(historyRows))setHistory(historyRows.filter((item:HistoryItem)=>!!item.note));
+  },30000);
+  return()=>window.clearInterval(timer);
+ },[resolvedQuery]);
  const stages:ServiceStatus[]=["waiting","repairing","testing","ready","delivered"];
  const progress=result?Math.max(1,(stages.indexOf(result.status)+1)/stages.length*100):0;
  return <main className="tracking-page">
@@ -37,7 +57,8 @@ export default function TrackingPage(){
    {result&&<article className="tracking-result"><div className="result-top"><div><span className="result-label">ARAÇ</span><h2>{result.plate}</h2><p>{result.brand} {result.model}</p></div><span className={"status-tag status-"+result.status}>{statusLabels[result.status]}</span></div>
     <div className="progress-track"><span style={{width:progress+"%"}}/></div>
     <div className="result-note"><div className="note-icon"><Clock3 size={17}/></div><div><b>Son servis bilgilendirmesi</b><p>{result.latest_note||statusLabels[result.status]}</p><small>{new Date(result.latest_note_at||result.updated_at).toLocaleString("tr-TR")}</small></div></div>
-    <div className="privacy-note"><ShieldCheck size={16}/> Bu ekranda yalnızca aracınızın servis durumu paylaşılır.</div>
+    {history.length>0&&<section className="customer-history"><h3><History size={16}/> Servis geçmişi</h3><div className="customer-history-list">{history.map((item,index)=><div className="customer-history-item" key={index}><span className="customer-history-dot"/><div><div className="customer-history-top"><b>{item.note_status?statusLabels[item.note_status]: "Servis gelişmesi"}</b><small>{item.note_created_at?new Date(item.note_created_at).toLocaleString("tr-TR"):""}</small></div><p>{item.note}</p></div></div>)}</div></section>}
+    <div className="privacy-note"><ShieldCheck size={16}/> Bu ekranda yalnızca aracınızın servis durumu ve gelişme notları paylaşılır. Bilgiler 30 saniyede bir yenilenir.</div>
    </article>}
    <div className="tracking-foot"><CheckCircle2 size={16}/> Ferah Otomotiv tarafından güvenli servis takibi</div>
   </section>
