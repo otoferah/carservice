@@ -13,7 +13,7 @@ export async function POST(request:Request){
   const password=String(body.password||"");const fullName=String(body.full_name||"").trim();const role=body.role as AppRole;
   if(!email||!email.includes("@")||password.length<10||!fullName||!allowedRoles.includes(role))
    return NextResponse.json({error:"Geçerli e-posta, ad soyad, rol ve en az 10 karakterli şifre girilmelidir."},{status:400});
-  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY;
   if(!url||!key)return NextResponse.json({error:"Sunucu yönetim anahtarı yapılandırılmamış."},{status:503});
   const admin=createSupabaseClient(url,key,{auth:{autoRefreshToken:false,persistSession:false}});
   const {data:created,error:createError}=await admin.auth.admin.createUser({email,password,email_confirm:true,user_metadata:{full_name:fullName}});
