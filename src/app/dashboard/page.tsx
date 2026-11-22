@@ -35,7 +35,7 @@ export default async function DashboardPage(){
     <div className="stats-grid">
      <article className="stat-card"><div className="stat-top"><span>Aktif servis</span><span className="stat-icon"><CarFront size={18}/></span></div><strong>{active}</strong><small>Henüz teslim edilmemiş araç</small></article>
      <article className="stat-card"><div className="stat-top"><span>Teslime hazır</span><span className="stat-icon green"><ShieldCheck size={18}/></span></div><strong>{ready}</strong><small>Yetkili teslim onayı bekliyor</small></article>
-     <article className="stat-card"><div className="stat-top"><span>Personel</span><span className="stat-icon"><Users size={18}/></span></div><strong>{staffCount??"—"}</strong><small>Aktif ekip üyesi</small></article>
+     <article className="stat-card"><div className="stat-top"><span>Personel</span><span className="stat-icon"><Users size={18}/></span></div><strong>{["admin","supervisor"].includes(profile.role)?(staffCount??"—"):"—"}</strong><small>Aktif ekip üyesi</small></article>
      <article className="stat-card"><div className="stat-top"><span>Teklif toplamı</span><span className="stat-icon"><ClipboardList size={18}/></span></div><strong>{total.toLocaleString("tr-TR")} ₺</strong><small>Son 30 servis kaydının toplamı</small></article>
     </div>
     <section className="panel"><div className="panel-heading"><div><h2>Son servis kayıtları</h2><p>En son oluşturulan araçlar</p></div><Link href="/dashboard/new" className="subtle-link">Kayıt oluştur <ArrowUpRight size={15}/></Link></div>
