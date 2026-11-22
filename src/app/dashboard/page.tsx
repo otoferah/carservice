@@ -24,7 +24,7 @@ export default async function DashboardPage(){
    <Link className="side-link active" href="/dashboard"><Activity size={18}/> Genel Bakış</Link>
    <Link className="side-link" href="/tracking"><Search size={18}/> Araç Sorgulama</Link>
    <div className="side-section">YÖNETİM</div>
-   <Link className="side-link" href="/dashboard/new"><ClipboardList size={18}/> Yeni Servis Kaydı</Link>
+   {["admin","supervisor"].includes(profile.role)&&<Link className="side-link" href="/dashboard/new"><ClipboardList size={18}/> Yeni Servis Kaydı</Link>}
    {profile.role==="admin"&&<Link className="side-link" href="/dashboard/users"><Users size={18}/> Personel Yönetimi</Link>}
    <div className="sidebar-bottom"><div className="user-chip"><div className="avatar">{(profile.full_name||"F").slice(0,1).toUpperCase()}</div><div><b>{profile.full_name}</b><small>{roleName}</small></div><ShieldCheck size={16}/></div><form action="/api/auth/signout" method="post"><button className="side-link signout" type="submit"><LogOut size={17}/> Güvenli çıkış</button></form></div>
   </aside>
