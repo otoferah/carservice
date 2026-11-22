@@ -30,7 +30,7 @@ export default async function DashboardPage(){
   </aside>
   <section className="main-area"><header className="topbar"><div><span className="breadcrumb">Ferah Otomotiv /</span> Genel Bakış</div><div className="top-actions"><span className="status-pill"><i/> Sistem aktif</span><span className="top-avatar">{(profile.full_name||"F").slice(0,1).toUpperCase()}</span></div></header>
    <div className="content-wrap">
-    <div className="page-heading"><div><p className="eyebrow">SERVİS OPERASYONLARI</p><h1>Hoş geldin, {profile.full_name?.split(" ")[0]||"Ekibimiz"}.</h1><p className="muted">Atölyedeki araçları ve servis süreçlerini buradan takip et.</p></div><Link className="primary-button action-link" href="/dashboard/new"><Plus size={18}/> Yeni servis kaydı</Link></div>
+    <div className="page-heading"><div><p className="eyebrow">SERVİS OPERASYONLARI</p><h1>Hoş geldin, {profile.full_name?.split(" ")[0]||"Ekibimiz"}.</h1><p className="muted">Atölyedeki araçları ve servis süreçlerini buradan takip et.</p></div>{["admin","supervisor"].includes(profile.role)&&<Link className="primary-button action-link" href="/dashboard/new"><Plus size={18}/> Yeni servis kaydı</Link>}</div>
     <div className="stats-grid">
      <article className="stat-card"><div className="stat-top"><span>Aktif servis</span><span className="stat-icon"><CarFront size={18}/></span></div><strong>{active}</strong><small>Henüz teslim edilmemiş araç</small></article>
      <article className="stat-card"><div className="stat-top"><span>Teslime hazır</span><span className="stat-icon green"><ShieldCheck size={18}/></span></div><strong>{ready}</strong><small>Yetkili teslim onayı bekliyor</small></article>
