@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import {useState,type FormEvent} from "react";
+import {useEffect,useState,type FormEvent} from "react";
 import {ArrowLeft,CarFront,CheckCircle2,Clock3,Search,ShieldCheck,Wrench} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
@@ -8,18 +8,25 @@ type TrackingResult={plate:string;brand:string;model:string;status:ServiceStatus
 export default function TrackingPage(){
  const [query,setQuery]=useState("");const [result,setResult]=useState<TrackingResult|null>(null);
  const [busy,setBusy]=useState(false);const [message,setMessage]=useState("");
- async function search(event:FormEvent<HTMLFormElement>){
-  event.preventDefault();setBusy(true);setMessage("");setResult(null);
+ async function lookup(value:string){
+  setBusy(true);setMessage("");setResult(null);
   try{
-   const value=query.trim();if(!value)throw new Error("QR takip kodunu veya plakanızı girin.");
-   const token=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
-   const {data,error}=await createClient().rpc("get_public_vehicle_tracking",{p_token:token?value:null,p_plate:token?null:value});
+   const v=value.trim();if(!v)throw new Error("QR takip kodunu veya plakanızı girin.");
+   const token=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
+   const {data,error}=await createClient().rpc("get_public_vehicle_tracking",{p_token:token?v:null,p_plate:token?null:v});
    if(error)throw error;const row=Array.isArray(data)?data[0]:null;
    if(!row)throw new Error("Bu plaka veya takip kodu için servis kaydı bulunamadı.");
    setResult(row as TrackingResult);
   }catch(err){setMessage(err instanceof Error?err.message:"Sorgulama yapılamadı.");}
   finally{setBusy(false);}
  }
+ async function search(event:FormEvent<HTMLFormElement>){event.preventDefault();await lookup(query);}
+ useEffect(()=>{
+  const token=new URLSearchParams(window.location.search).get("token");
+  if(token){setQuery(token);void lookup(token);}
+ },[]);
+ const stages:ServiceStatus[]=["waiting","repairing","testing","ready","delivered"];
+ const progress=result?Math.max(1,(stages.indexOf(result.status)+1)/stages.length*100):0;
  return <main className="tracking-page">
   <header className="tracking-header"><Link href="/login" className="back-link"><ArrowLeft size={17}/> Personel girişi</Link><Link href="/" className="side-brand"><span className="brand-icon"><Wrench size={19}/></span><span>FERAH <b>OTOMOTİV</b><small>SERVİS TAKİP</small></span></Link></header>
   <section className="tracking-content"><div className="tracking-symbol"><CarFront size={28}/></div><p className="eyebrow">MÜŞTERİ BİLGİLENDİRME</p>
@@ -28,7 +35,7 @@ export default function TrackingPage(){
    <form className="tracking-form" onSubmit={search}><label htmlFor="tracking-query">QR takip kodu veya plaka</label><div className="tracking-input"><Search size={19}/><input id="tracking-query" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Örn. 33 ABC 33" autoCapitalize="characters"/><button disabled={busy}>{busy?"Aranıyor...":"Sorgula"}</button></div></form>
    {message&&<p className="form-error tracking-error">{message}</p>}
    {result&&<article className="tracking-result"><div className="result-top"><div><span className="result-label">ARAÇ</span><h2>{result.plate}</h2><p>{result.brand} {result.model}</p></div><span className={"status-tag status-"+result.status}>{statusLabels[result.status]}</span></div>
-    <div className="progress-track"><span className={result.status==="delivered"?"complete":""}/></div>
+    <div className="progress-track"><span style={{width:progress+"%"}}/></div>
     <div className="result-note"><div className="note-icon"><Clock3 size={17}/></div><div><b>Son servis bilgilendirmesi</b><p>{result.latest_note||statusLabels[result.status]}</p><small>{new Date(result.latest_note_at||result.updated_at).toLocaleString("tr-TR")}</small></div></div>
     <div className="privacy-note"><ShieldCheck size={16}/> Bu ekranda yalnızca aracınızın servis durumu paylaşılır.</div>
    </article>}
