@@ -1,48 +1,62 @@
 # Ferah Otomotiv — Dijital Servis Yönetim Sistemi
 
-Ferah Otomotiv'in araç kabulünden müşteri teslimine kadar servis operasyonlarını yöneten Next.js + Supabase uygulaması.
+Ferah Otomotiv'in araç kabulü, teklif, onarım, müşteri bilgilendirme ve teslim operasyonlarını yöneten Next.js 15 + Supabase uygulaması.
 
-## Özellikler
-- Personel oturumu ve rol bazlı yetkilendirme.
-- Müşteri, plaka, marka/model, teklif tarihi ve teklifi veren bilgileri.
-- Sınırsız parça/işçilik kalemi, adet, birim fiyat ve otomatik teklif toplamı.
-- Araç fotoğrafı yükleme ve ekranda müşteri imzası alma.
-- Servise özel QR takip bağlantısı; QR bağlantısı veya plaka ile müşteri sorgulaması.
-- Servis panosu, ekip atama, aşama notları ve zaman çizelgesi.
-- Yönetici/supervisor tarafından kayıt düzenleme ve araç teslim onayı.
-- Yönetici tarafından personel hesabı oluşturma, rol ve aktiflik yönetimi.
-- Teklif ve QR kodunu yazdırarak PDF olarak kaydetme.
-- Özel Supabase Storage alanı, RLS ve GitHub Actions build kontrolü.
+## Modüller
+- Yönetici / Supervisor personel oturumu ve rol bazlı ekran yetkileri.
+- Müşteri ve araç kabulü: isim, telefon, e-posta, plaka, marka/model, teklif tarihi ve teklifi veren.
+- Sınırsız parça ve işçilik satırı, adet, birim fiyat ve otomatik teklif toplamı.
+- Birden çok araç fotoğrafı, müşteri imza alanı.
+- Her servis kaydına ayrı UUID takip anahtarı ve QR.
+- Yönetim panelinde servis dosyası, ekip ataması, aşama notları ve servis geçmişi.
+- Yönetici/Supervisor tarafından kayıt ve geçmiş notu düzenleme.
+- Yalnızca yönetici/Supervisor tarafından ve araç "Hazır" olduktan sonra teslim.
+- Yalnızca yönetici tarafından personel hesabı, rol ve aktiflik yönetimi.
+- Teklif PDF'si için yazdır / PDF kaydet.
+- Private Supabase Storage, RLS, build/typecheck iş akışı.
 
-## Rol sınırları
-- **Yönetici (admin):** Tüm kayıtlar, kullanıcı ve rol yönetimi, düzenleme ve araç teslimi.
-- **Supervisor:** Tüm servis kayıtları, ekip atamaları, kayıt düzenleme ve araç teslimi.
-- **Usta:** Yalnızca kendisine atanan araçların kayıtlarını görür; gelişme notu ve servis aşaması ekler.
-- **Müşteri:** Oturum açmadan QR takip bağlantısı veya plaka ile sınırlı servis durumunu sorgular.
+## Roller
+- **admin:** tüm servis kayıtları, personel ve rol yönetimi, kayıt düzenleme, teslim onayı.
+- **supervisor:** tüm servis kayıtları, ekip görevlendirme, kayıt düzenleme, teslim onayı.
+- **usta:** yalnızca atandığı iş emirlerini görür; gelişme ve aşama notu ekler.
+- **müşteri:** personel girişi olmadan QR veya plaka üzerinden sınırlı durum sorgular.
 
-Müşteri takip uç noktası yalnızca plaka, marka/model, servis durumu, teklif tarihi ve son gelişme notunu döndürür. Müşteri iletişim bilgileri, fiyatlar, imza ve ekip bilgileri açık sorguya dahil değildir. Plaka sorgusu, talep edilen müşteri kullanımına uygun olarak herkese açık ve sınırlı veri döndüren bir arama sunar.
+## Müşteri sorgulama gizliliği
+Plaka, kolayca tahmin edilebilir olduğu için yalnızca aktif servis kaydının genel durumunu (plaka/marka/model/aşama/teklif tarihi) verir; gelişme notları, müşteri adı/iletişimi, fiyatlar, imza, ekip ve servis geçmişi vermez. Teslime/iptale geçmiş kayıtlar plaka aramasında döndürülmez. Kayda özel QR token'ı ile yalnızca o servis dosyasının gelişme çizelgesi açılır. QR token'ı bir servis ziyaretini temsil eder; plaka veya araç sahibinin kalıcı kimliği değildir.
 
 ## Yerel geliştirme
-1. Node.js 22+ yükleyin.
+1. Node.js 22+ kurun.
 2. `npm install`
-3. `.env.example` dosyasını `.env.local` olarak kopyalayın.
-4. Supabase Settings → API Keys bölümünden Publishable ve Secret anahtarlarını kopyalayın.
-5. `npm run dev`
+3. `.env.example` dosyasını `.env.local` olarak kopyalayın ve değerleri girin.
+4. `npm run dev`
 
-## Ortam değişkenleri
+## Vercel ortam değişkenleri
+Project Settings → Environment Variables alanına aşağıdakileri ekleyin:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://ozwdxxoekvsntdriyvkg.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
 SUPABASE_SECRET_KEY=sb_secret_...
 ```
+`SUPABASE_SECRET_KEY` yalnızca sunucu tarafındaki kullanıcı yönetimi API'sinde kullanılır. Bunu asla `NEXT_PUBLIC_*` değişkeni yapmayın, GitHub'a eklemeyin veya tarayıcıya açmayın. Eski anahtar adları için geriye uyumluluk vardır.
 
-`SUPABASE_SECRET_KEY` yalnızca admin API tarafından sunucu tarafında kullanılır. RLS politikalarını aşan tam yetkili bir anahtardır; Vercel Environment Variables alanında saklayın ve GitHub'a ya da `NEXT_PUBLIC_*` değişkenine kesinlikle koymayın. Eski `anon/service_role` anahtarları için geriye dönük değişken desteği de bulunur.
+## Supabase veritabanı kurulumu
+SQL migration dosyaları `supabase/migrations/` içindedir. Sıralı olarak Supabase CLI ile uygulayın:
+```bash
+npx supabase link --project-ref ozwdxxoekvsntdriyvkg
+npx supabase db push
+```
+Supabase hesabında SQL editor ile kurulum tercih edilirse migration'lar aynı klasörde tarih sırasıyla çalıştırılmalıdır. Migration'lar idempotent olmayan başlangıç nesneleri içerebileceğinden aynı migration'ı ikinci kez elle çalıştırmayın; CLI migration geçmişini takip eder.
 
-## İlk yönetici
-Supabase Auth UID `e7af57b7-089e-412a-8f54-0e4c61900045` için aktif `admin` profili oluşturulmuştur. Bu kullanıcı kendi kayıtlı Auth şifresiyle giriş yapar.
+## İlk yönetici hesabı
+Migration, aşağıdaki Supabase Auth UID için admin profili oluşturur:
+`e7af57b7-089e-412a-8f54-0e4c61900045`
+Bu UID'nin ilgili projedeki Auth kullanıcısına ait olduğunu doğrulayın. Kullanıcı e-postası/şifresi Auth tarafında önceden tanımlı olmalıdır.
 
-## Vercel bağlantısı
-GitHub'da bu depoyu Vercel'e bağlayın. Framework preset Next.js, build komutu `npm run build` olarak algılanmalıdır. Yukarıdaki üç ortam değişkenini Vercel Project Settings → Environment Variables bölümüne ekleyin. `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` istemci tarafında kullanılır; service role key yalnızca sunucu tarafında kalır.
+## Vercel'e bağlama
+1. Vercel'de **Add New → Project** seçin ve `otoferah/carservice` GitHub deposunu içe aktarın.
+2. Framework **Next.js** olarak algılanmalıdır; build komutu `npm run build`.
+3. Yukarıdaki Environment Variables değerlerini Preview ve Production ortamları için tanımlayın.
+4. Deploy edin. Veritabanı migration'ları ve Auth/Storage ayarları tamamlanmadan uygulama canlı veriyle kullanıma hazır sayılmaz.
 
-## Supabase migration'ları
-Şema ve güvenlik migration'ları `supabase/migrations` klasöründedir. Bu oturumda belirtilen Supabase projesine uygulanmış ve tabloların RLS durumu doğrulanmıştır.
+## CI
+GitHub Actions, push ve pull request'te bağımlılık denetimi, TypeScript ve Next.js build adımlarını çalıştırır.
