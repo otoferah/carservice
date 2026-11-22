@@ -1,0 +1,52 @@
+"use client";
+import {useMemo,useState,type FormEvent} from "react";
+import Link from "next/link";
+import {QRCodeSVG} from "qrcode.react";
+import {Plus,Trash2,Printer,CheckCircle2} from "lucide-react";
+type Member={id:string;full_name:string;role:string};
+type Part={part_name:string;quantity:number;unit_price:number};
+type Saved={id:string;tracking_token:string;status:string;quote_total:number};
+export default function ServiceForm({members}:{members:Member[]}){
+ const [customer,setCustomer]=useState("");const [plate,setPlate]=useState("");const [brand,setBrand]=useState("");const [model,setModel]=useState("");
+ const [quoteDate,setQuoteDate]=useState(new Date().toISOString().slice(0,10));const [provider,setProvider]=useState("");
+ const [parts,setParts]=useState<Part[]>([{part_name:"",quantity:1,unit_price:0}]);const [team,setTeam]=useState<string[]>([]);
+ const [busy,setBusy]=useState(false);const [error,setError]=useState("");const [saved,setSaved]=useState<Saved|null>(null);
+ const total=useMemo(()=>parts.reduce((sum,p)=>sum+(Number(p.quantity)||0)*(Number(p.unit_price)||0),0),[parts]);
+ function patchPart(index:number,key:keyof Part,value:string){setParts(old=>old.map((p,i)=>i===index?{...p,[key]:key==="part_name"?value:Number(value)}:p));}
+ function toggleMember(id:string){setTeam(old=>old.includes(id)?old.filter(x=>x!==id):[...old,id]);}
+ async function submit(e:FormEvent<HTMLFormElement>){
+  e.preventDefault();setBusy(true);setError("");
+  try{
+   const response=await fetch("/api/services",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+    customer_name:customer,plate,brand,model,quote_date:quoteDate,quote_provider:provider,
+    parts:parts.filter(p=>p.part_name.trim()).map((p,i)=>({...p,sort_order:i})),team
+   })});
+   const data=await response.json();if(!response.ok)throw new Error(data.error||"Servis kaydı oluşturulamadı.");
+   setSaved(data as Saved);
+  }catch(err){setError(err instanceof Error?err.message:"Kayıt oluşturulamadı.");}
+  finally{setBusy(false);}
+ }
+ const qrUrl= saved && typeof window!=="undefined" ? window.location.origin+"/tracking?token="+saved.tracking_token : "";
+ return <div className="service-form-layout">
+  <form className="service-form" onSubmit={submit}>
+   <div className="form-section"><h2>01 · Müşteri ve araç bilgileri</h2><div className="field-grid">
+    <label className="field full">Araç sahibi adı ve soyadı<input required value={customer} onChange={e=>setCustomer(e.target.value)} placeholder="Müşteri adı soyadı"/></label>
+    <label className="field">Plaka<input required value={plate} onChange={e=>setPlate(e.target.value.toLocaleUpperCase("tr-TR"))} placeholder="33 ABC 33"/></label>
+    <label className="field">Marka<input required value={brand} onChange={e=>setBrand(e.target.value)} placeholder="Mercedes-Benz"/></label>
+    <label className="field">Model<input required value={model} onChange={e=>setModel(e.target.value)} placeholder="W124 200 E"/></label>
+    <label className="field">Teklif tarihi<input type="date" required value={quoteDate} onChange={e=>setQuoteDate(e.target.value)}/></label>
+    <label className="field">Teklifi veren<input value={provider} onChange={e=>setProvider(e.target.value)} placeholder="Personel adı"/></label>
+   </div></div>
+   <div className="form-section"><div className="section-title-row"><h2>02 · Kullanılan parçalar</h2><button type="button" className="outline-button" onClick={()=>setParts(old=>[...old,{part_name:"",quantity:1,unit_price:0}])}><Plus size={15}/> Parça ekle</button></div>
+    {parts.map((p,i)=><div className="part-row" key={i}><label className="field">Parça adı<input value={p.part_name} onChange={e=>patchPart(i,"part_name",e.target.value)} placeholder="Parça / işçilik açıklaması"/></label><label className="field quantity">Adet<input type="number" min="0.01" step="0.01" value={p.quantity} onChange={e=>patchPart(i,"quantity",e.target.value)}/></label><label className="field price">Birim fiyat (₺)<input type="number" min="0" step="0.01" value={p.unit_price} onChange={e=>patchPart(i,"unit_price",e.target.value)}/></label><div className="part-total">{(p.quantity*p.unit_price).toLocaleString("tr-TR")} ₺</div><button type="button" className="icon-button" aria-label="Parçayı sil" onClick={()=>setParts(old=>old.filter((_,j)=>i!==j))}><Trash2 size={16}/></button></div>)}
+    <div className="total-row"><span>Teklif toplamı</span><strong>{total.toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</strong></div>
+   </div>
+   <div className="form-section"><h2>03 · İlgilenen ekip</h2><p className="muted small-copy">Aracın bakım ve onarımında görev alacak personeli seçin. Ekip üyeleri servis notu girebilir.</p>
+    <div className="team-grid">{members.map(m=><label key={m.id} className="team-option"><input type="checkbox" checked={team.includes(m.id)} onChange={()=>toggleMember(m.id)}/><span><b>{m.full_name}</b><small>{m.role==="admin"?"Yönetici":m.role==="supervisor"?"Supervisor":"Usta"}</small></span></label>)}</div>
+   </div>
+   {error&&<p className="form-error">{error}</p>}
+   <button type="submit" className="primary-button submit-service" disabled={busy||!!saved}>{busy?"Kayıt oluşturuluyor...":saved?"Servis kaydı oluşturuldu":"Teklifi kaydet ve servise al"}</button>
+  </form>
+  {saved&&<aside className="saved-card"><div className="saved-success"><CheckCircle2 size={18}/> Servis kaydı oluşturuldu</div><p className="muted">Araç otomatik olarak “Araç beklemede” durumuyla servis listesine alındı.</p><div className="qr-frame"><QRCodeSVG value={qrUrl} size={180} level="H" includeMargin/></div><b className="qr-caption">{plate.toLocaleUpperCase("tr-TR")}</b><small className="muted">Bu QR kod yalnızca bu servis kaydını temsil eder.</small><button className="outline-button print-button" type="button" onClick={()=>window.print()}><Printer size={16}/> Teklif / QR yazdır · PDF kaydet</button><Link className="primary-button" href={"/dashboard/service/"+saved.id}>Servis kaydını aç</Link><Link className="text-link" href="/dashboard">Ana panele dön <span>→</span></Link></aside>}
+ </div>;
+}
