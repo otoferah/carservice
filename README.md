@@ -26,17 +26,17 @@ Müşteri takip uç noktası yalnızca plaka, marka/model, servis durumu, teklif
 1. Node.js 22+ yükleyin.
 2. `npm install`
 3. `.env.example` dosyasını `.env.local` olarak kopyalayın.
-4. Supabase API ayarlarından anon/publishable anahtarını ekleyin.
+4. Supabase Settings → API Keys bölümünden Publishable ve Secret anahtarlarını kopyalayın.
 5. `npm run dev`
 
 ## Ortam değişkenleri
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://ozwdxxoekvsntdriyvkg.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=SUPABASE_ANON_OR_PUBLISHABLE_KEY
-SUPABASE_SERVICE_ROLE_KEY=SERVER_SIDE_SERVICE_ROLE_SECRET
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+SUPABASE_SECRET_KEY=sb_secret_...
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` yalnızca admin API tarafından sunucu tarafında kullanılır. Vercel Environment Variables alanında saklayın; GitHub'a veya `NEXT_PUBLIC_*` değişkenine kesinlikle koymayın.
+`SUPABASE_SECRET_KEY` yalnızca admin API tarafından sunucu tarafında kullanılır. RLS politikalarını aşan tam yetkili bir anahtardır; Vercel Environment Variables alanında saklayın ve GitHub'a ya da `NEXT_PUBLIC_*` değişkenine kesinlikle koymayın. Eski `anon/service_role` anahtarları için geriye dönük değişken desteği de bulunur.
 
 ## İlk yönetici
 Supabase Auth UID `e7af57b7-089e-412a-8f54-0e4c61900045` için aktif `admin` profili oluşturulmuştur. Bu kullanıcı kendi kayıtlı Auth şifresiyle giriş yapar.
