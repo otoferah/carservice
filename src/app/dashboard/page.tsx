@@ -8,7 +8,7 @@ export default async function DashboardPage(){
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
  const [{data:profile},{data:records},{count:staffCount}]=await Promise.all([
   supabase.from("profiles").select("full_name,role,is_active").eq("id",user.id).maybeSingle(),
-  supabase.from("service_records").select("id,status,quote_total,quote_date,created_at,customers(full_name),vehicles(plate,brand,model)").order("created_at",{ascending:false}).limit(30),
+  supabase.from("service_records").select("id,status,quote_total,quote_date,created_at,customers(full_name),vehicles(plate,brand,model)").order("created_at",{ascending:false}).limit(100),
   supabase.from("profiles").select("*",{count:"exact",head:true}).eq("is_active",true)
  ]);
  if(!profile?.is_active)redirect("/login");
@@ -35,11 +35,11 @@ export default async function DashboardPage(){
      <article className="stat-card"><div className="stat-top"><span>Aktif servis</span><span className="stat-icon"><CarFront size={18}/></span></div><strong>{active}</strong><small>Henüz teslim edilmemiş araç</small></article>
      <article className="stat-card"><div className="stat-top"><span>Teslime hazır</span><span className="stat-icon green"><ShieldCheck size={18}/></span></div><strong>{ready}</strong><small>Yetkili teslim onayı bekliyor</small></article>
      <article className="stat-card"><div className="stat-top"><span>Personel</span><span className="stat-icon"><Users size={18}/></span></div><strong>{["admin","supervisor"].includes(profile.role)?(staffCount??"—"):"—"}</strong><small>Aktif ekip üyesi</small></article>
-     <article className="stat-card"><div className="stat-top"><span>Teklif toplamı</span><span className="stat-icon"><ClipboardList size={18}/></span></div><strong>{total.toLocaleString("tr-TR")} ₺</strong><small>Son 30 servis kaydının toplamı</small></article>
+     <article className="stat-card"><div className="stat-top"><span>Teklif toplamı</span><span className="stat-icon"><ClipboardList size={18}/></span></div><strong>{total.toLocaleString("tr-TR")} ₺</strong><small>Son 100 servis kaydının toplamı</small></article>
     </div>
-    <section className="panel"><div className="panel-heading"><div><h2>Son servis kayıtları</h2><p>En son oluşturulan araçlar</p></div><Link href="/dashboard/new" className="subtle-link">Kayıt oluştur <ArrowUpRight size={15}/></Link></div>
-     <div className="table-scroll"><table><thead><tr><th>ARAÇ</th><th>MÜŞTERİ</th><th>TEKLİF TARİHİ</th><th>DURUM</th><th>TUTAR</th></tr></thead><tbody>
-      {rows.length?rows.map(r=><tr key={r.id}><td><b>{r.vehicles?.plate||"—"}</b><small>{r.vehicles?.brand} {r.vehicles?.model}</small></td><td>{r.customers?.full_name||"—"}</td><td>{new Date(r.quote_date).toLocaleDateString("tr-TR")}</td><td><span className={"status-tag status-"+r.status}>{statusLabels[r.status]||r.status}</span></td><td>{Number(r.quote_total).toLocaleString("tr-TR")} ₺</td></tr>):<tr><td colSpan={5} className="empty-cell">Henüz servis kaydı bulunmuyor. İlk kaydı oluşturarak başlayın.</td></tr>}
+    <section className="panel"><div className="panel-heading"><div><h2>Son servis kayıtları</h2><p>En son oluşturulan araçlar</p></div>{["admin","supervisor"].includes(profile.role)&&<Link href="/dashboard/new" className="subtle-link">Kayıt oluştur <ArrowUpRight size={15}/></Link>}</div>
+     <div className="table-scroll"><table><thead><tr><th>ARAÇ</th><th>MÜŞTERİ</th><th>TEKLİF TARİHİ</th><th>DURUM</th><th>TUTAR</th><th>İŞLEM</th></tr></thead><tbody>
+      {rows.length?rows.map(r=><tr key={r.id}><td><b>{r.vehicles?.plate||"—"}</b><small>{r.vehicles?.brand} {r.vehicles?.model}</small></td><td>{r.customers?.full_name||"—"}</td><td>{new Date(r.quote_date+"T12:00:00").toLocaleDateString("tr-TR")}</td><td><span className={"status-tag status-"+r.status}>{statusLabels[r.status]||r.status}</span></td><td>{Number(r.quote_total).toLocaleString("tr-TR")} ₺</td><td><Link href={"/dashboard/service/"+r.id} className="subtle-link">Dosyayı aç <ArrowUpRight size={14}/></Link></td></tr>):<tr><td colSpan={6} className="empty-cell">Henüz servis kaydı bulunmuyor. İlk kaydı oluşturarak başlayın.</td></tr>}
      </tbody></table></div>
     </section>
     <div className="bottom-hint"><Wrench size={16}/> Teklif, servis aşamaları, ekip görevlendirme ve QR takip akışı tek platformda.</div>
