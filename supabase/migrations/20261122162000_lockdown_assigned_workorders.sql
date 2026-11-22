@@ -42,3 +42,22 @@ drop policy if exists "images staff upload" on public.service_images;
 drop policy if exists "images manager or assigned upload" on public.service_images;
 create policy "images manager or assigned upload" on public.service_images for insert to authenticated
 with check(uploaded_by=auth.uid() and (public.has_management_role() or public.is_assigned_to_record(service_record_id)));
+
+drop policy if exists "service media staff read" on storage.objects;
+drop policy if exists "service media manager or assigned read" on storage.objects;
+create policy "service media manager or assigned read" on storage.objects for select to authenticated
+using(bucket_id='service-media' and (
+ public.has_management_role() or exists(
+  select 1 from public.service_team st
+  where st.profile_id=auth.uid() and objects.name like st.service_record_id::text || '/%'
+ )
+));
+drop policy if exists "service media staff upload" on storage.objects;
+drop policy if exists "service media manager or assigned upload" on storage.objects;
+create policy "service media manager or assigned upload" on storage.objects for insert to authenticated
+with check(bucket_id='service-media' and (
+ public.has_management_role() or exists(
+  select 1 from public.service_team st
+  where st.profile_id=auth.uid() and objects.name like st.service_record_id::text || '/%'
+ )
+));
