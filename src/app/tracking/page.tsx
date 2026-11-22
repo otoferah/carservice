@@ -1,0 +1,38 @@
+"use client";
+import Link from "next/link";
+import {useState,type FormEvent} from "react";
+import {ArrowLeft,CarFront,CheckCircle2,Clock3,Search,ShieldCheck,Wrench} from "lucide-react";
+import {createClient} from "@/lib/supabase/client";
+import {statusLabels,type ServiceStatus} from "@/lib/types";
+type TrackingResult={plate:string;brand:string;model:string;status:ServiceStatus;quote_date:string;updated_at:string;latest_note:string|null;latest_note_at:string|null};
+export default function TrackingPage(){
+ const [query,setQuery]=useState("");const [result,setResult]=useState<TrackingResult|null>(null);
+ const [busy,setBusy]=useState(false);const [message,setMessage]=useState("");
+ async function search(event:FormEvent<HTMLFormElement>){
+  event.preventDefault();setBusy(true);setMessage("");setResult(null);
+  try{
+   const value=query.trim();if(!value)throw new Error("QR takip kodunu veya plakanızı girin.");
+   const token=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+   const {data,error}=await createClient().rpc("get_public_vehicle_tracking",{p_token:token?value:null,p_plate:token?null:value});
+   if(error)throw error;const row=Array.isArray(data)?data[0]:null;
+   if(!row)throw new Error("Bu plaka veya takip kodu için servis kaydı bulunamadı.");
+   setResult(row as TrackingResult);
+  }catch(err){setMessage(err instanceof Error?err.message:"Sorgulama yapılamadı.");}
+  finally{setBusy(false);}
+ }
+ return <main className="tracking-page">
+  <header className="tracking-header"><Link href="/login" className="back-link"><ArrowLeft size={17}/> Personel girişi</Link><Link href="/" className="side-brand"><span className="brand-icon"><Wrench size={19}/></span><span>FERAH <b>OTOMOTİV</b><small>SERVİS TAKİP</small></span></Link></header>
+  <section className="tracking-content"><div className="tracking-symbol"><CarFront size={28}/></div><p className="eyebrow">MÜŞTERİ BİLGİLENDİRME</p>
+   <h1>Aracınızın servis<br/><span>sürecini takip edin.</span></h1>
+   <p className="muted">Servis formunuzdaki QR kodu okutun veya araç plakanızı girerek güncel servis aşamasını görüntüleyin.</p>
+   <form className="tracking-form" onSubmit={search}><label htmlFor="tracking-query">QR takip kodu veya plaka</label><div className="tracking-input"><Search size={19}/><input id="tracking-query" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Örn. 33 ABC 33" autoCapitalize="characters"/><button disabled={busy}>{busy?"Aranıyor...":"Sorgula"}</button></div></form>
+   {message&&<p className="form-error tracking-error">{message}</p>}
+   {result&&<article className="tracking-result"><div className="result-top"><div><span className="result-label">ARAÇ</span><h2>{result.plate}</h2><p>{result.brand} {result.model}</p></div><span className={"status-tag status-"+result.status}>{statusLabels[result.status]}</span></div>
+    <div className="progress-track"><span className={result.status==="delivered"?"complete":""}/></div>
+    <div className="result-note"><div className="note-icon"><Clock3 size={17}/></div><div><b>Son servis bilgilendirmesi</b><p>{result.latest_note||statusLabels[result.status]}</p><small>{new Date(result.latest_note_at||result.updated_at).toLocaleString("tr-TR")}</small></div></div>
+    <div className="privacy-note"><ShieldCheck size={16}/> Bu ekranda yalnızca aracınızın servis durumu paylaşılır.</div>
+   </article>}
+   <div className="tracking-foot"><CheckCircle2 size={16}/> Ferah Otomotiv tarafından güvenli servis takibi</div>
+  </section>
+ </main>;
+}
