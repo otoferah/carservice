@@ -66,3 +66,17 @@ begin
  update public.profiles set role=p_role,full_name=coalesce(p_full_name,full_name),is_active=p_active,updated_at=now() where id=p_user_id;
  if not found then raise exception 'Kullanıcı profili bulunamadı.'; end if;
 end $$;
+
+-- Let technicians view names of people assigned to the same work order.
+drop policy if exists "profiles read staff" on public.profiles;
+drop policy if exists "profiles read staff and teammates" on public.profiles;
+create policy "profiles read staff and teammates" on public.profiles for select to authenticated
+using (
+ public.current_app_role() in ('admin','supervisor')
+ or id=auth.uid()
+ or exists(
+  select 1 from public.service_team mine
+  join public.service_team colleague on colleague.service_record_id=mine.service_record_id
+  where mine.profile_id=auth.uid() and colleague.profile_id=profiles.id
+ )
+);
