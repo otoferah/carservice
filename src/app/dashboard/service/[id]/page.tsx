@@ -6,7 +6,8 @@ import {statusLabels,type ServiceStatus} from "@/lib/types";
 import ServiceProgress from "./service-progress";
 type Person={full_name:string;role:string};
 type Update={id:string;status:ServiceStatus;note:string;created_at:string;profiles:Person|null};
-type Part={id:string;part_name:string;quantity:number;unit_price:number;line_total:number};\ntype ImageRow={id:string;storage_path:string;caption:string|null};
+type Part={id:string;part_name:string;quantity:number;unit_price:number;line_total:number};
+type ImageRow={id:string;storage_path:string;caption:string|null};
 export default async function ServiceDetailPage({params}:{params:Promise<{id:string}>}){
  const {id}=await params;const supabase=await createClient();
  const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
