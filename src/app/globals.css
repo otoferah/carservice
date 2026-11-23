@@ -850,3 +850,39 @@ tr:hover td{background:#1c2026!important}
   flex-basis:184px!important;
  }
 }
+
+/* Staff task assignment and completion UI */
+.service-task-panel{display:flex;flex-direction:column;gap:16px}
+.task-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.task-panel-heading h2{display:flex;align-items:center;gap:9px;margin:0}
+.service-task-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:15px;border:1px solid #343b44;border-radius:11px;background:#10151b}
+.service-task-form .field{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:650;color:#dce1e8}
+.service-task-form input,.service-task-form select,.service-task-form textarea,.task-complete-form textarea{width:100%;border:1px solid #3b424c;border-radius:8px;background:#0d1116;color:#f4f5f7;padding:10px 11px;font:inherit;font-weight:400;outline:none}
+.service-task-form textarea,.task-complete-form textarea{resize:vertical;min-height:62px}
+.service-task-form input:focus,.service-task-form select:focus,.service-task-form textarea:focus,.task-complete-form textarea:focus{border-color:#d5a84e;box-shadow:0 0 0 3px #d5a84e1c}
+.task-description-field{grid-column:1/-1}
+.service-task-form .primary-button{justify-self:start;grid-column:1/-1}
+.service-task-list{display:grid;gap:10px}
+.service-task-card{padding:14px;border:1px solid #353c45;border-radius:10px;background:#151a20}
+.service-task-card.is-completed{border-color:#315344;background:#111b18}
+.service-task-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.service-task-card-top>div{display:grid;gap:6px;min-width:0}
+.service-task-card-top b{font-size:14px;color:#f3f4f6}
+.service-task-card-top small{display:flex;align-items:center;gap:5px;color:#9ca6b2;font-size:11px}
+.task-status{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;border-radius:20px;padding:5px 9px;font-size:10px;font-weight:750}
+.task-status.pending{color:#f0c66f;background:#8c67231f;border:1px solid #a77a3144}
+.task-status.done{color:#8bd5a8;background:#2a8a511c;border:1px solid #3d9d6244}
+.service-task-description{color:#b5bdc7;font-size:12px;line-height:1.6;margin:10px 0 0;white-space:pre-wrap}
+.task-complete-form{display:grid;gap:9px;margin-top:12px}
+.task-complete-form .primary-button{justify-self:start}
+.task-completion-note{margin-top:10px;padding:10px 12px;border-radius:8px;background:#0c1511;color:#c8d8cf;font-size:12px;white-space:pre-wrap}
+.task-completion-note small{display:block;margin-top:6px;color:#82958a;font-size:10px}
+.assigned-tasks-panel{margin-bottom:18px}
+.assigned-task-list{display:grid}
+.assigned-task-row{display:flex;align-items:center;gap:12px;padding:13px 17px;border-top:1px solid #343a43;color:inherit;text-decoration:none}
+.assigned-task-row:hover{background:#ffffff06}
+.assigned-task-copy{display:grid;gap:4px;flex:1;min-width:0}
+.assigned-task-copy b{font-size:13px;color:#f2f4f6}
+.assigned-task-copy small{font-size:11px;color:#9ca6b2}
+.task-empty{padding:14px 17px;margin:0}
+@media(max-width:680px){.service-task-form{grid-template-columns:1fr}.task-description-field,.service-task-form .primary-button{grid-column:auto}.service-task-card-top{flex-direction:column}.assigned-task-row{align-items:flex-start;flex-wrap:wrap}}
