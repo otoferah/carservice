@@ -37,8 +37,8 @@ Deno.serve(async (req: Request) => {
       const username = String(body.username ?? "").trim().toLowerCase();
       const password = String(body.password ?? "");
       const role = body.role as Role;
-      if (!fullName || !usernamePattern.test(username) || password.length < 12 || !allowedRoles.includes(role))
-        return reply({ error: "Ad soyad, geçerli kullanıcı adı, görev rolü ve en az 12 karakterli şifre zorunludur." }, 400);
+      if (!fullName || !usernamePattern.test(username) || password.length < 12 || !allowedRoles.includes(role) || role === "admin")
+        return reply({ error: "Ad soyad, geçerli personel kullanıcı adı, Usta veya Supervisor rolü ve en az 12 karakterli şifre zorunludur." }, 400);
       const { data: existing, error: existingError } = await admin.from("profiles").select("id").ilike("username", username).maybeSingle();
       if (existingError) throw existingError;
       if (existing) return reply({ error: "Bu kullanıcı adı zaten kullanılıyor." }, 409);
