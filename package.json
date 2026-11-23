@@ -33,11 +33,10 @@
     "@vitejs/plugin-rsc": "^0.5.39",
     "cf": "^1.0.0-rc.2",
     "typescript": "^5.9.2",
-    "vite": "^8.3.0"
+    "vite": "8.3.8"
   },
   "overrides": {
     "postcss": "^8.5.33",
-    "vite": "8.3.8",
     "fflate": "0.7.5"
   },
   "type": "module",
