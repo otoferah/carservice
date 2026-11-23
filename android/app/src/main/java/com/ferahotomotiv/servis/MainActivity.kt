@@ -15,7 +15,6 @@ import android.widget.TextView
 import android.widget.Button
 import android.view.Gravity
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : Activity() {
     private lateinit var webView: WebView
@@ -133,7 +132,7 @@ class MainActivity : Activity() {
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (customView != null) { webView.webChromeClient?.onHideCustomView(); return }
+                if (customView != null) {\n                    customView?.let { root.removeView(it) }\n                    customView = null\n                    customViewCallback?.onCustomViewHidden()\n                    customViewCallback = null\n                    webView.visibility = View.VISIBLE\n                    enterImmersiveMode()\n                    return\n                }
                 if (webView.canGoBack()) webView.goBack() else {
                     webView.loadUrl(appUrl)
                 }
