@@ -17,6 +17,7 @@ function jsonError(message: string, status: number) {
 
 export async function POST(request: Request) {
   let imageId: string | null = null;
+  let stage = "yetkilendirme";
   let admin: Awaited<ReturnType<typeof getGoogleDriveAdminClient>> | null = null;
 
   try {
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
       return jsonError("Geçersiz servis kaydı veya görsel yolu.", 400);
     }
 
+    stage = "Supabase servis görseli kaydını okuma";
     admin = await getGoogleDriveAdminClient();
     const { data: image, error: imageError } = await admin
       .from("service_images")
@@ -61,11 +63,13 @@ export async function POST(request: Request) {
       }, { headers: { "Cache-Control": "no-store" } });
     }
 
+    stage = "Google Drive bağlantısını ve hedef klasörü kontrol etme";
     const connection = await getGoogleDriveConnection();
     if (!connection?.drive_folder_id) {
       return jsonError("Google Drive hedef klasörü henüz seçilmemiş.", 409);
     }
 
+    stage = "Orijinal fotoğrafı Supabase Storage'dan okuma";
     const { data: file, error: downloadError } = await admin.storage
       .from("service-media")
       .download(storagePath);
@@ -73,6 +77,7 @@ export async function POST(request: Request) {
       throw new Error("Orijinal görsel Supabase Storage üzerinden okunamadı.");
     }
 
+    stage = "Google OAuth erişim anahtarını yenileme";
     const accessToken = await getGoogleAccessToken();
     const originalName = storagePath.split("/").pop() || "service-image";
     const safeName = originalName.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -94,6 +99,7 @@ export async function POST(request: Request) {
       `\r\n--${boundary}--`,
     ]);
 
+    stage = "Fotoğrafı Google Drive klasörüne yükleme";
     const uploadResponse = await fetch(
       "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink",
       {
@@ -106,17 +112,20 @@ export async function POST(request: Request) {
       },
     );
 
-    const uploaded = await uploadResponse.json() as {
+    const uploaded = await uploadResponse.json().catch(() => null) as {
       id?: string;
       name?: string;
       webViewLink?: string;
-      error?: { message?: string };
-    };
+      error?: { message?: string; errors?: { reason?: string }[] };
+    } | null;
 
-    if (!uploadResponse.ok || !uploaded.id) {
-      throw new Error(uploaded.error?.message || "Google Drive görseli kabul etmedi.");
+    if (!uploadResponse.ok || !uploaded?.id) {
+      const reason = uploaded?.error?.errors?.[0]?.reason;
+      const detail = uploaded?.error?.message || "Google Drive geçerli bir yanıt döndürmedi.";
+      throw new Error("Google Drive HTTP " + uploadResponse.status + (reason ? " (" + reason + ")" : "") + ": " + detail);
     }
 
+    stage = "Drive dosya kimliğini Supabase'e kaydetme";
     const { error: updateError } = await admin
       .from("service_images")
       .update({
@@ -136,7 +145,8 @@ export async function POST(request: Request) {
       webViewLink: uploaded.webViewLink || null,
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Google Drive aktarımı başarısız.";
+    const detail = error instanceof Error ? error.message : "Bilinmeyen hata.";
+    const message = stage + " aşamasında hata: " + detail;
     if (admin && imageId) {
       await admin.from("service_images")
         .update({ google_drive_sync_error: message.slice(0, 1000) })
