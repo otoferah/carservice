@@ -1,6 +1,22 @@
 import {NextResponse} from "next/server";
 import {createClient as createSupabaseClient} from "@supabase/supabase-js";
 import {createClient} from "@/lib/supabase/server";
+
+function describeError(error: unknown, fallback: string) {
+ if (error instanceof Error) return { message: error.message };
+ if (error && typeof error === "object") {
+  const value = error as { message?: unknown; code?: unknown; details?: unknown; hint?: unknown };
+  const message = typeof value.message === "string" ? value.message : fallback;
+  return {
+   message,
+   ...(typeof value.code === "string" ? { code: value.code } : {}),
+   ...(typeof value.details === "string" && value.details ? { details: value.details } : {}),
+   ...(typeof value.hint === "string" && value.hint ? { hint: value.hint } : {}),
+  };
+ }
+ return { message: fallback };
+}
+
 export async function PATCH(request:Request,{params}:{params:Promise<{id:string}>}){
  try{
   const {id}=await params;const supabase=await createClient();
@@ -18,7 +34,7 @@ export async function PATCH(request:Request,{params}:{params:Promise<{id:string}
   });
   if(error)throw error;
   return NextResponse.json({success:true});
- }catch(error){return NextResponse.json({error:error instanceof Error?error.message:"Servis kaydı güncellenemedi."},{status:400});}
+ }catch(error){return NextResponse.json({error:describeError(error,"Servis kaydı güncellenemedi.").message},{status:400});}
 }
 export async function DELETE(_request:Request,{params}:{params:Promise<{id:string}>}){
  try{
@@ -39,5 +55,8 @@ export async function DELETE(_request:Request,{params}:{params:Promise<{id:strin
   let storageWarning:string|undefined;
   if(paths.length){const {error:storageError}=await admin.storage.from("service-media").remove([...new Set(paths)]);if(storageError)storageWarning="Servis kaydı silindi ancak bazı görseller depolamadan kaldırılamadı.";}
   return NextResponse.json({success:true,storageWarning});
- }catch(error){return NextResponse.json({error:error instanceof Error?error.message:"Servis kaydı silinemedi."},{status:400});}
+ }catch(error){
+  const info=describeError(error,"Servis kaydı silinemedi.");
+  return NextResponse.json({error:info.message, ...(info.code ? {code:info.code}:{}), ...(info.details ? {details:info.details}:{}), ...(info.hint ? {hint:info.hint}:{})},{status:400});
+ }
 }
