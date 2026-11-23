@@ -91,3 +91,14 @@
  .quote-signature-block p{margin:0 0 1mm!important}
  .print-only-quote .quote-signature{display:block!important;max-width:55mm!important;width:auto!important;height:auto!important;max-height:22mm!important;object-fit:contain!important;object-position:left center!important;border-bottom:1px solid #303a33!important;break-inside:avoid!important;page-break-inside:avoid!important}
 }
+
+/* Teklif PDF'sinde müşteri imzası ve araca özel takip QR kodu */
+.quote-bottom-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12mm;margin-top:4mm}
+.quote-tracking-qr{display:none}
+@media print{
+ .quote-bottom-row{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:8mm!important;margin-top:3mm!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ .quote-signature-block{flex:1;min-width:0;margin-top:0!important}
+ .quote-tracking-qr{display:flex!important;flex:0 0 32mm;flex-direction:column;align-items:center;justify-content:flex-end;gap:1.5mm;text-align:center;break-inside:avoid!important;page-break-inside:avoid!important}
+ .quote-tracking-qr svg{display:block!important;width:29mm!important;height:29mm!important}
+ .quote-tracking-qr small{display:block!important;max-width:34mm;font-size:6.5pt!important;line-height:1.15!important;color:#222!important}
+}
