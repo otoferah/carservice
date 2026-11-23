@@ -24,7 +24,7 @@ export default async function DashboardPage(){
  const roleName=profile.role==="admin"?"Yönetici":profile.role==="supervisor"?"Supervisor":"Usta";
  return <main className="app-shell">
   <aside className="sidebar">
-   <Link href="/dashboard" className="side-brand"><img className="side-brand-logo" src="/assets/ferah-logo.jpg" alt="Ferah Otomotiv"/></Link>
+   <Link href="/dashboard" className="side-brand"><img className="side-brand-logo" src="/assets/FERAH%20OTOMOT%C4%B0V%20Metalik%20Logo.png" alt="Ferah Otomotiv"/></Link>
    <div className="side-section">ÇALIŞMA ALANI</div>
    <Link className="side-link active" href="/dashboard"><Activity size={18}/> Genel Bakış</Link>
    <Link className="side-link" href="/tracking"><Search size={18}/> Araç Sorgulama</Link>
