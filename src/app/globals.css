@@ -72,3 +72,22 @@
  .sticker-plain-page .plain-qr-print{width:55mm!important;height:55mm!important;margin:0 auto!important;padding:0!important;break-inside:avoid}
  .sticker-plain-page .plain-qr-print svg{width:55mm!important;height:55mm!important}
 }
+
+/* One-page A4 quote output */
+@media print{
+ @page{size:A4 portrait;margin:10mm}
+ html,body{width:210mm!important;min-height:0!important;margin:0!important;padding:0!important;background:#fff!important}
+ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .detail-content{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+ .print-only-quote{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;font-size:9pt!important;line-height:1.25!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ .print-only-quote h2{font-size:14pt!important;margin:0 0 5mm!important;line-height:1.2!important}
+ .print-only-quote p{font-size:9pt!important;line-height:1.25!important;margin:2mm 0!important}
+ .print-only-quote table{width:100%!important;margin:4mm 0!important;table-layout:auto!important;white-space:normal!important;break-inside:auto!important}
+ .print-only-quote thead{display:table-header-group}
+ .print-only-quote tr{break-inside:avoid!important;page-break-inside:avoid!important}
+ .print-only-quote th,.print-only-quote td{font-size:8.5pt!important;line-height:1.2!important;padding:2mm 2.2mm!important}
+ .print-only-quote h3{font-size:12pt!important;margin:4mm 0!important;break-after:avoid!important;page-break-after:avoid!important}
+ .quote-signature-block{display:block!important;margin-top:4mm!important;break-inside:avoid!important;page-break-inside:avoid!important;break-before:avoid!important;page-break-before:avoid!important}
+ .quote-signature-block p{margin:0 0 1mm!important}
+ .print-only-quote .quote-signature{display:block!important;max-width:55mm!important;width:auto!important;height:auto!important;max-height:22mm!important;object-fit:contain!important;object-position:left center!important;border-bottom:1px solid #303a33!important;break-inside:avoid!important;page-break-inside:avoid!important}
+}
