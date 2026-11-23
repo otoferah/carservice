@@ -511,3 +511,103 @@ td small{color:#a2a7ae!important;font-size:9px}
  .print-quote th,.print-only-quote th{background:#f2f4f2!important;color:#26332b!important}
  .print-quote td,.print-only-quote td{color:#111!important}
 }
+
+
+/* ===== FERAH REFERENCE DESIGN: GOLD / CARBON ===== */
+.login-page{
+  grid-template-columns:minmax(520px,1fr) minmax(420px,1fr)!important;
+  background:#090b0e!important;
+}
+.login-card{width:min(464px,calc(100% - 56px));padding:48px 0!important}
+.login-brand-logo{width:190px!important;height:58px!important;margin-bottom:32px!important}
+.login-card h1{font-size:48px!important;line-height:1.04!important;letter-spacing:-2.4px!important;color:#f7f7f8!important}
+.login-card h1 span{color:#f0c96f!important}
+.login-card>.muted{color:#aab0b8!important;font-size:14px!important}
+.login-form label{color:#f0f1f3!important;font-size:12px!important}
+.login-form input{
+ height:45px!important;background:#202a39!important;border:1px solid #3c4654!important;
+ border-radius:8px!important;color:#fff!important;font-size:12px!important
+}
+.login-form input:focus{border-color:#d6a84f!important;box-shadow:0 0 0 3px #d6a84f24!important}
+.login-form .primary-button{height:43px!important;margin-top:2px}
+.secure-note{color:#b2bac3!important}
+.secure-note svg{color:#cbd2da!important}
+.text-link{border-color:#343941!important;color:#e7b957!important;margin-top:42px!important;padding-top:20px!important}
+.login-aside{
+ min-height:100vh!important;padding:70px 9%!important;
+ border-left:1px solid #343941!important;
+ background:
+   radial-gradient(ellipse at 82% 20%,#9a713533 0%,transparent 38%),
+   radial-gradient(ellipse at 55% 62%,#242a32aa 0%,transparent 48%),
+   linear-gradient(120deg,#11151a 0%,#0d1014 100%)!important;
+}
+.login-aside h2{font-size:48px!important;line-height:1.08!important;letter-spacing:-2px!important}
+.login-aside>p:not(.eyebrow){color:#c0c5cc!important;max-width:390px!important}
+.aside-glow{background:#d6a84f20!important;filter:blur(95px)!important}
+.aside-foot{color:#b4bbc3!important}
+.app-shell{grid-template-columns:272px minmax(0,1fr)!important}
+.sidebar{
+ background:linear-gradient(180deg,#111419 0%,#0b0d11 100%)!important;
+ border-right:1px solid #343941!important;padding:22px 15px!important
+}
+.side-brand{padding:0 7px 34px!important}
+.side-brand-logo{width:202px!important;height:58px!important}
+.side-section{font-size:10px!important;letter-spacing:1.5px!important;padding:14px 11px 9px!important}
+.side-link{font-size:12px!important;padding:12px 12px!important;border-radius:9px!important}
+.side-link.active{background:linear-gradient(100deg,#3a2d19,#1b1e23)!important;border:1px solid #b58a43!important;box-shadow:inset 2px 0 #f0c96f,0 0 18px #d6a84f25!important}
+.main-area{
+ background:
+  radial-gradient(ellipse at 84% 0%,#5b44201c 0%,transparent 35%),
+  #090b0e!important
+}
+.topbar{height:62px!important;background:#0e1115!important;padding:0 30px!important}
+.content-wrap{max-width:1700px!important;padding:28px 30px!important}
+.page-heading{
+ position:relative;min-height:150px;padding:18px 20px!important;margin-bottom:18px!important;
+ border:1px solid #343941;border-radius:13px;overflow:hidden;
+ background:
+  radial-gradient(ellipse at 85% 35%,#8b642b3d 0%,transparent 34%),
+  linear-gradient(100deg,#11151a 0%,#0e1116 60%,#171715 100%)!important;
+}
+.page-heading:after{
+ content:"";position:absolute;right:2%;top:-40%;width:44%;height:180%;
+ background:radial-gradient(ellipse at center,#d6a84f20 0%,#d6a84f08 38%,transparent 68%);
+ pointer-events:none
+}
+.page-heading>div,.page-heading>a{position:relative;z-index:1}
+.page-heading h1{font-size:38px!important;letter-spacing:-1.6px!important}
+.page-heading .muted{font-size:13px!important}
+.stats-grid{gap:14px!important;margin-bottom:22px!important}
+.stat-card{min-height:132px!important;padding:18px!important;border-radius:13px!important}
+.stat-top{font-size:12px!important}
+.stat-icon{width:36px!important;height:36px!important;border-radius:10px!important}
+.stat-card strong{font-size:30px!important;margin:13px 0 5px!important}
+.stat-card small{font-size:11px!important}
+.finance-card{min-height:130px!important}
+.panel{border-radius:13px!important}
+.panel-heading{padding:18px 20px!important}
+.panel-heading h2{font-size:17px!important}
+.panel-heading p{font-size:12px!important}
+th{font-size:10px!important;padding:13px 16px!important}
+td{font-size:12px!important;padding:14px 16px!important}
+td b{font-size:13px!important}
+td small{font-size:11px!important}
+.bottom-hint{font-size:12px!important;margin-top:20px!important}
+@media(max-width:900px){
+ .login-page{grid-template-columns:1fr!important}
+ .login-aside{display:none!important}
+ .app-shell{grid-template-columns:220px minmax(0,1fr)!important}
+ .content-wrap{padding:20px 16px!important}
+ .page-heading h1{font-size:30px!important}
+}
+@media(max-width:720px){
+ .app-shell{display:block!important}
+ .sidebar{min-height:auto!important}
+ .content-wrap{padding:16px 12px!important}
+ .page-heading{min-height:125px!important;padding:15px!important}
+ .page-heading h1{font-size:25px!important}
+ .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .stat-card{min-height:105px!important;padding:12px!important}
+ .stat-card strong{font-size:21px!important}
+ .topbar{padding:0 13px!important}
+}
