@@ -1,5 +1,5 @@
 "use client";
-import {useState} from "react";
+import {useState,type FormEvent} from "react";
 import {useRouter} from "next/navigation";
 import {Plus,Trash2,Wallet} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
@@ -7,7 +7,7 @@ type Expense={id:string;description:string;category:string;amount:number;expense
 export default function ExpenseManager({initialExpenses}:{initialExpenses:Expense[]}){
  const [items,setItems]=useState(initialExpenses);const [description,setDescription]=useState("");const [category,setCategory]=useState("Genel");const [amount,setAmount]=useState("");const [date,setDate]=useState(new Date().toISOString().slice(0,10));const [notes,setNotes]=useState("");const [busy,setBusy]=useState(false);const [message,setMessage]=useState("");const [error,setError]=useState("");
  const router=useRouter();const supabase=createClient();
- async function addExpense(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError("");setMessage("");
+ async function addExpense(e:FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError("");setMessage("");
   const value=Number(amount);if(!description.trim()||!Number.isFinite(value)||value<=0){setError("Açıklama ve sıfırdan büyük bir tutar girin.");setBusy(false);return;}
   const {data:{user}}=await supabase.auth.getUser();
   const {data,error}=await supabase.from("expenses").insert({description:description.trim(),category,amount:value,expense_date:date,notes:notes.trim()||null,created_by:user?.id}).select("id,description,category,amount,expense_date,notes,created_at").single();
