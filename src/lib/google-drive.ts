@@ -131,31 +131,11 @@ export async function getGoogleAccessToken(): Promise<string> {
   return tokens.access_token;
 }
 
-export async function ensureGoogleDriveFolder(accessToken: string): Promise<string> {
-  const connection = await getGoogleDriveConnection();
-  if (connection?.drive_folder_id) return connection.drive_folder_id;
-
-  const response = await fetch("https://www.googleapis.com/drive/v3/files?fields=id,name,mimeType", {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer " + accessToken,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: "Ferah Otomotiv - Servis Araç Görselleri",
-      mimeType: "application/vnd.google-apps.folder",
-    }),
-  });
-  const result = await response.json() as { id?: string; error?: { message?: string } };
-  if (!response.ok || !result.id) {
-    throw new Error("Google Drive klasörü oluşturulamadı: " + (result.error?.message || "Bilinmeyen hata"));
-  }
-
+export async function saveGoogleDriveFolderId(folderId: string) {
   const admin = await getGoogleDriveAdminClient();
   const { error } = await admin.from("google_drive_connections").update({
-    drive_folder_id: result.id,
+    drive_folder_id: folderId,
     updated_at: new Date().toISOString(),
   }).eq("id", 1);
   if (error) throw new Error("Google Drive klasör bilgisi kaydedilemedi: " + error.message);
-  return result.id;
 }
