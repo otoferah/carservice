@@ -649,3 +649,21 @@ tr:hover td{background:#1c2026!important}
 @media(max-width:720px){.page-heading{min-height:132px!important;padding:15px!important;overflow:hidden}.hero-copy{max-width:100%;z-index:2}.hero-copy h1{max-width:75%}.hero-copy .muted{max-width:75%;font-size:11px!important}.hero-visual{width:76%;right:-14%;opacity:.5}.page-heading:after{background:linear-gradient(90deg,#11151a 0%,#11151ae8 50%,#11151a55 100%)}.page-heading .action-link{align-self:flex-start}.stat-card:hover{transform:none}}
 @media(prefers-reduced-motion:reduce){.stat-card,.primary-button{transition:none!important}}
 @media print{.hero-visual{display:none!important}}
+
+
+/* ===== FERAH BRAND IMAGE ASSETS ===== */
+.sidebar .side-brand{display:flex!important;align-items:center!important;justify-content:center!important;padding:0 4px 18px!important}
+.sidebar .side-brand-logo{display:block!important;width:132px!important;height:132px!important;max-width:none!important;object-fit:contain!important;object-position:center!important}
+.login-brand-logo{width:172px!important;height:172px!important;margin:0 0 18px!important}
+.login-brand-logo img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:left center!important}
+.tracking-header .side-brand{display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important}
+.tracking-header .side-brand-logo{width:76px!important;height:76px!important;max-width:none!important;object-fit:contain!important;object-position:center!important}
+.hero-visual{right:1%!important;width:58%!important}
+.hero-visual img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;opacity:.98!important;transform:none!important;filter:drop-shadow(0 16px 28px #000b)!important}
+@media(max-width:720px){
+ .sidebar .side-brand{justify-content:flex-start!important;padding:0 4px 10px!important}
+ .sidebar .side-brand-logo{width:92px!important;height:92px!important}
+ .login-brand-logo{width:140px!important;height:140px!important}
+ .tracking-header .side-brand-logo{width:64px!important;height:64px!important}
+ .hero-visual{right:-18%!important;width:84%!important;opacity:.62!important}
+}
