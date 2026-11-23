@@ -14,7 +14,7 @@ export default function LoginPage(){
   finally{setBusy(false);}
  }
  return <main className="login-page">
-  <div className="login-card"><div className="login-brand-logo"><img src="/ferah-logo.svg" alt="Ferah Otomotiv"/></div>
+  <div className="login-card"><div className="login-brand-logo"><img src="/assets/ferah-logo.jpg" alt="Ferah Otomotiv"/></div>
    <p className="eyebrow">FERAH OTOMOTİV</p><h1>Servis yönetim<br/><span>merkezi.</span></h1>
    <p className="muted">Devam etmek için personel hesabınızla giriş yapın.</p>
    <form onSubmit={submit} className="login-form">
