@@ -199,3 +199,73 @@
 
 /* Araç fotoğrafı ekranda görünsün, yazdırılan teklif/PDF içinde yer almasın */
 @media print{.print-quote .quote-photo{display:none!important}}
+
+/* ===== FERAH OTOMOTİV · OBSIDIAN GREEN THEME ===== */
+:root{color-scheme:dark;--ink:#f2f5f3;--muted:#a4b0a9;--line:#f3f6f4;--paper:#090d0b;--white:#111815;--green:#1b8a5c;--lime:#7dffb5;--deep:#070b09;--panel:#111815;--panel-2:#151e19;--orange:#ff9b45;--orange-soft:#3a2414}
+html,body{background:#090d0b!important;color:#f2f5f3!important}
+body{color:#f2f5f3!important}
+a{color:inherit}
+.muted,.panel-heading p,.stat-card small,.user-row-info small,.field,.detail-panel dt,.token-text{color:#a4b0a9!important}
+.eyebrow{color:#75e6a8!important}
+.form-page,.form-content,.detail-content,.login-page{background:#090d0b!important;color:#f2f5f3!important}
+.login-page{background:linear-gradient(135deg,#090d0b,#111a15)!important}
+.login-card{color:#f2f5f3}.login-card h1,.login-card h1 span{color:#f5f8f6}.login-card input,.tracking-form input{background:#111815!important;border-color:#f3f6f4!important;color:#fff!important}
+.login-aside{background:#0b120e!important;border-left:1px solid #f3f6f4!important}
+.login-aside h2{color:#fff}.login-aside>p:not(.eyebrow){color:#b5c1ba}
+.app-shell{background:#090d0b!important}
+.sidebar{background:#070b09!important;border-right:1px solid #f3f6f4!important;color:#f2f5f3}
+.side-brand{padding:0 7px 35px}.side-brand-logo{display:block;width:100%;max-width:205px;height:54px;object-fit:contain;object-position:left center}
+.side-section{color:#9aa79f!important}
+.side-link{color:#d5ded8!important;border:1px solid transparent;transition:background .25s,border-color .25s,color .25s}
+.side-link:hover,.side-link.active{background:#10251a!important;color:#fff!important;border-color:#f3f6f4!important;box-shadow:inset 3px 0 #35d889,0 0 18px #35d88912}
+.user-chip{border-top:1px solid #f3f6f4!important}.user-chip b{color:#fff}
+.main-area,.content-wrap{background:#090d0b!important}
+.topbar{background:#0d1310!important;color:#fff!important;border-bottom:1px solid #f3f6f4!important}
+.breadcrumb{color:#a4b0a9!important}.status-pill{background:#101914;border-color:#f3f6f4!important;color:#dce8e0!important}.top-avatar,.avatar{background:#183c2a!important;color:#c8ffdf!important}
+.page-heading h1,.detail-heading h1,.form-content h1,.detail-content h1,.login-card h1{color:#fff!important}
+.stat-card,.panel,.service-form,.saved-card,.detail-panel,.detail-main,.detail-aside,.user-manager>*,.expense-form-panel{background:#111815!important;color:#f2f5f3!important;border:1px solid #f3f6f4!important;position:relative;isolation:isolate}
+.stat-card:before,.panel:before,.service-form:before,.saved-card:before,.detail-panel:before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(115deg,#f4f7f5 0%,#f4f7f5 24%,#25d985 48%,#f4f7f5 68%,#f4f7f5 100%);background-size:240% 100%;animation:ferah-border-flow 8s linear infinite;pointer-events:none;z-index:-1;opacity:.5}
+@keyframes ferah-border-flow{0%{background-position:100% 0}100%{background-position:-140% 0}}
+.stat-top,.panel-heading h2,.form-section h2,.detail-panel h2{color:#f4f7f5!important}
+.stat-icon{background:#1a2b22!important;color:#8af0b6!important}.stat-icon.green{background:#183a28!important;color:#80f2ae!important}.stat-icon.orange{background:#3a2414!important;color:#ffad62!important}
+.stat-card strong{color:#fff!important}.panel-heading{border-bottom:1px solid #303b34}
+table{color:#edf3ef!important}th{background:#18211b!important;color:#c0ccc4!important;border-bottom:1px solid #f3f6f4!important}td{border-bottom:1px solid #344039!important;color:#edf3ef!important}tr:hover td{background:#18231c!important}
+input,select,textarea,.field input,.field select,.field textarea,.login-form input,.tracking-input{background:#0a100c!important;color:#fff!important;border:1px solid #f3f6f4!important}
+input::placeholder,textarea::placeholder{color:#9aa79f!important}
+input:focus,select:focus,textarea:focus{border-color:#35d889!important;box-shadow:0 0 0 3px #35d88922!important}
+button,.outline-button{color:#f4f7f5}
+.outline-button{background:#121a15!important;border-color:#f3f6f4!important;color:#eaf2ed!important}
+.outline-button:hover{border-color:#35d889!important;color:#8af0b6!important}
+.primary-button{background:#147a4e!important;color:#fff!important;border:1px solid #f3f6f4!important;box-shadow:0 0 18px #20d27a18}
+.primary-button:hover{background:#1b9863!important}
+.form-top{background:#0d1310!important;border-bottom:1px solid #f3f6f4!important;color:#fff!important}
+.form-top:before{content:"";display:block;flex:0 0 190px;height:48px;background:url('/ferah-logo.svg') left center/contain no-repeat;order:-1}
+.back-link{color:#e6eee9!important}.form-top .eyebrow{color:#75e6a8!important}
+.field input,.field select{border-radius:8px}
+.form-section+.form-section,.total-row,.signature-box,.detail-panel dl,.service-signature{border-color:#3a4840!important}
+.part-row,.team-option,.detail-team-item,.update-form{background:#151e19!important;border-color:#f3f6f4!important;color:#fff!important}
+.team-option small,.muted.small-copy{color:#aab7af!important}
+.status-tag,.status-pill{border:1px solid #f3f6f4}
+.status-quote,.status-waiting{background:#3a2a15!important;color:#ffbf73!important}
+.status-repairing,.status-testing{background:#153629!important;color:#8af0b6!important}
+.status-ready{background:#183a28!important;color:#9bffc0!important}
+.status-delivered{background:#192c22!important;color:#a4e7b7!important}
+.status-cancelled{background:#3a1d19!important;color:#ff9b8d!important}
+.form-error,.expense-alert{color:#ffad62!important;background:#3a2414!important;border:1px solid #ff9b45!important;border-radius:8px;padding:10px 12px;font-weight:700}
+.success-message{color:#8af0b6!important}
+.empty-cell{color:#aab7af!important}
+.subtle-link,.text-link{color:#85edb3!important}
+.delete-service-button,.expense-delete,.icon-button{color:#ffad62!important}
+.expense-manager{display:grid;gap:18px}.expense-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:20px}.expense-form .field{color:#dce7e0!important}.expense-form .expense-notes{grid-column:1/-1}.expense-form>.primary-button{grid-column:1/-1;justify-self:start;min-width:210px}.expense-total{color:#ffad62!important;font-size:19px}.money-negative{color:#ffad62!important;font-weight:800}.money-positive{color:#85edb3!important}.expense-delete{background:#321f14!important;border:1px solid #ff9b45!important;border-radius:7px;padding:8px}.expense-delete:hover{background:#533019!important}
+.quote-photo{border:1px solid #f3f6f4}
+.print-quote{background:#111815!important;color:#fff!important;border-color:#f3f6f4!important}
+@media(max-width:700px){.form-top:before{flex-basis:130px;height:40px}.expense-form{grid-template-columns:1fr}.expense-form .expense-notes,.expense-form>.primary-button{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.stat-card:before,.panel:before,.service-form:before,.saved-card:before,.detail-panel:before{animation:none}}
+/* Keep physical/PDF documents clean and legible on white paper. */
+@media print{
+ html,body{background:#fff!important;color:#111!important}
+ .print-quote,.print-only-quote{background:#fff!important;color:#111!important}
+ .print-quote th,.print-only-quote th{background:#f2f4f2!important;color:#26332b!important}
+ .print-quote td,.print-only-quote td{color:#111!important}
+ .print-quote .quote-photo{display:none!important}
+}
