@@ -1,24 +1,34 @@
 "use client";
 import {useState,type FormEvent} from "react";
 import {useRouter} from "next/navigation";
+import {createClient} from "@/lib/supabase/client";
 import {UserPlus,ShieldCheck,Users,KeyRound,Save} from "lucide-react";
 type Role="admin"|"supervisor"|"usta";
 type Member={id:string;full_name:string;username:string|null;role:Role;is_active:boolean;created_at:string};
 const roleLabel:Record<Role,string>={admin:"Yönetici",supervisor:"Supervisor",usta:"Usta"};
+async function manageStaff(payload:Record<string,unknown>){
+ const supabase=createClient();
+ const {data,error}=await supabase.functions.invoke("manage-staff",{body:payload});
+ if(error){
+  let message=error.message;
+  try{const detail=await (error as {context?:Response}).context?.json();if(detail?.error)message=detail.error;}catch{/* keep SDK message */}
+  throw new Error(message);
+ }
+ if(data?.error)throw new Error(data.error);
+ return data;
+}
 export default function UserManager({users}:{users:Member[]}){
  const router=useRouter();const [name,setName]=useState("");const [username,setUsername]=useState("");const [password,setPassword]=useState("");const [role,setRole]=useState<Role>("usta");
  const [busy,setBusy]=useState(false);const [message,setMessage]=useState("");const [error,setError]=useState("");
  async function createUser(e:FormEvent<HTMLFormElement>){
   e.preventDefault();setBusy(true);setMessage("");setError("");
-  try{const res=await fetch("/api/admin/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({full_name:name,username,password,role})});
-   const data=await res.json();if(!res.ok)throw new Error(data.error||"Personel oluşturulamadı.");
+  try{await manageStaff({action:"create",full_name:name,username,password,role});
    setName("");setUsername("");setPassword("");setRole("usta");setMessage("Personel hesabı oluşturuldu. Kullanıcı adı ve şifreyi personele güvenli şekilde iletin.");router.refresh();
   }catch(err){setError(err instanceof Error?err.message:"İşlem başarısız.");}finally{setBusy(false);}
  }
  async function updateMember(member:Member,nextRole:Role,nextActive:boolean,nextUsername:string,nextPassword:string){
   setError("");setMessage("");
-  try{const res=await fetch("/api/admin/users",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({user_id:member.id,full_name:member.full_name,username:nextUsername,password:nextPassword,role:nextRole,is_active:nextActive})});
-   const data=await res.json();if(!res.ok)throw new Error(data.error||"Personel güncellenemedi.");setMessage(member.full_name+" bilgileri güncellendi.");router.refresh();
+  try{await manageStaff({action:"update",user_id:member.id,full_name:member.full_name,username:nextUsername,password:nextPassword,role:nextRole,is_active:nextActive});setMessage(member.full_name+" bilgileri güncellendi.");router.refresh();
   }catch(err){setError(err instanceof Error?err.message:"İşlem başarısız.");}
  }
  return <div className="user-manager"><section className="detail-panel"><h2><UserPlus size={17}/> Yeni personel hesabı</h2><form className="user-create-form" onSubmit={createUser}>
