@@ -30,8 +30,23 @@ Deno.serve(async (req: Request) => {
     const actorId = authData.user.id;
     const { data: actor, error: actorError } = await admin.from("profiles").select("role,is_active").eq("id", actorId).maybeSingle();
     if (actorError) throw actorError;
-    if (actor?.role !== "admin" || actor.is_active !== true) return reply({ error: "Bu işlem yalnızca aktif Merkez Yönetici tarafından yapılabilir." }, 403);
+    if (!actor || !["admin","supervisor"].includes(actor.role) || actor.is_active !== true) return reply({ error: "Bu işlem için aktif yönetici veya supervisor hesabı gerekli." }, 403);
     const body = await req.json();
+    if (body.action === "delete") {
+      const id = String(body.user_id ?? "");
+      if (!id) return reply({ error: "Silinecek personel seçilmedi." }, 400);
+      if (id === actorId) return reply({ error: "Kendi hesabınızı silemezsiniz." }, 400);
+      const { data: target, error: targetError } = await admin.from("profiles").select("id,role,username").eq("id", id).maybeSingle();
+      if (targetError) throw targetError;
+      if (!target) return reply({ error: "Personel hesabı bulunamadı." }, 404);
+      if (target.role === "admin" && target.username === null) return reply({ error: "Merkez Yönetici ana hesabı koruma altındadır." }, 403);
+      const { error: deleteError } = await admin.auth.admin.deleteUser(id);
+      if (deleteError) throw deleteError;
+      return reply({ success: true, deleted_user_id: id });
+    }
+    if (body.action === "create" || body.action === "update") {
+      if (actor.role !== "admin") return reply({ error: "Personel oluşturma ve düzenleme yalnızca Yönetici tarafından yapılabilir." }, 403);
+    }
     if (body.action === "create") {
       const fullName = String(body.full_name ?? "").trim();
       const username = String(body.username ?? "").trim().toLowerCase();
