@@ -22,7 +22,7 @@ export default function TrackingPage(){
    if(!row)throw new Error("Bu plaka veya takip kodu için servis kaydı bulunamadı.");
    setResult(row as TrackingResult);
    const imageParams=new URLSearchParams(token?{token:v}:{plate:v});
-   const imageResponse=await fetch("/api/public/tracking-image?"+imageParams.toString());
+   const imageResponse=await fetch((process.env.NEXT_PUBLIC_SUPABASE_URL||"")+"/functions/v1/public-tracking-image?"+imageParams.toString(),{headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY||""}});
    if(imageResponse.ok){const imageData=await imageResponse.json();setImageUrl(imageData.imageUrl||null);}
    const {data:historyRows}=await supabase.rpc("get_public_vehicle_tracking_history",params);
    setHistory(Array.isArray(historyRows)?historyRows.filter((item:HistoryItem)=>!!item.note):[]);
@@ -44,7 +44,7 @@ export default function TrackingPage(){
    const row=Array.isArray(data)?data[0]:null;
    if(!error&&row)setResult(row as TrackingResult);
    const imageParams=new URLSearchParams(token?{token:resolvedQuery}:{plate:resolvedQuery});
-   const imageResponse=await fetch("/api/public/tracking-image?"+imageParams.toString());
+   const imageResponse=await fetch((process.env.NEXT_PUBLIC_SUPABASE_URL||"")+"/functions/v1/public-tracking-image?"+imageParams.toString(),{headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY||""}});
    if(imageResponse.ok){const imageData=await imageResponse.json();setImageUrl(imageData.imageUrl||null);}
    const {data:historyRows}=await supabase.rpc("get_public_vehicle_tracking_history",params);
    if(Array.isArray(historyRows))setHistory(historyRows.filter((item:HistoryItem)=>!!item.note));
