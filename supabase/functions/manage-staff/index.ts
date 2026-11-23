@@ -37,8 +37,8 @@ Deno.serve(async (req: Request) => {
       const username = String(body.username ?? "").trim().toLowerCase();
       const password = String(body.password ?? "");
       const role = body.role as Role;
-      if (!fullName || !usernamePattern.test(username) || password.length < 12 || !allowedRoles.includes(role) || role === "admin")
-        return reply({ error: "Ad soyad, geçerli personel kullanıcı adı, Usta veya Supervisor rolü ve en az 12 karakterli şifre zorunludur." }, 400);
+      if (!fullName || !usernamePattern.test(username) || password.length < 12 || !allowedRoles.includes(role))
+        return reply({ error: "Ad soyad, geçerli kullanıcı adı, Usta, Supervisor veya tam yetkili Yönetici rolü ve en az 12 karakterli şifre zorunludur." }, 400);
       const { data: existing, error: existingError } = await admin.from("profiles").select("id").ilike("username", username).maybeSingle();
       if (existingError) throw existingError;
       if (existing) return reply({ error: "Bu kullanıcı adı zaten kullanılıyor." }, 409);
@@ -71,7 +71,6 @@ Deno.serve(async (req: Request) => {
       const { data: target, error: targetError } = await admin.from("profiles").select("id,role").eq("id", id).maybeSingle();
       if (targetError) throw targetError;
       if (!target) return reply({ error: "Personel hesabı bulunamadı." }, 404);
-      if (role === "admin" && target.role !== "admin") return reply({ error: "Yönetici yetkisi yalnızca Merkez Yönetici ana hesabında kalır." }, 403);
       if (target.role === "admin" && (role !== "admin" || !active)) {
         const { count, error: countError } = await admin.from("profiles").select("id", { count: "exact", head: true }).eq("role", "admin").eq("is_active", true);
         if (countError) throw countError;
