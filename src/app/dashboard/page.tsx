@@ -6,7 +6,7 @@ import {statusLabels,type ServiceStatus} from "@/lib/types";
 type ServiceRow={id:string;status:ServiceStatus;quote_total:number;quote_date:string;created_at:string;customers:{full_name:string}|null;vehicles:{plate:string;brand:string;model:string}|null};
 export default async function DashboardPage(){
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
- const [{data:profile},{data:records},{count:staffCount}]=await Promise.all([
+ const [{data:profile},{data:records},{count:staffCount},{data:myTasks}]=await Promise.all([
   supabase.from("profiles").select("full_name,role,is_active").eq("id",user.id).maybeSingle(),
   supabase.from("service_records").select("id,status,quote_total,quote_date,created_at,customers(full_name),vehicles(plate,brand,model)").order("created_at",{ascending:false}).limit(100),
   supabase.from("profiles").select("*",{count:"exact",head:true}).eq("is_active",true),
