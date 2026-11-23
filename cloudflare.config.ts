@@ -6,7 +6,7 @@ export default defineConfig({
     entrypoint: "vinext/server/fetch-handler",
     compatibilityDate: "2026-11-23",
     observability: {
-      enabled: true,
+      enabled: false,
       logs: { enabled: true },
     },
     assets: {
