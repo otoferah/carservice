@@ -611,3 +611,41 @@ td small{font-size:11px!important}
  .stat-card strong{font-size:21px!important}
  .topbar{padding:0 13px!important}
 }
+
+
+/* ===== FERAH OTOMOTIV / FINAL GOLD REFINEMENT ===== */
+:root{color-scheme:dark;--ferah-gold:#d6a84f;--ferah-gold-light:#f3d58e;--ferah-bg:#090b0e;--ferah-panel:#14171c;--ferah-line:#343941}
+html,body{background:var(--ferah-bg)!important;color:#f1f2f4!important}
+::selection{background:#d6a84f55;color:#fff}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #e5bd69!important;outline-offset:3px}
+.page-heading{isolation:isolate;min-height:160px!important;padding:22px 22px!important;align-items:center!important}
+.page-heading:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(105deg,#11151a 0%,#101318 56%,#171713 100%)}
+.page-heading:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#11151a 0%,#11151a 36%,#11151aee 49%,#11151a55 73%,#11151a20 100%);pointer-events:none}
+.hero-copy{position:relative;z-index:3;max-width:58%}
+.hero-copy .eyebrow{color:#e2b65d!important}
+.hero-visual{position:absolute;z-index:0;right:3%;top:0;bottom:0;width:56%;display:flex;align-items:center;justify-content:flex-end;overflow:hidden;pointer-events:none}
+.hero-visual img{display:block;width:100%;height:145%;object-fit:contain;object-position:center;opacity:.92;filter:drop-shadow(0 18px 28px #0009);transform:translateY(3%)}
+.page-heading .action-link{z-index:4;flex:0 0 auto;align-self:center}
+.stat-card,.panel,.detail-panel,.service-form,.saved-card,.expense-form,.tracking-result{border-color:#3a4048!important;box-shadow:0 10px 28px #0004,inset 0 1px #ffffff0a!important}
+.stat-card{transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.stat-card:hover{transform:translateY(-2px);border-color:#8e7040!important;box-shadow:0 14px 32px #0005,0 0 20px #d6a84f0c!important}
+.stat-icon{background:linear-gradient(145deg,#302719,#211d17)!important;color:#edc36d!important;border:1px solid #57452a}
+.stat-icon.orange{background:#34231b!important;color:#f0a66b!important;border-color:#6b4228}
+.status-pill{border-color:#75603a!important}
+.side-link.active{background:linear-gradient(100deg,#392c19,#1a1d22)!important;border-color:#a9823e!important;box-shadow:inset 2px 0 #f0c96f,0 0 18px #d6a84f16!important}
+.primary-button{background:linear-gradient(135deg,#f1cf7e,#c4933e)!important;color:#17130c!important;border:1px solid #f5d996!important;box-shadow:0 6px 18px #d6a84f22!important}
+.primary-button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.panel-heading{background:linear-gradient(180deg,#171b21,#14171c)!important}
+th{background:#1d2229!important;color:#d6b675!important}
+td{border-color:#30363e!important}
+tr:hover td{background:#1c2026!important}
+.subtle-link,.text-link{color:#edc36d!important}
+.form-top,.tracking-header,.topbar{border-color:#343941!important}
+.field input,.field select,.field textarea,.login-form input,.tracking-input{border-color:#414853!important}
+.field input:focus,.field select:focus,.field textarea:focus,.login-form input:focus{border-color:#d6a84f!important;box-shadow:0 0 0 3px #d6a84f22!important}
+.status-tag{border-color:#5a606a!important}
+.bottom-hint{color:#aeb4bc!important}
+@media(max-width:900px){.hero-copy{max-width:68%}.hero-visual{width:58%;right:0}.page-heading .action-link{font-size:10px}}
+@media(max-width:720px){.page-heading{min-height:132px!important;padding:15px!important;overflow:hidden}.hero-copy{max-width:100%;z-index:2}.hero-copy h1{max-width:75%}.hero-copy .muted{max-width:75%;font-size:11px!important}.hero-visual{width:76%;right:-14%;opacity:.5}.page-heading:after{background:linear-gradient(90deg,#11151a 0%,#11151ae8 50%,#11151a55 100%)}.page-heading .action-link{align-self:flex-start}.stat-card:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){.stat-card,.primary-button{transition:none!important}}
+@media print{.hero-visual{display:none!important}}
