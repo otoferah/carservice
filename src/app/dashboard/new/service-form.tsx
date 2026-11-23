@@ -4,6 +4,7 @@ import Link from "next/link";
 import {QRCodeSVG} from "qrcode.react";
 import {Plus,Trash2,Printer,CheckCircle2,PenLine,ImagePlus,RotateCcw} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
+import {publicTrackingUrl} from "@/lib/public-tracking";
 type Member={id:string;full_name:string;role:string};
 type Part={part_name:string;quantity:number;unit_price:number};
 type Saved={id:string;tracking_token:string;status:string;quote_total:number};
@@ -83,7 +84,7 @@ export default function ServiceForm({members}:{members:Member[]}){
   }catch(err){setError(err instanceof Error?err.message:"Kayıt oluşturulamadı.");}
   finally{setBusy(false);}
  }
- const qrUrl=saved&&typeof window!=="undefined"?window.location.origin+"/tracking?token="+saved.tracking_token:"";
+ const qrUrl=saved?publicTrackingUrl(saved.tracking_token):"";
  return <div className="service-form-layout">
   <form className="service-form" onSubmit={submit}>
    <div className="form-section"><h2>01 · Müşteri ve araç bilgileri</h2><div className="field-grid">
