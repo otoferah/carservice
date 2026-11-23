@@ -5,6 +5,10 @@ export default defineConfig({
     name: "ferah-otomotiv-servis",
     entrypoint: "vinext/server/fetch-handler",
     compatibilityDate: "2026-11-23",
+    observability: {
+      enabled: true,
+      logs: { enabled: true },
+    },
     assets: {
       htmlHandling: "none",
       notFoundHandling: "none",
