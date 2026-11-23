@@ -801,3 +801,14 @@ tr:hover td{background:#1c2026!important}
  .sidebar .side-brand{justify-content:flex-start!important;padding-bottom:10px!important}
  .sidebar .side-brand-logo{width:76px!important;height:76px!important}
 }
+
+/* Transparent metallic logo: no square canvas, scale by placement */
+.sidebar .side-brand-logo{width:168px!important;height:auto!important;max-width:100%!important;max-height:76px!important;object-fit:contain!important;object-position:left center!important}
+.login-brand-logo{width:100%!important;max-width:250px!important;height:82px!important;margin:0 0 28px!important}
+.login-brand-logo img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:left center!important}
+.tracking-header .side-brand-logo{width:160px!important;height:auto!important;max-height:60px!important;object-fit:contain!important}
+@media(max-width:720px){
+ .sidebar .side-brand-logo{width:130px!important;max-height:58px!important}
+ .login-brand-logo{max-width:205px!important;height:68px!important}
+ .tracking-header .side-brand-logo{width:128px!important;max-height:52px!important}
+}
