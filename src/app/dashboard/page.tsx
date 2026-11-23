@@ -3,6 +3,7 @@ import {redirect} from "next/navigation";
 import {Activity,ArrowUpRight,CarFront,ClipboardList,HardDrive,LogOut,Plus,Search,ShieldCheck,Users,Wrench,Wallet} from "lucide-react";
 import {createClient} from "@/lib/supabase/server";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
+import MobileDashboardNav from "./mobile-dashboard-nav";
 type ServiceRow={id:string;status:ServiceStatus;quote_total:number;quote_date:string;created_at:string;customers:{full_name:string}|null;vehicles:{plate:string;brand:string;model:string}|null};
 export default async function DashboardPage(){
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
@@ -35,18 +36,8 @@ export default async function DashboardPage(){
    {manager&&<Link className="side-link" href="/dashboard/expenses"><Wallet size={18}/> Gider Yönetimi</Link>}
    <div className="sidebar-bottom"><div className="user-chip"><div className="avatar">{(profile.full_name||"F").slice(0,1).toUpperCase()}</div><div><b>{profile.full_name}</b><small>{roleName}</small></div><ShieldCheck size={16}/></div><form action="/api/auth/signout" method="post"><button className="side-link signout" type="submit"><LogOut size={17}/> Güvenli çıkış</button></form></div>
   </aside>
-  <section className="main-area"><header className="topbar"><div><span className="breadcrumb">Ferah Otomotiv /</span> Genel Bakış</div><div className="top-actions"><span className="status-pill"><i/> Sistem aktif</span><span className="top-avatar">{(profile.full_name||"F").slice(0,1).toUpperCase()}</span></div></header>
-   <nav className="mobile-app-nav" aria-label="Ana menü">
-    <div className="mobile-nav-group"><span>ÇALIŞMA ALANI</span><div>
-     <Link href="/dashboard"><Activity size={16}/>Genel Bakış</Link>
-     <Link href="/tracking"><Search size={16}/>Araç Sorgulama</Link>
-    </div></div>
-    <div className="mobile-nav-group"><span>YÖNETİM</span><div>
-     {["admin","supervisor"].includes(profile.role)&&<Link href="/dashboard/new"><ClipboardList size={16}/>Yeni Servis Kaydı</Link>}
-     {profile.role==="admin"&&<><Link href="/dashboard/users"><Users size={16}/>Personel Yönetimi</Link><Link href="/dashboard/google-drive"><HardDrive size={16}/>Google Drive</Link></>}
-     {manager&&<Link href="/dashboard/expenses"><Wallet size={16}/>Gider Yönetimi</Link>}
-    </div></div>
-   </nav>
+  <section className="main-area"><header className="topbar"><div className="topbar-left"><MobileDashboardNav role={profile.role} fullName={profile.full_name||"Ferah Otomotiv"} roleName={roleName}/><span className="breadcrumb">Ferah Otomotiv /</span> Genel Bakış</div><div className="top-actions"><span className="status-pill"><i/> Sistem aktif</span><span className="top-avatar">{(profile.full_name||"F").slice(0,1).toUpperCase()}</span></div></header>
+
    <div className="content-wrap">
     <div className="page-heading"><div className="hero-copy"><p className="eyebrow">SERVİS OPERASYONLARI</p><h1>Hoş geldin, {profile.full_name?.split(" ")[0]||"Ekibimiz"}.</h1><p className="muted">Atölyedeki araçları ve servis süreçlerini buradan takip et.</p></div><div className="hero-visual" aria-hidden="true"><img src="/assets/ferah-hero-car.jpg" alt=""/></div>{["admin","supervisor"].includes(profile.role)&&<Link className="primary-button action-link" href="/dashboard/new"><Plus size={18}/> Yeni servis kaydı</Link>}</div>
     <div className="stats-grid">
