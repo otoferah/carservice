@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import {
-  ensureGoogleDriveFolder,
   getGoogleDriveAdminClient,
   getGoogleDriveConnection,
   requireGoogleDriveAdmin,
@@ -70,12 +69,6 @@ export async function GET(request: Request) {
     scope: tokens.scope,
     expires_in: tokens.expires_in,
   });
-
-  try {
-    await ensureGoogleDriveFolder(tokens.access_token);
-  } catch {
-    return finish("connected_folder_error");
-  }
 
   // Touch the server-only client here to fail clearly if token storage is misconfigured.
   await getGoogleDriveAdminClient();
