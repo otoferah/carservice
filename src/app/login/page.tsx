@@ -1,7 +1,7 @@
 "use client";
 import {useState,type FormEvent} from "react";
 import {useRouter} from "next/navigation";
-import {Wrench,ShieldCheck} from "lucide-react";
+import {ShieldCheck} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
 export default function LoginPage(){
  const router=useRouter();const [username,setUsername]=useState("");const [password,setPassword]=useState("");
@@ -14,7 +14,7 @@ export default function LoginPage(){
   finally{setBusy(false);}
  }
  return <main className="login-page">
-  <div className="login-card"><div className="brand-mark"><Wrench size={24}/></div>
+  <div className="login-card"><div className="login-brand-logo"><img src="/ferah-logo.svg" alt="Ferah Otomotiv"/></div>
    <p className="eyebrow">FERAH OTOMOTİV</p><h1>Servis yönetim<br/><span>merkezi.</span></h1>
    <p className="muted">Devam etmek için personel hesabınızla giriş yapın.</p>
    <form onSubmit={submit} className="login-form">
