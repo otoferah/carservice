@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Cloud, HardDrive, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getGoogleDriveConnection } from "@/lib/google-drive";
+import GoogleDriveFolderPicker from "./folder-picker";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ export default async function GoogleDrivePage({ searchParams }: Props) {
   const connected = !!connection?.refresh_token;
   const statusMessages: Record<string, string> = {
     connected: "Google Drive başarıyla bağlandı ve servis görselleri klasörü hazır.",
-    connected_folder_error: "Google hesabı bağlandı ancak Drive klasörü oluşturulamadı. Yeniden deneyin.",
+    
     disconnected: "Google Drive bağlantısı kaldırıldı.",
     denied: "Google izin ekranında bağlantı reddedildi.",
     invalid_state: "Güvenlik doğrulaması başarısız oldu. Bağlantıyı yeniden başlatın.",
@@ -65,7 +66,8 @@ export default async function GoogleDrivePage({ searchParams }: Props) {
         {loadError ? <p className="form-error">Bağlantı kaydı okunamadı. Veritabanı migration işlemi uygulanmış mı kontrol edin.</p> :
           connected ? <div>
             <p className="muted"><CheckCircle2 size={16} style={{ verticalAlign: "middle", marginRight: 7 }}/> Google hesabı yetkilendirildi.</p>
-            <p className="muted small-copy">{connection?.drive_folder_id ? "Servis görselleri klasörü hazır." : "Servis görselleri klasörü henüz oluşturulmadı."}</p>
+            <p className="muted small-copy">{connection?.drive_folder_id ? "Servis görselleri klasörü seçildi." : "Henüz bir servis görselleri klasörü seçilmedi."}</p>
+            <GoogleDriveFolderPicker currentFolderId={connection?.drive_folder_id || null} />
             <form action="/api/google-drive/disconnect" method="post">
               <button className="outline-button" type="submit">Google Drive bağlantısını kaldır</button>
             </form>
@@ -75,7 +77,7 @@ export default async function GoogleDrivePage({ searchParams }: Props) {
             <a className="primary-button" href="/api/google-drive/connect"><Cloud size={16}/> Google hesabını bağla</a>
           </div>
         }
-        <p className="muted small-copy" style={{ marginTop: 18 }}>Not: Google OAuth uygulaması Testing durumundayken Drive izni 7 gün sonra sona erebilir. Bu bağlantıyı test aşamasında kullanın; kalıcı kullanım öncesinde Google yayın ve doğrulama gerekliliklerini tamamlayın.</p>\n        <div className="bottom-hint" style={{ marginTop: 22 }}><ShieldCheck size={16}/> Google erişim anahtarları sunucu tarafında tutulur; personel ve müşterilere gösterilmez.</div>
+        <p className="muted small-copy" style={{ marginTop: 18 }}>Not: Google OAuth uygulaması Testing durumundayken Drive yenileme izni 7 gün sonra sona erebilir. Kalıcı kullanım öncesinde yayın ve doğrulama gerekliliklerini tamamlayın.</p>\n        <div className="bottom-hint" style={{ marginTop: 22 }}><ShieldCheck size={16}/> Uzun ömürlü yenileme anahtarı sunucuda saklanır. Klasör seçimi sırasında yalnızca kısa ömürlü erişim anahtarı yönetici tarayıcısına verilir.</div>
       </section>
     </main>
   );
