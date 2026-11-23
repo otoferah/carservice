@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const admin = await getGoogleDriveAdminClient();
     const { error } = await admin.from("google_drive_connections").delete().eq("id", 1);
     if (error) throw error;
-    return NextResponse.redirect(new URL("/dashboard/google-drive?status=disconnected", request.url));
+    return NextResponse.redirect(new URL("/dashboard/google-drive?status=disconnected", request.url), 303);
   } catch {
     return NextResponse.json({ error: "Google Drive bağlantısı kaldırılamadı." }, { status: 500 });
   }
