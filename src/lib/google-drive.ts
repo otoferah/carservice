@@ -113,7 +113,8 @@ export async function getGoogleAccessToken(): Promise<string> {
   };
 
   if (!response.ok || !tokens.access_token) {
-    throw new Error("Google Drive erişim anahtarı yenilenemedi. Bağlantıyı yeniden kurmanız gerekebilir.");
+    const reason = tokens.error || "unknown_error";
+    throw new Error("Google OAuth token yenileme hatası (" + reason + "). Google hesabı bağlantısını yeniden kurmanız gerekebilir.");
   }
 
   const admin = await getGoogleDriveAdminClient();
