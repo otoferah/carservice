@@ -102,3 +102,71 @@
  .quote-tracking-qr svg{display:block!important;width:29mm!important;height:29mm!important}
  .quote-tracking-qr small{display:block!important;max-width:34mm;font-size:6.5pt!important;line-height:1.15!important;color:#222!important}
 }
+
+
+/* Premium A4 servis teklifi */
+.print-only-quote{display:none}
+.quote-document-header{position:relative;display:grid;grid-template-columns:1fr 1.35fr auto;align-items:center;gap:8mm;padding:0 0 7mm;border-bottom:1.2mm solid #176b4b}
+.quote-brand-lockup{display:flex;align-items:center;gap:3mm;color:#17382b}
+.quote-brand-symbol{width:12mm;height:12mm;border-radius:3mm;background:#176b4b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18pt;font-weight:900}
+.quote-brand-lockup b{display:block;font-size:10pt;letter-spacing:.7px;font-weight:900}
+.quote-brand-lockup small{display:block;margin-top:1mm;font-size:6.5pt;letter-spacing:1.4px;color:#718078}
+.quote-document-title{text-align:center}
+.quote-document-title>span{font-size:7pt;font-weight:800;letter-spacing:2px;color:#176b4b}
+.quote-document-title h2{font-size:23pt!important;line-height:1.05!important;margin:1.5mm 0!important;text-align:center!important;color:#17251e}
+.quote-document-title p{margin:0!important;color:#748078;font-size:8pt!important}
+.quote-document-date{text-align:right;white-space:nowrap}
+.quote-document-date small,.quote-info-card small,.quote-total-panel small{display:block;font-size:6.5pt;font-weight:800;letter-spacing:1px;color:#718078}
+.quote-document-date b{display:block;margin-top:1.5mm;font-size:9pt;color:#17251e}
+.quote-customer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3mm;margin:7mm 0 9mm}
+.quote-info-card{min-height:20mm;padding:4mm;background:#f3f7f4;border:0.25mm solid #e0e9e3;border-radius:2mm}
+.quote-info-card b{display:block;margin-top:2mm;font-size:10pt;color:#182820}
+.quote-info-card span{display:block;margin-top:1mm;font-size:7.5pt;color:#68766e}
+.quote-table-heading{display:flex;align-items:center;justify-content:space-between;margin:0 0 3mm}
+.quote-table-heading div{display:flex;align-items:center;gap:3mm}
+.quote-table-heading div span{font-size:8pt;font-weight:900;color:#176b4b}
+.quote-table-heading div b{font-size:11pt;color:#182820}
+.quote-table-heading>small{font-size:6.5pt;letter-spacing:1.2px;color:#87928b;font-weight:800}
+.print-only-quote .quote-premium-table{width:100%;border-collapse:collapse;margin:0!important;border:0.25mm solid #dfe7e1}
+.print-only-quote .quote-premium-table thead{display:table-header-group}
+.print-only-quote .quote-premium-table th{background:#173b2d!important;color:#fff!important;text-align:left;font-size:7pt!important;letter-spacing:.6px;font-weight:800;padding:3.5mm!important;border:0!important}
+.print-only-quote .quote-premium-table td{font-size:9pt!important;padding:4mm 3.5mm!important;color:#27352d;border-bottom:.25mm solid #e3e9e5!important}
+.print-only-quote .quote-premium-table tbody tr:nth-child(even){background:#f7f9f7!important}
+.print-only-quote .quote-premium-table th:nth-child(2),.quote-premium-table td:nth-child(2){text-align:center;width:13mm}
+.print-only-quote .quote-premium-table th:nth-child(3),.quote-premium-table td:nth-child(3),.quote-premium-table th:nth-child(4),.quote-premium-table td:nth-child(4){text-align:right;white-space:nowrap}
+.quote-total-panel{display:flex;align-items:center;justify-content:space-between;margin:5mm 0 8mm;padding:5mm 6mm;background:#f0f5f1;border-left:1.3mm solid #176b4b;border-radius:1.5mm}
+.quote-total-panel small{color:#176b4b}
+.quote-total-panel span{display:block;margin-top:1.5mm;font-size:7.5pt;color:#718078}
+.quote-total-panel strong{font-size:19pt;color:#173b2d;white-space:nowrap}
+.quote-bottom-row{display:grid;grid-template-columns:1fr 55mm;align-items:stretch;gap:10mm;margin-top:8mm;padding-top:5mm;border-top:.3mm solid #dce5df}
+.quote-signature-block{display:flex;flex-direction:column;align-items:flex-start;min-height:48mm}
+.quote-approval-title{font-size:11pt;font-weight:800;color:#1c2c23}
+.quote-signature-block>p{font-size:8pt!important;color:#68766e;margin:2mm 0 3mm!important}
+.print-only-quote .quote-signature{width:auto!important;max-width:52mm!important;height:20mm!important;max-height:20mm!important;object-fit:contain!important;object-position:left center!important;border-bottom:.25mm solid #aebbb2!important}
+.quote-signature-line{width:52mm;height:20mm;border-bottom:.25mm solid #aebbb2}
+.quote-signature-block>small{font-size:7pt;color:#718078;margin-top:1mm}
+.quote-provider-line{margin-top:auto;padding-top:5mm;font-size:7.5pt;color:#68766e}
+.quote-provider-line b{color:#26372d}
+.quote-tracking-qr{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3mm;border:.3mm solid #dce6df;border-radius:2mm;background:#fbfcfb;gap:1.5mm}
+.quote-qr-frame{line-height:0}
+.quote-qr-frame svg{display:block;width:35mm!important;height:35mm!important}
+.quote-tracking-qr>b{font-size:8pt;color:#173b2d}
+.quote-tracking-qr>small{max-width:48mm;font-size:6.5pt!important;line-height:1.35!important;color:#68766e!important}
+.quote-document-footer{display:flex;justify-content:space-between;gap:5mm;margin-top:9mm;padding-top:3mm;border-top:.25mm solid #dce5df;font-size:6.5pt;color:#87928b}
+.quote-document-footer span:first-child{font-weight:800;letter-spacing:.7px;color:#537061}
+@media print{
+ @page{size:A4 portrait;margin:12mm}
+ html,body{width:auto!important;min-height:0!important;margin:0!important;padding:0!important;background:#fff!important}
+ body{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ .form-page,.detail-content{width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;padding:0!important;background:#fff!important}
+ .form-top,.detail-heading,.detail-grid,.detail-main,.detail-aside,.back-link{display:none!important}
+ .print-only-quote{display:block!important;visibility:visible!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;color:#17251e!important;font-family:Arial,Helvetica,sans-serif!important;font-size:9pt!important;line-height:1.35!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ .quote-document-header,.quote-customer-grid,.quote-total-panel,.quote-bottom-row,.quote-document-footer{break-inside:avoid!important;page-break-inside:avoid!important}
+ .print-only-quote h2{text-align:initial}
+ .print-only-quote p{margin:0}
+ .print-only-quote table{break-inside:auto!important}
+ .print-only-quote tr{break-inside:avoid!important;page-break-inside:avoid!important}
+ .quote-bottom-row{display:grid!important;grid-template-columns:1fr 55mm!important;gap:10mm!important}
+ .quote-tracking-qr{display:flex!important}
+ .quote-tracking-qr svg{width:35mm!important;height:35mm!important}
+}
