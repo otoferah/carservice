@@ -886,3 +886,9 @@ tr:hover td{background:#1c2026!important}
 .assigned-task-copy small{font-size:11px;color:#9ca6b2}
 .task-empty{padding:14px 17px;margin:0}
 @media(max-width:680px){.service-task-form{grid-template-columns:1fr}.task-description-field,.service-task-form .primary-button{grid-column:auto}.service-task-card-top{flex-direction:column}.assigned-task-row{align-items:flex-start;flex-wrap:wrap}}
+
+/* Permanent staff deletion action */
+.user-row-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.danger-button{color:#f29b9b!important;border-color:#8d4141!important}
+.danger-button:hover{background:#8d24241c!important;border-color:#c45b5b!important}
+@media(max-width:680px){.user-row-actions{width:100%;justify-content:flex-start}}
