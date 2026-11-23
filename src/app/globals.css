@@ -196,3 +196,6 @@
  .user-row-editable>.outline-button{grid-column:2;justify-self:start}
  .user-row-controls{grid-template-columns:1fr;grid-column:1/-1}
 }
+
+/* Araç fotoğrafı ekranda görünsün, yazdırılan teklif/PDF içinde yer almasın */
+@media print{.print-quote .quote-photo{display:none!important}}
