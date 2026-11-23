@@ -35,12 +35,10 @@ export default function GoogleDriveFolderPicker({ currentFolderId }: { currentFo
     setBusy(true);
     setMessage("");
     try {
-      const config = {
-        apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
-        appId: process.env.NEXT_PUBLIC_GOOGLE_APP_ID,
-      };
-      if (!config.apiKey || !config.appId) {
-        throw new Error("Google Picker için NEXT_PUBLIC_GOOGLE_API_KEY ve NEXT_PUBLIC_GOOGLE_APP_ID ayarları eksik.");
+      const configResponse = await fetch("/api/google-drive/picker-config", { cache: "no-store" });
+      const config = await configResponse.json();
+      if (!configResponse.ok || !config.apiKey || !config.appId) {
+        throw new Error(config.error || "Google Picker yapılandırması sunucudan alınamadı.");
       }
 
       const tokenResponse = await fetch("/api/google-drive/picker-token", { cache: "no-store" });
