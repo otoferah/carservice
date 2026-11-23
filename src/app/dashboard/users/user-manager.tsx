@@ -38,7 +38,7 @@ function UserRow({member,onUpdate}:{member:Member;onUpdate:(member:Member,role:R
   <div className="user-row-avatar">{member.full_name.slice(0,1).toUpperCase()}</div>
   <div className="user-row-info"><b>{member.full_name}</b><small>{member.username?"@"+member.username+" · ":"Kullanıcı adı atanmadı · "}{roleLabel[member.role]} · {member.is_active?"Aktif":"Erişimi kapalı"}</small></div>
   <button className="outline-button" type="button" onClick={()=>setEditing(!editing)}>{editing?"Kapat":"Hesap bilgilerini düzenle"}</button>
-  <div className="user-row-controls">
+  <div className={"user-row-controls"+(editing?" is-open":"")}>
    <label className="field">Kullanıcı adı<input value={username} onChange={e=>setUsername(e.target.value.toLowerCase())} minLength={3} maxLength={30} pattern="[a-zA-Z0-9._-]+" placeholder="kullanici.adi"/></label>
    <label className="field">Yeni şifre <span className="muted small-copy">(Değiştirmeyeceksen boş bırak)</span><input type="password" value={password} onChange={e=>setPassword(e.target.value)} minLength={password?12:undefined} placeholder="En az 12 karakter" autoComplete="new-password"/></label>
    <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option><option value="admin">Yönetici</option></select></label>
