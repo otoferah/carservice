@@ -36,6 +36,25 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
     <div className="detail-panel"><h2><Wrench size={17}/> Müşteri takip bağlantısı</h2><p className="muted small-copy">Bu kayıt için oluşturulmuş tekil takip bağlantısı.</p><Link className="outline-button" href={trackingUrl} target="_blank">Müşteri görünümünü aç ↗</Link><p className="token-text">{record.tracking_token}</p></div>
     <div className="detail-panel quote-actions"><h2><Printer size={17}/> Teklif çıktısı</h2><p className="muted small-copy">Teklif formunu yazdırabilir veya PDF olarak bilgisayarınıza kaydedebilirsiniz.</p><PrintQuoteButton /></div><div className="detail-panel sticker-actions"><h2><CarFront size={17}/> Araca özel QR sticker</h2><p className="muted small-copy">Bu servis kaydına özel QR kodu etiket olarak yazdırın veya PDF kaydedip sticker baskısına gönderin.</p><Link className="primary-button sticker-open-button" href={"/dashboard/service/"+id+"/sticker"}>QR sticker oluştur / yazdır ↗</Link></div>
    </aside></div>
-   <div className="print-only-quote"><h2>FERAH OTOMOTİV · SERVİS TEKLİF FORMU</h2><p><b>Araç sahibi:</b> {record.customers?.full_name}　 <b>Plaka:</b> {record.vehicles?.plate}</p><p><b>Marka / Model:</b> {record.vehicles?.brand} {record.vehicles?.model}　 <b>Teklif tarihi:</b> {formattedDate}</p><table><thead><tr><th>PARÇA / İŞLEM</th><th>ADET</th><th>BİRİM FİYAT</th><th>TOPLAM</th></tr></thead><tbody>{record.service_parts.map(p=><tr key={p.id}><td>{p.part_name}</td><td>{p.quantity}</td><td>{Number(p.unit_price).toLocaleString("tr-TR")} ₺</td><td>{Number(p.line_total).toLocaleString("tr-TR")} ₺</td></tr>)}</tbody></table><h3>Genel toplam: {Number(record.quote_total).toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</h3><div className="quote-bottom-row"><div className="quote-signature-block"><p><b>Teklifi veren:</b> {record.quote_provider||"—"}</p>{signatureUrl&&<><p><b>Müşteri imzası:</b></p><img src={signatureUrl} alt="Müşteri imzası" className="quote-signature"/></>}</div><div className="quote-tracking-qr"><QRCodeSVG value={publicTrackingUrl} size={180} level="M" includeMargin={true}/><small>Araç servis durumunu takip etmek için okutun</small></div></div></div>
+   <div className="print-only-quote">
+    <header className="quote-document-header">
+     <div className="quote-brand-lockup"><span className="quote-brand-symbol">F</span><div><b>FERAH OTOMOTİV</b><small>SERVİS YÖNETİMİ</small></div></div>
+     <div className="quote-document-title"><span>SERVİS TEKLİFİ</span><h2>Teklif Formu</h2><p>Servis işlemleri ve parça maliyetleri</p></div>
+     <div className="quote-document-date"><small>TEKLİF TARİHİ</small><b>{formattedDate}</b></div>
+    </header>
+    <section className="quote-customer-grid">
+     <div className="quote-info-card"><small>MÜŞTERİ</small><b>{record.customers?.full_name||"—"}</b><span>{record.customers?.phone||record.customers?.email||"Müşteri bilgisi"}</span></div>
+     <div className="quote-info-card"><small>ARAÇ</small><b>{record.vehicles?.brand||""} {record.vehicles?.model||""}</b><span>Plaka: {record.vehicles?.plate||"—"}</span></div>
+     <div className="quote-info-card"><small>TEKLİFİ HAZIRLAYAN</small><b>{record.quote_provider||"—"}</b><span>Ferah Otomotiv servis ekibi</span></div>
+    </section>
+    <div className="quote-table-heading"><div><span>01</span><b>İşlem ve parça dökümü</b></div><small>FİYATLANDIRMA</small></div>
+    <table className="quote-premium-table"><thead><tr><th>PARÇA / İŞLEM AÇIKLAMASI</th><th>ADET</th><th>BİRİM FİYAT</th><th>TOPLAM</th></tr></thead><tbody>{record.service_parts.map(p=><tr key={p.id}><td>{p.part_name}</td><td>{p.quantity}</td><td>{Number(p.unit_price).toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</td><td>{Number(p.line_total).toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</td></tr>)}{!record.service_parts.length&&<tr><td colSpan={4}>Bu teklif için işlem veya parça kalemi bulunmuyor.</td></tr>}</tbody></table>
+    <section className="quote-total-panel"><div><small>TEKLİF GENEL TOPLAMI</small><span>Belirtilen işlemler için toplam tutar</span></div><strong>{Number(record.quote_total).toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</strong></section>
+    <div className="quote-bottom-row">
+     <div className="quote-signature-block"><div className="quote-approval-title">Müşteri onayı</div><p>Teklif kapsamını ve belirtilen tutarı onaylıyorum.</p>{signatureUrl?<img src={signatureUrl} alt="Müşteri imzası" className="quote-signature"/>:<div className="quote-signature-line"/>}<small>Müşteri imzası</small><div className="quote-provider-line">Teklifi hazırlayan: <b>{record.quote_provider||"Ferah Otomotiv"}</b></div></div>
+     <div className="quote-tracking-qr"><div className="quote-qr-frame"><QRCodeSVG value={publicTrackingUrl} size={200} level="M" includeMargin={true}/></div><b>Servis durumunu takip edin</b><small>Güncel servis bilgilerini görüntülemek için QR kodu telefonunuzla okutun.</small></div>
+    </div>
+    <footer className="quote-document-footer"><span>FERAH OTOMOTİV · SERVİS YÖNETİMİ</span><span>Bu teklif, ilgili servis kaydı için hazırlanmıştır.</span></footer>
+   </div>
   </section></main>;
 }
