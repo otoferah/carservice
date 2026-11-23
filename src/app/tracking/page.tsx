@@ -9,11 +9,11 @@ type HistoryItem={note:string|null;note_status:ServiceStatus|null;note_created_a
 const isToken=(value:string)=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 export default function TrackingPage(){
  const [query,setQuery]=useState("");const [result,setResult]=useState<TrackingResult|null>(null);
- const [history,setHistory]=useState<HistoryItem[]>([]);const [resolvedQuery,setResolvedQuery]=useState("");
+ const [history,setHistory]=useState<HistoryItem[]>([]);const [imageUrl,setImageUrl]=useState<string|null>(null);const [resolvedQuery,setResolvedQuery]=useState("");
  const [busy,setBusy]=useState(false);const [message,setMessage]=useState("");
 
  async function lookup(value:string){
-  setBusy(true);setMessage("");setResult(null);setHistory([]);setResolvedQuery("");
+  setBusy(true);setMessage("");setResult(null);setHistory([]);setImageUrl(null);setResolvedQuery("");
   try{
    const v=value.trim();if(!v)throw new Error("QR takip kodunu veya plakanızı girin.");
    const token=isToken(v);const params={p_token:token?v:null,p_plate:token?null:v};const supabase=createClient();
@@ -54,7 +54,7 @@ export default function TrackingPage(){
    <p className="muted">Servis formunuzdaki QR kodu okutun veya araç plakanızı girerek güncel servis aşamasını görüntüleyin.</p>
    <form className="tracking-form" onSubmit={search}><label htmlFor="tracking-query">QR takip kodu veya plaka</label><div className="tracking-input"><Search size={19}/><input id="tracking-query" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Örn. 33 ABC 33" autoCapitalize="characters"/><button disabled={busy}>{busy?"Aranıyor...":"Sorgula"}</button></div></form>
    {message&&<p className="form-error tracking-error">{message}</p>}
-   {result&&<article className="tracking-result"><div className="result-top"><div><span className="result-label">ARAÇ</span><h2>{result.plate}</h2><p>{result.brand} {result.model}</p></div><span className={"status-tag status-"+result.status}>{statusLabels[result.status]}</span></div>
+   {result&&<article className="tracking-result">{imageUrl&&<div className="tracking-vehicle-photo"><img src={imageUrl} alt={result.plate+" araç fotoğrafı"}/></div>}<div className="result-top"><div><span className="result-label">ARAÇ</span><h2>{result.plate}</h2><p>{result.brand} {result.model}</p></div><span className={"status-tag status-"+result.status}>{statusLabels[result.status]}</span></div>
     <div className="progress-track"><span style={{width:progress+"%"}}/></div>
     <div className="result-note"><div className="note-icon"><Clock3 size={17}/></div><div><b>Son servis bilgilendirmesi</b><p>{result.latest_note||statusLabels[result.status]}</p><small>{new Date(result.latest_note_at||result.updated_at).toLocaleString("tr-TR")}</small></div></div>
     {history.length>0&&<section className="customer-history"><h3><History size={16}/> Servis geçmişi</h3><div className="customer-history-list">{history.map((item,index)=><div className="customer-history-item" key={index}><span className="customer-history-dot"/><div><div className="customer-history-top"><b>{item.note_status?statusLabels[item.note_status]: "Servis gelişmesi"}</b><small>{item.note_created_at?new Date(item.note_created_at).toLocaleString("tr-TR"):""}</small></div><p>{item.note}</p></div></div>)}</div></section>}
