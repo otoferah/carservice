@@ -812,3 +812,41 @@ tr:hover td{background:#1c2026!important}
  .login-brand-logo{max-width:205px!important;height:68px!important}
  .tracking-header .side-brand-logo{width:128px!important;max-height:52px!important}
 }
+
+
+/* Sidebar brand mark: increase visual prominence and prevent flex shrink */
+.sidebar > .side-brand{
+  display:flex!important;
+  width:100%!important;
+  min-height:112px!important;
+  height:112px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:8px 0 22px!important;
+  margin:0 0 8px!important;
+  flex:0 0 112px!important;
+  overflow:visible!important;
+}
+.sidebar > .side-brand .side-brand-logo{
+  display:block!important;
+  width:224px!important;
+  min-width:224px!important;
+  max-width:224px!important;
+  height:88px!important;
+  min-height:88px!important;
+  max-height:88px!important;
+  flex:0 0 224px!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+@media(max-width:720px){
+ .sidebar > .side-brand{
+  min-height:86px!important;height:86px!important;flex-basis:86px!important;
+  justify-content:flex-start!important;padding:4px 0 12px!important;
+ }
+ .sidebar > .side-brand .side-brand-logo{
+  width:184px!important;min-width:184px!important;max-width:184px!important;
+  height:70px!important;min-height:70px!important;max-height:70px!important;
+  flex-basis:184px!important;
+ }
+}
