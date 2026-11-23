@@ -15,10 +15,27 @@ function jsonError(message: string, status: number) {
   });
 }
 
+function errorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === "object") {
+    const value = error as { message?: unknown; code?: unknown; details?: unknown; hint?: unknown };
+    const parts = [
+      typeof value.message === "string" ? value.message : null,
+      typeof value.code === "string" ? "Kod: " + value.code : null,
+      typeof value.details === "string" && value.details ? "Detay: " + value.details : null,
+      typeof value.hint === "string" && value.hint ? "İpucu: " + value.hint : null,
+    ].filter(Boolean);
+    if (parts.length) return parts.join(" · ");
+  }
+  return "Ayrıntısı okunamayan bir hata oluştu.";
+}
+
 export async function POST(request: Request) {
   let imageId: string | null = null;
   let stage = "yetkilendirme";
   let admin: Awaited<ReturnType<typeof getGoogleDriveAdminClient>> | null = null;
+  let uploadedFileId: string | null = null;
+  let accessToken: string | null = null;
 
   try {
     const session = await createClient();
@@ -78,7 +95,7 @@ export async function POST(request: Request) {
     }
 
     stage = "Google OAuth erişim anahtarını yenileme";
-    const accessToken = await getGoogleAccessToken();
+    accessToken = await getGoogleAccessToken();
     const originalName = storagePath.split("/").pop() || "service-image";
     const safeName = originalName.replace(/[^a-zA-Z0-9._-]/g, "_");
     const mimeType = file.type || "application/octet-stream";
@@ -124,6 +141,7 @@ export async function POST(request: Request) {
       const detail = uploaded?.error?.message || "Google Drive geçerli bir yanıt döndürmedi.";
       throw new Error("Google Drive HTTP " + uploadResponse.status + (reason ? " (" + reason + ")" : "") + ": " + detail);
     }
+    uploadedFileId = uploaded.id;
 
     stage = "Drive dosya kimliğini Supabase'e kaydetme";
     const { error: updateError } = await admin
@@ -145,8 +163,21 @@ export async function POST(request: Request) {
       webViewLink: uploaded.webViewLink || null,
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
-    const detail = error instanceof Error ? error.message : "Bilinmeyen hata.";
-    const message = stage + " aşamasında hata: " + detail;
+    const detail = errorMessage(error);
+    let cleanupNote = "";
+    // Drive upload succeeded but its ID could not be persisted: remove the orphaned copy.
+    if (uploadedFileId && accessToken) {
+      try {
+        const cleanup = await fetch("https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(uploadedFileId), {
+          method: "DELETE",
+          headers: { Authorization: "Bearer " + accessToken },
+        });
+        if (!cleanup.ok && cleanup.status !== 404) cleanupNote = " Drive'daki geçici kopya otomatik temizlenemedi (HTTP " + cleanup.status + ").";
+      } catch {
+        cleanupNote = " Drive'daki geçici kopya otomatik temizlenemedi.";
+      }
+    }
+    const message = stage + " aşamasında hata: " + detail + cleanupNote;
     if (admin && imageId) {
       await admin.from("service_images")
         .update({ google_drive_sync_error: message.slice(0, 1000) })
