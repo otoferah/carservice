@@ -4,6 +4,7 @@ import {ArrowLeft,CarFront,ClipboardList,Users,Wrench,Printer} from "lucide-reac
 import {createClient} from "@/lib/supabase/server";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
 import ServiceProgress from "./service-progress";
+import TaskManager from "./task-manager";
 import PrintQuoteButton from "./print-button";
 import {QRCodeSVG} from "qrcode.react";
 import DeleteServiceButton from "./delete-service-button";
@@ -14,10 +15,15 @@ type ImageRow={id:string;storage_path:string;caption:string|null};
 export default async function ServiceDetailPage({params}:{params:Promise<{id:string}>}){
  const {id}=await params;const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
  const {data:profile}=await supabase.from("profiles").select("role,is_active,full_name").eq("id",user.id).maybeSingle();if(!profile?.is_active)redirect("/login");
+ const manager=["admin","supervisor"].includes(profile.role);
  const {data:raw}=await supabase.from("service_records").select("id,status,quote_date,quote_total,tracking_token,quote_provider,customer_signature_path,created_at,customers(full_name,phone,email),vehicles(plate,brand,model),service_images(id,storage_path,caption),service_parts(id,part_name,quantity,unit_price,line_total),service_team(profile_id,assignment_role,profiles!service_team_profile_id_fkey(full_name,role)),service_updates(id,status,note,created_at,edited_at,profiles!service_updates_created_by_fkey(full_name,role))").eq("id",id).maybeSingle();
  if(!raw)notFound();
  const record=raw as unknown as {id:string;status:ServiceStatus;quote_date:string;quote_total:number;tracking_token:string;quote_provider:string|null;customer_signature_path:string|null;customers:{full_name:string;phone:string|null;email:string|null}|null;vehicles:{plate:string;brand:string;model:string}|null;service_images:ImageRow[];service_parts:Part[];service_team:{profile_id:string;assignment_role:string;profiles:Person|null}[];service_updates:Update[]};
- const manager=["admin","supervisor"].includes(profile.role);const assigned=record.service_team.some(m=>m.profile_id===user.id);
+ const {data:taskRows}=await supabase.from("service_tasks").select("id,title,description,status,completion_note,created_at,completed_at,assigned_to,profiles!service_tasks_assigned_to_fkey(full_name)").eq("service_record_id",id).order("created_at",{ascending:false});
+ const {data:peopleRows}=manager?await supabase.from("profiles").select("id,full_name").eq("role","usta").eq("is_active",true).order("full_name"):{data:[]};
+ const tasks=(taskRows??[]) as unknown as {id:string;title:string;description:string|null;status:"assigned"|"completed";completion_note:string|null;created_at:string;completed_at:string|null;assigned_to:string;profiles:{full_name:string}|null}[];
+ const people=(peopleRows??[]) as {id:string;full_name:string}[];
+ const assigned=record.service_team.some(m=>m.profile_id===user.id)||tasks.some(t=>t.assigned_to===user.id);
  const updates=[...record.service_updates].sort((a,b)=>b.created_at.localeCompare(a.created_at));
  const imageUrls=await Promise.all((record.service_images??[]).map(async image=>{const {data}=await supabase.storage.from("service-media").createSignedUrl(image.storage_path,3600);return data?.signedUrl?{url:data.signedUrl,caption:image.caption}:null;}));
  const photos=imageUrls.filter((image):image is {url:string;caption:string|null}=>!!image);
@@ -32,6 +38,7 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
     <section className="detail-panel"><h2><ClipboardList size={17}/> Kullanılan parçalar / işlemler</h2><div className="table-scroll"><table><thead><tr><th>AÇIKLAMA</th><th>ADET</th><th>BİRİM FİYAT</th><th>TOPLAM</th></tr></thead><tbody>{record.service_parts.map(p=><tr key={p.id}><td>{p.part_name}</td><td>{p.quantity}</td><td>{Number(p.unit_price).toLocaleString("tr-TR")} ₺</td><td>{Number(p.line_total).toLocaleString("tr-TR")} ₺</td></tr>)}{!record.service_parts.length&&<tr><td colSpan={4}>Parça kalemi eklenmemiş.</td></tr>}</tbody></table></div></section>
     {(photos.length>0||signatureUrl)&&<section className="detail-panel"><h2><CarFront size={17}/> Araç görselleri ve müşteri imzası</h2><div className="service-photo-grid">{photos.map((photo,i)=><a href={photo.url} target="_blank" rel="noreferrer" key={i}><img src={photo.url} alt={photo.caption||"Araç görseli"}/><small>{photo.caption||"Araç görseli"}</small></a>)}</div>{signatureUrl&&<div className="service-signature"><small>Müşteri imzası</small><img src={signatureUrl} alt="Müşteri imzası"/></div>}</section>}
     <section className="detail-panel"><h2><Users size={17}/> İlgilenen ekip</h2><div className="detail-team">{record.service_team.map((m,i)=><div className="detail-team-item" key={i}><span className="avatar">{(m.profiles?.full_name||"P").slice(0,1)}</span><div><b>{m.profiles?.full_name||"Personel"}</b><small>{m.assignment_role==="admin"?"Yönetici":m.assignment_role==="supervisor"?"Supervisor":"Usta"}</small></div></div>)}</div></section>
+    <TaskManager recordId={id} tasks={tasks} people={people} canManage={manager}/>
     <ServiceProgress recordId={id} currentStatus={record.status} updates={updates} canUpdate={manager||assigned} canDeliver={manager} canEditHistory={manager} viewerName={profile.full_name}/>
    </div><aside className="detail-aside"><div className="detail-panel"><h2><CarFront size={17}/> Araç özeti</h2><dl><dt>Plaka</dt><dd>{record.vehicles?.plate}</dd><dt>Marka / Model</dt><dd>{record.vehicles?.brand} {record.vehicles?.model}</dd><dt>Müşteri</dt><dd>{record.customers?.full_name}</dd><dt>Telefon</dt><dd>{record.customers?.phone||"—"}</dd><dt>E-posta</dt><dd>{record.customers?.email||"—"}</dd><dt>Teklif tarihi</dt><dd>{formattedDate}</dd><dt>Teklifi veren</dt><dd>{record.quote_provider||"—"}</dd></dl></div>
     <div className="detail-panel"><h2><Wrench size={17}/> Müşteri takip bağlantısı</h2><p className="muted small-copy">Bu kayıt için oluşturulmuş tekil takip bağlantısı.</p><Link className="outline-button" href={trackingUrl} target="_blank">Müşteri görünümünü aç ↗</Link><p className="token-text">{record.tracking_token}</p></div>
