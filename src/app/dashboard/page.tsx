@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {redirect} from "next/navigation";
-import {Activity,ArrowUpRight,CarFront,ClipboardList,LogOut,Plus,Search,ShieldCheck,Users,Wrench,Wallet} from "lucide-react";
+import {Activity,ArrowUpRight,CarFront,ClipboardList,HardDrive,LogOut,Plus,Search,ShieldCheck,Users,Wrench,Wallet} from "lucide-react";
 import {createClient} from "@/lib/supabase/server";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
 type ServiceRow={id:string;status:ServiceStatus;quote_total:number;quote_date:string;created_at:string;customers:{full_name:string}|null;vehicles:{plate:string;brand:string;model:string}|null};
@@ -31,7 +31,7 @@ export default async function DashboardPage(){
    <Link className="side-link" href="/tracking"><Search size={18}/> Araç Sorgulama</Link>
    <div className="side-section">YÖNETİM</div>
    {["admin","supervisor"].includes(profile.role)&&<Link className="side-link" href="/dashboard/new"><ClipboardList size={18}/> Yeni Servis Kaydı</Link>}
-   {profile.role==="admin"&&<Link className="side-link" href="/dashboard/users"><Users size={18}/> Personel Yönetimi</Link>}
+   {profile.role==="admin"&&<><Link className="side-link" href="/dashboard/users"><Users size={18}/> Personel Yönetimi</Link><Link className="side-link" href="/dashboard/google-drive"><HardDrive size={18}/> Google Drive</Link></>}
    {manager&&<Link className="side-link" href="/dashboard/expenses"><Wallet size={18}/> Gider Yönetimi</Link>}
    <div className="sidebar-bottom"><div className="user-chip"><div className="avatar">{(profile.full_name||"F").slice(0,1).toUpperCase()}</div><div><b>{profile.full_name}</b><small>{roleName}</small></div><ShieldCheck size={16}/></div><form action="/api/auth/signout" method="post"><button className="side-link signout" type="submit"><LogOut size={17}/> Güvenli çıkış</button></form></div>
   </aside>
