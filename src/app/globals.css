@@ -170,3 +170,12 @@
  .quote-tracking-qr{display:flex!important}
  .quote-tracking-qr svg{width:35mm!important;height:35mm!important}
 }
+
+/* Public vehicle tracking photo */
+.tracking-vehicle-photo{width:100%;height:230px;overflow:hidden;border-radius:10px;background:#f0f4f1;margin-bottom:18px;border:1px solid #e5ebe6}
+.tracking-vehicle-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.danger-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:9px 12px;border:1px solid #f0d2cf;border-radius:8px;background:#fff7f6;color:#a33f35;font-size:11px;font-weight:700;white-space:nowrap}
+.danger-button:hover{background:#ffefed;border-color:#dca49e}
+.delete-service-wrap{display:grid;gap:5px}
+.delete-service-wrap .form-error{max-width:180px}
+@media(max-width:580px){.tracking-vehicle-photo{height:190px}.detail-heading-actions{align-items:flex-start}}
