@@ -2,7 +2,7 @@
 import {useState,type FormEvent} from "react";
 import {useRouter} from "next/navigation";
 import {ClipboardCheck,Plus,CheckCircle2,Clock3,UserRound} from "lucide-react";
-type Task={id:string;title:string;description:string|null;status:"assigned"|"completed";completion_note:string|null;created_at:string;completed_at:string|null;assigned_to:string;profiles:{full_name:string}|null};
+type Task={id:string;title:string;description:string|null;status:"assigned"|"completed";completion_note:string|null;created_at:string;completed_at:string|null;assigned_to:string|null;assigned_to_name:string|null;assigned_by_name:string|null;profiles:{full_name:string}|null};
 type Person={id:string;full_name:string};
 export default function TaskManager({recordId,tasks,people,canManage}:{recordId:string;tasks:Task[];people:Person[];canManage:boolean}){
  const router=useRouter();const [title,setTitle]=useState("");const [description,setDescription]=useState("");const [assignedTo,setAssignedTo]=useState(people[0]?.id||"");const [busy,setBusy]=useState(false);const [error,setError]=useState("");const [message,setMessage]=useState("");
@@ -34,7 +34,7 @@ function TaskCard({task,recordId}:{task:Task;recordId:string}){
   catch(err){setError(err instanceof Error?err.message:"Görev tamamlanamadı.");}finally{setBusy(false);}
  }
  return <article className={"service-task-card "+(task.status==="completed"?"is-completed":"")}>
-  <div className="service-task-card-top"><div><b>{task.title}</b><small><UserRound size={12}/>{task.profiles?.full_name||"Atanan usta"}</small></div><span className={"task-status "+(task.status==="completed"?"done":"pending")}>{task.status==="completed"?<><CheckCircle2 size={13}/> Tamamlandı</>:<><Clock3 size={13}/> Bekliyor</>}</span></div>
+  <div className="service-task-card-top"><div><b>{task.title}</b><small><UserRound size={12}/>{task.profiles?.full_name||task.assigned_to_name||"Atanan usta"}</small></div><span className={"task-status "+(task.status==="completed"?"done":"pending")}>{task.status==="completed"?<><CheckCircle2 size={13}/> Tamamlandı</>:<><Clock3 size={13}/> Bekliyor</>}</span></div>
   {task.description&&<p className="service-task-description">{task.description}</p>}
   {task.status==="completed"?<div className="task-completion-note">{task.completion_note||"Görev tamamlandı."}<small>{task.completed_at?new Date(task.completed_at).toLocaleString("tr-TR"):""}</small></div>:<div className="task-complete-form"><textarea rows={2} value={note} onChange={e=>setNote(e.target.value)} placeholder="Yapılan işlemi / sonucu yazın (isteğe bağlı)"/><button type="button" className="primary-button" disabled={busy} onClick={()=>void complete()}><CheckCircle2 size={14}/>{busy?"Kaydediliyor...":"Görevi tamamla ve kaydet"}</button>{error&&<p className="form-error">{error}</p>}</div>}
  </article>;
