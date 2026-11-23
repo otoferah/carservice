@@ -288,3 +288,85 @@ button,.outline-button{color:#f4f7f5}
 .tracking-foot,.privacy-note{color:#aab7af!important}
 @media(min-width:851px){.stats-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .stat-card:before,.panel:before,.service-form:before,.saved-card:before,.detail-panel:before{-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;z-index:2;padding:1px}
+
+
+/* ===== FERAH · MONOCHROME UI / GREEN ONLY ON ANIMATED FRAMES ===== */
+:root{
+ --green:#c4ccd3!important;
+ --lime:#e3e8ec!important;
+ --deep:#080b0e!important;
+ --ink:#f2f5f7!important;
+ --muted:#aab3bb!important;
+ --line:#f3f5f7!important;
+ --paper:#090c10!important;
+ --white:#11161b!important;
+}
+.eyebrow,.login-card h1 span,.secure-note svg,.text-link,.subtle-link,
+.bottom-hint svg,.detail-panel h2 svg,.tracking-foot svg,.privacy-note svg,
+.user-chip>svg,.count-pill,.success-message,.saved-success,
+.tracking-symbol,.note-icon,.status-pill i{
+ color:#c7d0d8!important;
+}
+.brand-mark,.brand-icon,.stat-icon,.stat-icon.green,.avatar,.top-avatar,
+.user-row-avatar,.tracking-symbol{
+ background:#202830!important;
+ color:#e3e8ec!important;
+}
+.primary-button,.tracking-input button{
+ background:#303942!important;
+ color:#fff!important;
+ border:1px solid #e4e9ed!important;
+ box-shadow:none!important;
+}
+.primary-button:hover,.tracking-input button:hover{background:#414b55!important}
+.side-link:hover,.side-link.active{
+ background:#202830!important;
+ color:#fff!important;
+ border-color:#e5e9ed!important;
+ box-shadow:inset 3px 0 #d5dde4!important;
+}
+.side-link.active{border-left-color:#d5dde4!important}
+.outline-button:hover{border-color:#d5dde4!important;color:#fff!important}
+input:focus,select:focus,textarea:focus,.field input:focus{
+ border-color:#d5dde4!important;
+ box-shadow:0 0 0 3px #d5dde422!important;
+}
+.team-option input,.active-toggle input{accent-color:#c7d0d8!important}
+.status-repairing,.status-testing,.status-ready,.status-delivered{
+ background:#252d35!important;color:#e1e7ec!important;
+}
+.status-ready{border-color:#d5dde4!important}
+.progress-track span{background:#c7d0d8!important}
+.timeline-dot{background:#c7d0d8!important;border-color:#333d47!important}
+.timeline-item:not(:last-child):before{background:#68737d!important}
+.money-positive{color:#e6ebef!important}
+.count-pill{background:#252d35!important}
+.result-note{border:1px solid #56616b!important}
+.tracking-symbol{background:#202830!important}
+.form-error,.expense-alert,.status-waiting,.status-quote{
+ color:#ffad62!important;
+}
+.expense-total,.money-negative,.expense-delete,.delete-service-button,.icon-button{
+ color:#ffad62!important;
+}
+/* License plate: high-contrast amber, distinct from vehicle description. */
+.panel tbody td:first-child b{
+ display:inline-block;
+ color:#ffd17d!important;
+ background:#302719!important;
+ border:1px solid #8e6b35!important;
+ border-radius:5px;
+ padding:4px 7px;
+ font-size:13px!important;
+ font-weight:800!important;
+ letter-spacing:.7px;
+ line-height:1.2;
+}
+.panel tbody td:first-child small{color:#c4ccd3!important}
+/* Keep green exclusively in the animated white/green template-frame stroke. */
+.stat-card:before,.panel:before,.service-form:before,.saved-card:before,.detail-panel:before{
+ background:linear-gradient(115deg,#f4f7f5 0%,#f4f7f5 24%,#25d985 48%,#f4f7f5 68%,#f4f7f5 100%)!important;
+}
+@media print{
+ .print-quote h3,.print-quote strong{color:#222!important}
+}
