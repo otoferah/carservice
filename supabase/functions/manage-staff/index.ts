@@ -83,9 +83,10 @@ Deno.serve(async (req: Request) => {
       if (password && password.length < 12) return reply({ error: "Yeni şifre en az 12 karakter olmalıdır." }, 400);
       if (id === actorId && (role !== "admin" || !active))
         return reply({ error: "Kendi Merkez Yönetici hesabınızı devre dışı bırakamaz veya rolünü düşüremezsiniz." }, 400);
-      const { data: target, error: targetError } = await admin.from("profiles").select("id,role").eq("id", id).maybeSingle();
+      const { data: target, error: targetError } = await admin.from("profiles").select("id,role,username").eq("id", id).maybeSingle();
       if (targetError) throw targetError;
       if (!target) return reply({ error: "Personel hesabı bulunamadı." }, 404);
+      if (target.role === "admin" && target.username === null) return reply({ error: "Merkez Yönetici ana hesabı koruma altındadır." }, 403);
       if (target.role === "admin" && (role !== "admin" || !active)) {
         const { count, error: countError } = await admin.from("profiles").select("id", { count: "exact", head: true }).eq("role", "admin").eq("is_active", true);
         if (countError) throw countError;
