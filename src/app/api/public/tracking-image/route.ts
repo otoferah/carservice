@@ -14,10 +14,10 @@ export async function GET(request:Request){
    const {data,error}=await admin.from("service_records").select("id").eq("tracking_token",token).maybeSingle();
    if(error)throw error;record=data||undefined;
   }else{
-   const normalized=plate.toLocaleUpperCase("tr-TR").replace(/\\s+/g,"");
+   const normalized=plate.toLocaleUpperCase("tr-TR").replace(/\s+/g,"");
    const {data,error}=await admin.from("service_records").select("id,created_at,vehicles!inner(plate)").not("status","in","(delivered,cancelled)").order("created_at",{ascending:false}).limit(500);
    if(error)throw error;
-   record=data?.find((item:any)=>String(item.vehicles?.plate||"").toLocaleUpperCase("tr-TR").replace(/\\s+/g,"")===normalized);
+   record=data?.find((item:any)=>String(item.vehicles?.plate||"").toLocaleUpperCase("tr-TR").replace(/\s+/g,"")===normalized);
   }
   if(!record)return NextResponse.json({imageUrl:null});
   const {data:images,error:imageError}=await admin.from("service_images").select("storage_path").eq("service_record_id",record.id).order("created_at",{ascending:true}).limit(1);
