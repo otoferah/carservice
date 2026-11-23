@@ -4,6 +4,7 @@ import {ArrowLeft} from "lucide-react";
 import {QRCodeSVG} from "qrcode.react";
 import StickerPrintButton from "./sticker-print-button";
 import {createClient} from "@/lib/supabase/server";
+import {publicTrackingUrl} from "@/lib/public-tracking";
 
 export default async function VehicleStickerPage({params}:{params:Promise<{id:string}>}) {
  const {id}=await params;
