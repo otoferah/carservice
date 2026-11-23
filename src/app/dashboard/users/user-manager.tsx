@@ -51,7 +51,7 @@ function UserRow({member,currentUserId,onUpdate}:{member:Member;currentUserId:st
   <div className={"user-row-controls"+(editing?" is-open":"")}>
    <label className="field">Kullanıcı adı<input value={username} onChange={e=>setUsername(e.target.value.toLowerCase())} minLength={3} maxLength={30} pattern="[a-zA-Z0-9._-]+" placeholder="kullanici.adi"/></label>
    <label className="field">Yeni şifre <span className="muted small-copy">(Değiştirmeyeceksen boş bırak)</span><input type="password" value={password} onChange={e=>setPassword(e.target.value)} minLength={password?12:undefined} placeholder="En az 12 karakter" autoComplete="new-password"/></label>
-   <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option><option value="admin">Yönetici</option></select></label>
+   <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option></select></label>
    <label className="active-toggle"><input type="checkbox" checked={active} onChange={e=>setActive(e.target.checked)}/> Aktif</label>
    <button className="primary-button" type="button" onClick={()=>{onUpdate(member,role,active,username,password);setPassword("");}}><Save size={14}/> Değişiklikleri kaydet</button>
   </div>
