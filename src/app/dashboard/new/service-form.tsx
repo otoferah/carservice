@@ -48,14 +48,18 @@ export default function ServiceForm({members}:{members:Member[]}){
     if(uploadError){warnings.push(file.name+": "+uploadError.message);continue;}
     const {error:insertError}=await supabase.from("service_images").insert({service_record_id:data.id,storage_path:path,caption:file.name,uploaded_by:user?.id});
     if(insertError){warnings.push(file.name+": "+insertError.message);continue;}
-    const mirrorResponse=await fetch("/api/google-drive/mirror-image",{
-     method:"POST",
-     headers:{"Content-Type":"application/json"},
-     body:JSON.stringify({serviceRecordId:data.id,storagePath:path})
-    });
-    if(!mirrorResponse.ok){
-     const mirrorResult=await mirrorResponse.json().catch(()=>({}));
-     warnings.push(file.name+": Supabase'e kaydedildi ancak Google Drive kopyası oluşturulamadı ("+(mirrorResult.error||"aktarım hatası")+")");
+    try{
+     const mirrorResponse=await fetch("/api/google-drive/mirror-image",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({serviceRecordId:data.id,storagePath:path})
+     });
+     if(!mirrorResponse.ok){
+      const mirrorResult=await mirrorResponse.json().catch(()=>({}));
+      warnings.push(file.name+": Supabase'e kaydedildi ancak Google Drive kopyası oluşturulamadı ("+(mirrorResult.error||"aktarım hatası")+")");
+     }
+    }catch{
+     warnings.push(file.name+": Supabase'e kaydedildi ancak Google Drive aktarımına ulaşılamadı.");
     }
     const {data:signed}=await supabase.storage.from("service-media").createSignedUrl(path,3600);
     if(signed?.signedUrl)uploadedUrls.push(signed.signedUrl);
