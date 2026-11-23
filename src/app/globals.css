@@ -179,3 +179,5 @@
 .delete-service-wrap{display:grid;gap:5px}
 .delete-service-wrap .form-error{max-width:180px}
 @media(max-width:580px){.tracking-vehicle-photo{height:190px}.detail-heading-actions{align-items:flex-start}}
+
+.tracking-photo-empty{display:grid;place-items:center;color:#7d8b82;font-size:11px;text-align:center;padding:18px}
