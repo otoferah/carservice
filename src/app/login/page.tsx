@@ -4,11 +4,11 @@ import {useRouter} from "next/navigation";
 import {Wrench,ShieldCheck} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
 export default function LoginPage(){
- const router=useRouter();const [email,setEmail]=useState("");const [password,setPassword]=useState("");
+ const router=useRouter();const [username,setUsername]=useState("");const [password,setPassword]=useState("");
  const [busy,setBusy]=useState(false);const [error,setError]=useState("");
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setError("");
-  try{const supabase=createClient();const {error:authError}=await supabase.auth.signInWithPassword({email,password});
+  try{const supabase=createClient();const loginId=username.trim().toLowerCase();const email=loginId.includes("@")?loginId:loginId+"@staff.ferahotomotiv.com";const {error:authError}=await supabase.auth.signInWithPassword({email,password});
    if(authError)throw authError;router.replace("/dashboard");router.refresh();
   }catch(err){setError(err instanceof Error?err.message:"Giriş yapılamadı.");}
   finally{setBusy(false);}
@@ -18,7 +18,7 @@ export default function LoginPage(){
    <p className="eyebrow">FERAH OTOMOTİV</p><h1>Servis yönetim<br/><span>merkezi.</span></h1>
    <p className="muted">Devam etmek için personel hesabınızla giriş yapın.</p>
    <form onSubmit={submit} className="login-form">
-    <label>E-posta adresi<input type="email" autoComplete="username" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="personel@ferahotomotiv.com"/></label>
+    <label>Kullanıcı adı<input type="text" autoComplete="username" required value={username} onChange={e=>setUsername(e.target.value)} placeholder="kullanici.adi" autoCapitalize="none"/></label>
     <label>Şifre<input type="password" autoComplete="current-password" required value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••••"/></label>
     {error&&<p className="form-error">{error}</p>}
     <button className="primary-button" type="submit" disabled={busy}>{busy?"Giriş yapılıyor...":"Güvenli giriş yap"}</button>
