@@ -75,7 +75,7 @@ export default async function GoogleDrivePage({ searchParams }: Props) {
             <a className="primary-button" href="/api/google-drive/connect"><Cloud size={16}/> Google hesabını bağla</a>
           </div>
         }
-        <div className="bottom-hint" style={{ marginTop: 22 }}><ShieldCheck size={16}/> Google erişim anahtarları sunucu tarafında tutulur; personel ve müşterilere gösterilmez.</div>
+        <p className="muted small-copy" style={{ marginTop: 18 }}>Not: Google OAuth uygulaması Testing durumundayken Drive izni 7 gün sonra sona erebilir. Bu bağlantıyı test aşamasında kullanın; kalıcı kullanım öncesinde Google yayın ve doğrulama gerekliliklerini tamamlayın.</p>\n        <div className="bottom-hint" style={{ marginTop: 22 }}><ShieldCheck size={16}/> Google erişim anahtarları sunucu tarafında tutulur; personel ve müşterilere gösterilmez.</div>
       </section>
     </main>
   );
