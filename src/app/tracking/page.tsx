@@ -54,7 +54,7 @@ export default function TrackingPage(){
  const stages:ServiceStatus[]=["waiting","repairing","testing","ready","delivered"];
  const progress=result?Math.max(1,(stages.indexOf(result.status)+1)/stages.length*100):0;
  return <main className="tracking-page">
-  <header className="tracking-header"><Link href="/login" className="back-link"><ArrowLeft size={17}/> Personel girişi</Link><Link href="/" className="side-brand tracking-brand"><img className="side-brand-logo" src="/assets/ferah-logo.jpg" alt="Ferah Otomotiv"/></Link></header>
+  <header className="tracking-header"><Link href="/login" className="back-link"><ArrowLeft size={17}/> Personel girişi</Link><Link href="/" className="side-brand tracking-brand"><img className="side-brand-logo" src="/assets/FERAH%20OTOMOT%C4%B0V%20Metalik%20Logo.png" alt="Ferah Otomotiv"/></Link></header>
   <section className="tracking-content"><div className="tracking-symbol"><CarFront size={28}/></div><p className="eyebrow">MÜŞTERİ BİLGİLENDİRME</p>
    <h1>Aracınızın servis<br/><span>sürecini takip edin.</span></h1>
    <p className="muted">Servis formunuzdaki QR kodu okutun veya araç plakanızı girerek güncel servis aşamasını görüntüleyin.</p>
