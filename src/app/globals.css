@@ -40,3 +40,24 @@
 .quote-actions .print-quote-button{cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;min-height:42px}
 .quote-actions .print-quote-button:hover{border-color:var(--green);color:var(--green)}
 @media print{.quote-actions .print-quote-button{display:none!important}}
+
+/* Araç üzerine yapıştırılacak, tekil servis QR etiketi */
+.sticker-page{min-height:100vh;background:#f3f6f3;padding:22px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.sticker-toolbar{width:min(900px,100%);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sticker-print-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;cursor:pointer}
+.vehicle-sticker{width:80mm;min-height:80mm;box-sizing:border-box;background:#fff;border:1px solid #dce5dd;border-radius:4mm;padding:5mm;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#14251c;box-shadow:0 8px 28px #12251b18}
+.sticker-brand{font-size:17px;font-weight:900;letter-spacing:1.4px;color:#176b4b}.sticker-brand b{color:#17261e}
+.sticker-caption{font-size:8px;font-weight:800;letter-spacing:2px;color:#6e7e73;margin-top:2mm}
+.sticker-qr{margin:3mm 0 1mm;line-height:0}.sticker-qr svg{width:49mm;height:49mm;max-width:100%}
+.sticker-plate{font-size:19px;font-weight:900;letter-spacing:1.2px;margin-top:1mm}
+.sticker-vehicle{font-size:9px;font-weight:700;color:#59685f;margin-top:1mm}
+.sticker-instruction{font-size:8px;color:#46564c;margin-top:3mm}
+.sticker-footer{font-size:6.5px;color:#849087;margin-top:2mm}
+.sticker-hint{font-size:11px;color:#7a887f;text-align:center;max-width:500px}
+@media print{
+ @page{size:90mm 100mm;margin:5mm}
+ html,body{background:#fff!important;margin:0!important;padding:0!important}
+ .sticker-page{min-height:0!important;padding:0!important;margin:0!important;background:#fff!important;display:block!important}
+ .sticker-toolbar,.sticker-hint{display:none!important}
+ .vehicle-sticker{width:80mm!important;height:80mm!important;min-height:80mm!important;margin:0 auto!important;box-shadow:none!important;border:0.3mm solid #d5ddd6!important;border-radius:3mm!important;break-inside:avoid;page-break-inside:avoid}
+}
