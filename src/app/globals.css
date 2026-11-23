@@ -36,3 +36,7 @@
 
 .delivery-action{margin-top:18px;padding-top:16px;border-top:1px solid #edf1ed}.delivery-action .primary-button{width:100%;background:#287a3f}.print-only-quote{display:none}.quote-actions button{width:100%;cursor:default}
 @media print{.form-top,.detail-heading-actions,.detail-main,.detail-aside,.back-link{display:none!important}.detail-content{width:100%;margin:0}.detail-heading{display:none}.print-only-quote{display:block!important;padding:28px;color:#111;font-size:11px}.print-only-quote h2{text-align:center;font-size:18px;margin:0 0 22px}.print-only-quote p{margin:8px 0}.print-only-quote table{margin-top:20px}.print-only-quote th,.print-only-quote td{padding:9px;border-bottom:1px solid #ddd}.print-only-quote h3{text-align:right;font-size:16px;margin-top:18px}.quote-signature{max-width:200px;height:75px;object-fit:contain}}
+
+.quote-actions .print-quote-button{cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;min-height:42px}
+.quote-actions .print-quote-button:hover{border-color:var(--green);color:var(--green)}
+@media print{.quote-actions .print-quote-button{display:none!important}}
