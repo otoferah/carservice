@@ -2,6 +2,8 @@ package com.ferahotomotiv.servis
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.print.PrintAttributes
+import android.print.PrintManager
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -10,6 +12,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.webkit.CookieManager
+import android.webkit.JavascriptInterface
 import android.webkit.SslErrorHandler
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -63,6 +66,8 @@ class MainActivity : Activity() {
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             userAgentString = userAgentString + " FerahOtomotivAndroid/1.0"
         }
+
+        webView.addJavascriptInterface(AndroidPdfBridge(), "FerahAndroid")
 
         CookieManager.getInstance().setAcceptCookie(true)
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
@@ -155,6 +160,22 @@ class MainActivity : Activity() {
             webView.restoreState(savedInstanceState)
         } else {
             webView.loadUrl(appUrl)
+        }
+    }
+
+    private inner class AndroidPdfBridge {
+        @JavascriptInterface
+        fun printPdf() {
+            runOnUiThread {
+                val printManager = getSystemService(PRINT_SERVICE) as PrintManager
+                val adapter = webView.createPrintDocumentAdapter("Ferah-Otomotiv-Teklif")
+                val attributes = PrintAttributes.Builder()
+                    .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                    .setColorMode(PrintAttributes.COLOR_MODE_COLOR)
+                    .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+                    .build()
+                printManager.print("Ferah Otomotiv - Servis Teklifi", adapter, attributes)
+            }
         }
     }
 
