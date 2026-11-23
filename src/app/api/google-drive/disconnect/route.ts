@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getGoogleDriveAdminClient, getGoogleDriveConnection, requireGoogleDriveAdmin } from "@/lib/google-drive";
 
-export async function POST() {
+export async function POST(request: Request) {
   const access = await requireGoogleDriveAdmin();
   if (!access.authorized) {
     return NextResponse.json({ error: "Bu işlem için yönetici oturumu gerekiyor." }, { status: access.status });
@@ -18,7 +18,7 @@ export async function POST() {
     const admin = await getGoogleDriveAdminClient();
     const { error } = await admin.from("google_drive_connections").delete().eq("id", 1);
     if (error) throw error;
-    return NextResponse.redirect(new URL("/dashboard/google-drive?status=disconnected", process.env.NEXT_PUBLIC_APP_URL || "https://ferah-otomotiv-servis.otoferah.workers.dev"));
+    return NextResponse.redirect(new URL("/dashboard/google-drive?status=disconnected", request.url));
   } catch {
     return NextResponse.json({ error: "Google Drive bağlantısı kaldırılamadı." }, { status: 500 });
   }
