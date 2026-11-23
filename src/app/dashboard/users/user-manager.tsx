@@ -17,7 +17,7 @@ async function manageStaff(payload:Record<string,unknown>){
  if(data?.error)throw new Error(data.error);
  return data;
 }
-export default function UserManager({users}:{users:Member[]}){
+export default function UserManager({users,currentUserId}:{users:Member[];currentUserId:string}){
  const router=useRouter();const [name,setName]=useState("");const [username,setUsername]=useState("");const [password,setPassword]=useState("");const [role,setRole]=useState<Role>("usta");
  const [busy,setBusy]=useState(false);const [message,setMessage]=useState("");const [error,setError]=useState("");
  async function createUser(e:FormEvent<HTMLFormElement>){
@@ -35,19 +35,19 @@ export default function UserManager({users}:{users:Member[]}){
   <label className="field">Adı soyadı<input required value={name} onChange={e=>setName(e.target.value)} placeholder="Personel adı soyadı"/></label>
   <label className="field">Kullanıcı adı<input required minLength={3} maxLength={30} pattern="[a-zA-Z0-9._-]+" value={username} onChange={e=>setUsername(e.target.value.toLowerCase())} placeholder="ornek.kullanici" autoCapitalize="none" autoComplete="off"/></label>
   <label className="field">İlk şifre (en az 12 karakter)<input type="password" minLength={12} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="Merkez yöneticinin belirlediği şifre" autoComplete="new-password"/></label>
-  <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option><option value="admin">Yönetici</option></select></label>
+  <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option></select></label>
   <button className="primary-button" disabled={busy}><UserPlus size={15}/>{busy?"Hesap oluşturuluyor...":"Personel oluştur"}</button>
  </form><p className="user-form-hint">Personel e-posta adresi gerekmez. Girişte yalnızca burada belirlenen kullanıcı adı ve şifre kullanılır.</p>{error&&<p className="form-error user-message">{error}</p>}{message&&<p className="success-message">{message}</p>}</section>
- <section className="detail-panel"><h2><Users size={17}/> Kayıtlı personel <span className="count-pill">{users.length}</span></h2><div className="user-list">{users.map(m=><UserRow key={m.id} member={m} onUpdate={updateMember}/>)}</div></section>
+ <section className="detail-panel"><h2><Users size={17}/> Kayıtlı personel <span className="count-pill">{users.length}</span></h2><div className="user-list">{users.map(m=><UserRow key={m.id} member={m} currentUserId={currentUserId} onUpdate={updateMember}/>)}</div></section>
  <p className="privacy-note"><ShieldCheck size={16}/> Personel hesabı, kullanıcı adı ve şifre yalnızca Merkez Yönetici tarafından belirlenir ve değiştirilebilir.</p>
  </div>;
 }
-function UserRow({member,onUpdate}:{member:Member;onUpdate:(member:Member,role:Role,active:boolean,username:string,password:string)=>void}){
+function UserRow({member,currentUserId,onUpdate}:{member:Member;currentUserId:string;onUpdate:(member:Member,role:Role,active:boolean,username:string,password:string)=>void}){
  const [role,setRole]=useState<Role>(member.role);const [active,setActive]=useState(member.is_active);const [username,setUsername]=useState(member.username||"");const [password,setPassword]=useState("");const [editing,setEditing]=useState(false);
  return <div className="user-row user-row-editable">
   <div className="user-row-avatar">{member.full_name.slice(0,1).toUpperCase()}</div>
   <div className="user-row-info"><b>{member.full_name}</b><small>{member.username?"@"+member.username+" · ":"Kullanıcı adı atanmadı · "}{roleLabel[member.role]} · {member.is_active?"Aktif":"Erişimi kapalı"}</small></div>
-  <button className="outline-button" type="button" onClick={()=>setEditing(!editing)}>{editing?"Kapat":"Hesap bilgilerini düzenle"}</button>
+  {member.id===currentUserId?<span className="muted small-copy">Merkez Yönetici ana hesabı · E-posta ile giriş</span>:<button className="outline-button" type="button" onClick={()=>setEditing(!editing)}>{editing?"Kapat":"Hesap bilgilerini düzenle"}</button>}
   <div className={"user-row-controls"+(editing?" is-open":"")}>
    <label className="field">Kullanıcı adı<input value={username} onChange={e=>setUsername(e.target.value.toLowerCase())} minLength={3} maxLength={30} pattern="[a-zA-Z0-9._-]+" placeholder="kullanici.adi"/></label>
    <label className="field">Yeni şifre <span className="muted small-copy">(Değiştirmeyeceksen boş bırak)</span><input type="password" value={password} onChange={e=>setPassword(e.target.value)} minLength={password?12:undefined} placeholder="En az 12 karakter" autoComplete="new-password"/></label>
