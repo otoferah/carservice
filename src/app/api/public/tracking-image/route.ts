@@ -9,12 +9,17 @@ export async function GET(request:Request){
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL;const secret=process.env.SUPABASE_SECRET_KEY;
   if(!url||!secret)return NextResponse.json({error:"Servis bağlantısı yapılandırılmamış."},{status:500});
   const admin=createSupabaseClient(url,secret,{auth:{autoRefreshToken:false,persistSession:false}});
-  let query=admin.from("service_records").select("id,created_at,vehicles!inner(plate)");
-  if(token)query=query.eq("tracking_token",token);
-  else query=query.not("status","in","(delivered,cancelled)").ilike("vehicles.plate",plate);
-  const {data:records,error}=await query.order("created_at",{ascending:false}).limit(1);
-  if(error)throw error;
-  const record=records?.[0];if(!record)return NextResponse.json({imageUrl:null});
+  let record:{id:string}|undefined;
+  if(token){
+   const {data,error}=await admin.from("service_records").select("id").eq("tracking_token",token).maybeSingle();
+   if(error)throw error;record=data||undefined;
+  }else{
+   const normalized=plate.toLocaleUpperCase("tr-TR").replace(/\\s+/g,"");
+   const {data,error}=await admin.from("service_records").select("id,created_at,vehicles!inner(plate)").not("status","in","(delivered,cancelled)").order("created_at",{ascending:false}).limit(500);
+   if(error)throw error;
+   record=data?.find((item:any)=>String(item.vehicles?.plate||"").toLocaleUpperCase("tr-TR").replace(/\\s+/g,"")===normalized);
+  }
+  if(!record)return NextResponse.json({imageUrl:null});
   const {data:images,error:imageError}=await admin.from("service_images").select("storage_path").eq("service_record_id",record.id).order("created_at",{ascending:true}).limit(1);
   if(imageError)throw imageError;
   const path=images?.[0]?.storage_path;if(!path)return NextResponse.json({imageUrl:null});
