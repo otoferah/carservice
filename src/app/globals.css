@@ -892,3 +892,18 @@ tr:hover td{background:#1c2026!important}
 .danger-button{color:#f29b9b!important;border-color:#8d4141!important}
 .danger-button:hover{background:#8d24241c!important;border-color:#c45b5b!important}
 @media(max-width:680px){.user-row-actions{width:100%;justify-content:flex-start}}
+
+.saved-login-users{display:grid;gap:10px;margin:-8px 0 20px}
+.saved-login-heading{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px;font-weight:700;color:#26372e}
+.saved-login-heading small{font-size:10px;font-weight:400;color:var(--muted)}
+.saved-login-list{display:grid;gap:7px}
+.saved-login-user{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fbfcfb}
+.saved-login-user.selected{border-color:var(--green);background:#f0f7f2}
+.saved-login-select,.saved-login-remove{display:flex;align-items:center;border:0;background:transparent;color:var(--ink);min-height:40px}
+.saved-login-select{gap:10px;flex:1;text-align:left;padding:0 12px;font-size:12px;font-weight:700}
+.saved-login-select svg{color:var(--green)}
+.saved-login-remove{justify-content:center;width:40px;color:#89958e}
+.saved-login-remove:hover{color:#a33f35;background:#fff0ef}
+.remember-login-option{display:flex!important;grid-template-columns:16px 1fr;align-items:center;gap:9px!important;font-size:11px!important;font-weight:500!important;color:var(--muted)}
+.remember-login-option input{width:15px;height:15px;accent-color:var(--green)}
+@media(max-width:760px){.saved-login-heading{align-items:flex-start;flex-direction:column;gap:3px}}
