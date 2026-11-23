@@ -29,7 +29,7 @@ export default async function GoogleDrivePage({ searchParams }: Props) {
 
   const connected = !!connection?.refresh_token;
   const statusMessages: Record<string, string> = {
-    connected: "Google Drive başarıyla bağlandı ve servis görselleri klasörü hazır.",
+    connected: "Google hesabı bağlandı. Şimdi mevcut servis görselleri klasörünü seçin.",
     
     disconnected: "Google Drive bağlantısı kaldırıldı.",
     denied: "Google izin ekranında bağlantı reddedildi.",
@@ -77,7 +77,8 @@ export default async function GoogleDrivePage({ searchParams }: Props) {
             <a className="primary-button" href="/api/google-drive/connect"><Cloud size={16}/> Google hesabını bağla</a>
           </div>
         }
-        <p className="muted small-copy" style={{ marginTop: 18 }}>Not: Google OAuth uygulaması Testing durumundayken Drive yenileme izni 7 gün sonra sona erebilir. Kalıcı kullanım öncesinde yayın ve doğrulama gerekliliklerini tamamlayın.</p>\n        <div className="bottom-hint" style={{ marginTop: 22 }}><ShieldCheck size={16}/> Uzun ömürlü yenileme anahtarı sunucuda saklanır. Klasör seçimi sırasında yalnızca kısa ömürlü erişim anahtarı yönetici tarayıcısına verilir.</div>
+        <p className="muted small-copy" style={{ marginTop: 18 }}>Not: Google OAuth uygulaması Testing durumundayken Drive yenileme izni 7 gün sonra sona erebilir. Kalıcı kullanım öncesinde yayın ve doğrulama gerekliliklerini tamamlayın.</p>
+        <div className="bottom-hint" style={{ marginTop: 22 }}><ShieldCheck size={16}/> Uzun ömürlü yenileme anahtarı sunucuda saklanır. Klasör seçimi sırasında yalnızca kısa ömürlü erişim anahtarı yönetici tarayıcısına verilir.</div>
       </section>
     </main>
   );
