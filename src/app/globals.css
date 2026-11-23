@@ -269,3 +269,22 @@ button,.outline-button{color:#f4f7f5}
  .print-quote td,.print-only-quote td{color:#111!important}
  .print-quote .quote-photo{display:none!important}
 }
+
+/* Additional dark surfaces for customer lookup and login branding */
+.login-brand-logo{width:210px;height:56px;margin-bottom:30px}.login-brand-logo img{width:100%;height:100%;object-fit:contain;object-position:left center}
+.tracking-page{background:#090d0b!important;color:#f2f5f3!important}
+.tracking-header{background:#0d1310!important;border-bottom:1px solid #f3f6f4!important}
+.tracking-header .side-brand{color:#fff!important}
+.tracking-content h1,.tracking-content h1 span{color:#fff!important}
+.tracking-symbol{background:#173a29!important;color:#8af0b6!important}
+.tracking-input,.tracking-result{background:#111815!important;border:1px solid #f3f6f4!important;color:#fff!important}
+.tracking-result h2,.tracking-result h3,.result-note b{color:#fff!important}
+.tracking-input input{background:transparent!important;border:0!important;color:#fff!important}
+.result-note{background:#18231c!important;color:#edf3ef!important}
+.result-note p,.result-top p{color:#c0ccc4!important}
+.progress-track{background:#28372e!important}.progress-track span{background:#35d889!important}
+.tracking-vehicle-photo{background:#151e19!important;border-color:#f3f6f4!important}
+.tracking-photo-empty{color:#b8c4bc!important}
+.tracking-foot,.privacy-note{color:#aab7af!important}
+@media(min-width:851px){.stats-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stat-card:before,.panel:before,.service-form:before,.saved-card:before,.detail-panel:before{-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;z-index:2;padding:1px}
