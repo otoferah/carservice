@@ -18,7 +18,7 @@ export default async function GoogleDrivePage({ searchParams }: Props) {
   if (!profile?.is_active || profile.role !== "admin") redirect("/dashboard");
 
   const query = await searchParams;
-  let connection = null;
+  let connection: Awaited<ReturnType<typeof getGoogleDriveConnection>> = null;
   let loadError = false;
   try {
     connection = await getGoogleDriveConnection();
