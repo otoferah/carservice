@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import {useEffect,useState,type FormEvent} from "react";
-import {ArrowLeft,CarFront,CheckCircle2,Clock3,Search,ShieldCheck,Wrench,History} from "lucide-react";
+import {ArrowLeft,CarFront,CheckCircle2,Clock3,Search,ShieldCheck,History} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
 type TrackingResult={plate:string;brand:string;model:string;status:ServiceStatus;quote_date:string;updated_at:string;latest_note:string|null;latest_note_at:string|null};
