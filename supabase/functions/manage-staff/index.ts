@@ -71,6 +71,7 @@ Deno.serve(async (req: Request) => {
       const { data: target, error: targetError } = await admin.from("profiles").select("id,role").eq("id", id).maybeSingle();
       if (targetError) throw targetError;
       if (!target) return reply({ error: "Personel hesabı bulunamadı." }, 404);
+      if (role === "admin" && target.role !== "admin") return reply({ error: "Yönetici yetkisi yalnızca Merkez Yönetici ana hesabında kalır." }, 403);
       if (target.role === "admin" && (role !== "admin" || !active)) {
         const { count, error: countError } = await admin.from("profiles").select("id", { count: "exact", head: true }).eq("role", "admin").eq("is_active", true);
         if (countError) throw countError;
