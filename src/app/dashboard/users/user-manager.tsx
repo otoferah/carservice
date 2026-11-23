@@ -35,11 +35,11 @@ export default function UserManager({users,currentUserId}:{users:Member[];curren
   <label className="field">Adı soyadı<input required value={name} onChange={e=>setName(e.target.value)} placeholder="Personel adı soyadı"/></label>
   <label className="field">Kullanıcı adı<input required minLength={3} maxLength={30} pattern="[a-zA-Z0-9._-]+" value={username} onChange={e=>setUsername(e.target.value.toLowerCase())} placeholder="ornek.kullanici" autoCapitalize="none" autoComplete="off"/></label>
   <label className="field">İlk şifre (en az 12 karakter)<input type="password" minLength={12} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="Merkez yöneticinin belirlediği şifre" autoComplete="new-password"/></label>
-  <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option></select></label>
+  <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option><option value="admin">Yönetici (tam yetki)</option></select></label>
   <button className="primary-button" disabled={busy}><UserPlus size={15}/>{busy?"Hesap oluşturuluyor...":"Personel oluştur"}</button>
  </form><p className="user-form-hint">Personel e-posta adresi gerekmez. Girişte yalnızca burada belirlenen kullanıcı adı ve şifre kullanılır.</p>{error&&<p className="form-error user-message">{error}</p>}{message&&<p className="success-message">{message}</p>}</section>
  <section className="detail-panel"><h2><Users size={17}/> Kayıtlı personel <span className="count-pill">{users.length}</span></h2><div className="user-list">{users.map(m=><UserRow key={m.id} member={m} currentUserId={currentUserId} onUpdate={updateMember}/>)}</div></section>
- <p className="privacy-note"><ShieldCheck size={16}/> Personel hesabı, kullanıcı adı ve şifre yalnızca Merkez Yönetici tarafından belirlenir ve değiştirilebilir.</p>
+ <p className="privacy-note"><ShieldCheck size={16}/> Personel hesapları ve yönetici yetkileri, aktif yönetici hesapları tarafından yönetilir.</p>
  </div>;
 }
 function UserRow({member,currentUserId,onUpdate}:{member:Member;currentUserId:string;onUpdate:(member:Member,role:Role,active:boolean,username:string,password:string)=>void}){
@@ -51,7 +51,7 @@ function UserRow({member,currentUserId,onUpdate}:{member:Member;currentUserId:st
   <div className={"user-row-controls"+(editing?" is-open":"")}>
    <label className="field">Kullanıcı adı<input value={username} onChange={e=>setUsername(e.target.value.toLowerCase())} minLength={3} maxLength={30} pattern="[a-zA-Z0-9._-]+" placeholder="kullanici.adi"/></label>
    <label className="field">Yeni şifre <span className="muted small-copy">(Değiştirmeyeceksen boş bırak)</span><input type="password" value={password} onChange={e=>setPassword(e.target.value)} minLength={password?12:undefined} placeholder="En az 12 karakter" autoComplete="new-password"/></label>
-   <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option></select></label>
+   <label className="field">Görev rolü<select value={role} onChange={e=>setRole(e.target.value as Role)}><option value="usta">Usta</option><option value="supervisor">Supervisor</option><option value="admin">Yönetici (tam yetki)</option></select></label>
    <label className="active-toggle"><input type="checkbox" checked={active} onChange={e=>setActive(e.target.checked)}/> Aktif</label>
    <button className="primary-button" type="button" onClick={()=>{onUpdate(member,role,active,username,password);setPassword("");}}><Save size={14}/> Değişiklikleri kaydet</button>
   </div>
