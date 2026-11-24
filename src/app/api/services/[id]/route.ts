@@ -34,6 +34,12 @@ export async function PATCH(request:Request,{params}:{params:Promise<{id:string}
    p_parts:Array.isArray(body.parts)?body.parts:[],p_team:Array.isArray(body.team)?body.team:[]
   });
   if(error)throw error;
+  const {error:intakeError}=await supabase.rpc("set_service_intake_details",{
+   p_service_record_id:id,
+   p_intake_odometer_km:body.intake_odometer_km===null||body.intake_odometer_km===undefined?null:Number(body.intake_odometer_km),
+   p_tc_identity_number:body.tc_identity_number||null
+  });
+  if(intakeError)throw intakeError;
   return NextResponse.json({success:true});
  }catch(error){return NextResponse.json({error:describeError(error,"Servis kaydı güncellenemedi.").message},{status:400});}
 }
