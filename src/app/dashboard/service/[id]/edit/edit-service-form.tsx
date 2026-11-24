@@ -6,7 +6,8 @@ type Part={id?:string;part_name:string;quantity:number;unit_price:number};
 type Member={id:string;full_name:string;role:string};
 type RecordData={id:string;quote_date:string;quote_provider:string|null;intake_odometer_km:number|null;tc_identity_number:string;customers:{full_name:string;phone:string|null;email:string|null}|null;vehicles:{plate:string;brand:string;model:string}|null;service_parts:Part[];service_team:{profile_id:string}[]};
 export default function EditServiceForm({record,members}:{record:RecordData;members:Member[]}){
- const [customer,setCustomer]=useState(record.customers?.full_name||"");const [phone,setPhone]=useState(record.customers?.phone||"");const [email,setEmail]=useState(record.customers?.email||"");\n const [tcIdentity,setTcIdentity]=useState(record.tc_identity_number);const [intakeKm,setIntakeKm]=useState(record.intake_odometer_km===null?"":String(record.intake_odometer_km));
+ const [customer,setCustomer]=useState(record.customers?.full_name||"");const [phone,setPhone]=useState(record.customers?.phone||"");const [email,setEmail]=useState(record.customers?.email||"");
+ const [tcIdentity,setTcIdentity]=useState(record.tc_identity_number);const [intakeKm,setIntakeKm]=useState(record.intake_odometer_km===null?"":String(record.intake_odometer_km));
  const [plate,setPlate]=useState(record.vehicles?.plate||"");const [brand,setBrand]=useState(record.vehicles?.brand||"");const [model,setModel]=useState(record.vehicles?.model||"");
  const [quoteDate,setQuoteDate]=useState(record.quote_date);const [provider,setProvider]=useState(record.quote_provider||"");
  const [parts,setParts]=useState<Part[]>(record.service_parts.length?record.service_parts.map(p=>({...p})): [{part_name:"",quantity:1,unit_price:0}]);
