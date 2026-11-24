@@ -15,7 +15,8 @@ export default async function EditServicePage({params}:{params:Promise<{id:strin
   supabase.from("profiles").select("id,full_name,role").eq("is_active",true).in("role",["usta","supervisor","admin"]).order("full_name")
  ]);
  if(!raw)notFound();
- const record=raw as unknown as {id:string;quote_date:string;quote_provider:string|null;customers:{full_name:string;phone:string|null;email:string|null}|null;vehicles:{plate:string;brand:string;model:string}|null;service_parts:Part[];service_team:Team[]};
+ const {data:identity}=await supabase.from("customer_private_identity").select("tc_identity_number").eq("service_record_id",id).maybeSingle();
+ const record=raw as unknown as {id:string;quote_date:string;quote_provider:string|null;intake_odometer_km:number|null;customers:{full_name:string;phone:string|null;email:string|null}|null;vehicles:{plate:string;brand:string;model:string}|null;service_parts:Part[];service_team:Team[]};
  return <main className="form-page"><header className="form-top"><Link href={"/dashboard/service/"+id} className="back-link"><ArrowLeft size={17}/> Servis dosyasına dön</Link><span className="eyebrow">FERAH OTOMOTİV · KAYIT DÜZENLEME</span></header>
   <section className="form-content"><p className="eyebrow">SERVİS DOSYASI</p><h1>Kayıt bilgilerini düzenle</h1><p className="muted">Yalnızca yönetici ve supervisor bu bilgileri düzenleyebilir. Önceki servis gelişme notları korunur.</p>
    <EditServiceForm record={{...record,tc_identity_number:identity?.tc_identity_number||""}} members={members??[]}/>
