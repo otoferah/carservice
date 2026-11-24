@@ -1,6 +1,7 @@
 const { app, BrowserWindow, shell, session } = require("electron");
+const path = require("node:path");
 
-const APP_URL = "https://feat-google-drive-oauth-ferah-otomotiv-servis.otoferah.workers.dev/";
+const APP_URL = "https://ferah-otomotiv-servis.otoferah.workers.dev/";
 const APP_HOST = new URL(APP_URL).hostname;
 let mainWindow;
 
@@ -27,6 +28,7 @@ function createWindow() {
     autoHideMenuBar: true,
     backgroundColor: "#090b0e",
     title: "Ferah Otomotiv",
+    icon: path.join(__dirname, "build", "icon.ico"),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -67,6 +69,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  app.setAppUserModelId("com.ferahotomotiv.servis");
   session.defaultSession.setPermissionRequestHandler((_webContents, permission, callback) => {
     callback(["notifications", "clipboard-read", "clipboard-sanitized-write"].includes(permission));
   });
