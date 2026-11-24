@@ -4,6 +4,7 @@ import { FileDown } from "lucide-react";
 
 declare global {
   interface Window {
+    FerahDesktop?: { savePdf: () => Promise<{canceled:boolean;filePath?:string}> };
     FerahAndroid?: {
       printPdf: () => void;
     };
@@ -16,6 +17,11 @@ export default function PrintQuoteButton() {
     // The installed Ferah app exposes a native PrintManager bridge.
     if (window.FerahAndroid?.printPdf) {
       window.FerahAndroid.printPdf();
+      return;
+    }
+
+    if (window.FerahDesktop?.savePdf) {
+      void window.FerahDesktop.savePdf();
       return;
     }
 
