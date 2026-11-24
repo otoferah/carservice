@@ -1,4 +1,5 @@
-const { app, BrowserWindow, shell, session } = require("electron");
+const { app, BrowserWindow, shell, session, ipcMain, dialog } = require("electron");
+const fs = require("node:fs/promises");
 const path = require("node:path");
 
 const APP_URL = "https://ferah-otomotiv-servis.otoferah.workers.dev/";
@@ -35,7 +36,8 @@ function createWindow() {
       sandbox: true,
       webSecurity: true,
       allowRunningInsecureContent: false,
-      spellcheck: true
+      spellcheck: true,
+      preload: path.join(__dirname, "preload.cjs")
     }
   });
 
@@ -67,6 +69,15 @@ function createWindow() {
   mainWindow.on("closed", () => { mainWindow = null; });
   mainWindow.loadURL(APP_URL);
 }
+
+ipcMain.handle("ferah:save-pdf", async (event) => {
+  if (!mainWindow || event.sender !== mainWindow.webContents) throw new Error("Geçersiz PDF isteği.");
+  const result = await dialog.showSaveDialog(mainWindow, { title: "Ferah Otomotiv - PDF kaydet", defaultPath: "Ferah-Servis.pdf", buttonLabel: "PDF kaydet", filters: [{ name: "PDF Belgesi", extensions: ["pdf"] }] });
+  if (result.canceled || !result.filePath) return { canceled: true };
+  const pdf = await mainWindow.webContents.printToPDF({ printBackground: true, preferCSSPageSize: true, pageSize: "A4", margins: { top: 0.35, bottom: 0.35, left: 0.35, right: 0.35 } });
+  await fs.writeFile(result.filePath, pdf);
+  return { canceled: false, filePath: result.filePath };
+});
 
 app.whenReady().then(() => {
   app.setAppUserModelId("com.ferahotomotiv.servis");
