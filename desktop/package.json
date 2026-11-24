@@ -22,7 +22,8 @@
     },
     "files": [
       "main.cjs",
-      "package.json"
+      "package.json",
+      "build/icon.ico"
     ],
     "win": {
       "target": [
@@ -33,7 +34,8 @@
           ]
         }
       ],
-      "artifactName": "Ferah-Otomotiv-Setup-${version}.${ext}"
+      "artifactName": "Ferah-Otomotiv-Setup-${version}.${ext}",
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -43,7 +45,10 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Ferah Otomotiv",
       "deleteAppDataOnUninstall": false,
-      "runAfterFinish": true
+      "runAfterFinish": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico"
     }
   }
 }
