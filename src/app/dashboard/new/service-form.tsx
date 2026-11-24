@@ -10,7 +10,7 @@ type Member={id:string;full_name:string;role:string};
 type Part={part_name:string;quantity:number;unit_price:number};
 type Saved={id:string;tracking_token:string;status:string;quote_total:number};
 export default function ServiceForm({members}:{members:Member[]}){
- const [customer,setCustomer]=useState("");const [phone,setPhone]=useState("");const [email,setEmail]=useState("");
+ const [customer,setCustomer]=useState("");const [phone,setPhone]=useState("");const [email,setEmail]=useState("");\n const [tcIdentity,setTcIdentity]=useState("");const [intakeKm,setIntakeKm]=useState("");
  const [plate,setPlate]=useState("");const [brand,setBrand]=useState("");const [model,setModel]=useState("");
  const [quoteDate,setQuoteDate]=useState(new Date().toISOString().slice(0,10));const [provider,setProvider]=useState("");
  const [parts,setParts]=useState<Part[]>([{part_name:"",quantity:1,unit_price:0}]);const [team,setTeam]=useState<string[]>([]);
@@ -36,7 +36,7 @@ export default function ServiceForm({members}:{members:Member[]}){
   e.preventDefault();setBusy(true);setError("");setUploadWarning("");
   try{
    const response=await fetch("/api/services",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-    customer_name:customer,phone,email,plate,brand,model,quote_date:quoteDate,quote_provider:provider,
+    customer_name:customer,phone,email,tc_identity_number:tcIdentity,intake_odometer_km:intakeKm===""?null:Number(intakeKm),plate,brand,model,quote_date:quoteDate,quote_provider:provider,
     parts:parts.filter(p=>p.part_name.trim()).map((p,i)=>({...p,sort_order:i})),team
    })});
    const data=await response.json();if(!response.ok)throw new Error(data.error||"Servis kaydı oluşturulamadı.");
@@ -90,11 +90,11 @@ export default function ServiceForm({members}:{members:Member[]}){
   <form className="service-form" onSubmit={submit}>
    <div className="form-section"><h2>01 · Müşteri ve araç bilgileri</h2><div className="field-grid">
     <label className="field full">Araç sahibi adı ve soyadı<input required value={customer} onChange={e=>setCustomer(e.target.value)} placeholder="Müşteri adı soyadı"/></label>
-    <label className="field">Telefon<input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Telefon numarası"/></label>
+    <label className="field">Telefon<input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Telefon numarası"/></label>\n    <label className="field">TC kimlik numarası<input inputMode="numeric" autoComplete="off" maxLength={11} pattern="[0-9]{11}" value={tcIdentity} onChange={e=>setTcIdentity(e.target.value.replace(/\\D/g,"").slice(0,11))} placeholder="11 haneli TC kimlik no"/><small>Yalnızca yönetici ve supervisor görüntüleyebilir.</small></label>
     <label className="field">E-posta<input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="E-posta adresi"/></label>
     <label className="field">Plaka<input required value={plate} onChange={e=>setPlate(e.target.value.toLocaleUpperCase("tr-TR"))} placeholder="33 ABC 33"/></label>
     <label className="field">Marka<input required value={brand} onChange={e=>setBrand(e.target.value)} placeholder="Mercedes-Benz"/></label>
-    <label className="field">Model<input required value={model} onChange={e=>setModel(e.target.value)} placeholder="W124 200 E"/></label>
+    <label className="field">Model<input required value={model} onChange={e=>setModel(e.target.value)} placeholder="W124 200 E"/></label>\n    <label className="field">Teslim alınan kilometre (KM)<input type="number" min="0" step="1" inputMode="numeric" value={intakeKm} onChange={e=>setIntakeKm(e.target.value)} placeholder="Örn. 125000"/></label>
     <label className="field">Teklif tarihi<input type="date" required value={quoteDate} onChange={e=>setQuoteDate(e.target.value)}/></label>
     <label className="field full">Teklifi veren<input value={provider} onChange={e=>setProvider(e.target.value)} placeholder="Personel adı"/></label>
    </div></div>
