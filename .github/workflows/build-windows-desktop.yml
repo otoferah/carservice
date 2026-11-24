@@ -4,10 +4,11 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - feat/google-drive-oauth
+      - cloudflare-test
     paths:
       - "desktop/**"
       - ".github/workflows/build-windows-desktop.yml"
+      - "public/ferah-logo.svg"
 
 permissions:
   contents: read
@@ -30,6 +31,17 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Install icon tooling
+        run: npm install --no-save --package-lock=false sharp
+
+      - name: Generate Otoferah application icon
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          node generate-icons.cjs
+          python -m pip install --disable-pip-version-check Pillow
+          python -c "from PIL import Image; Image.open('build/icon.png').convert('RGBA').save('build/icon.ico', sizes=[(16,16),(24,24),(32,32),(48,48),(64,64),(128,128),(256,256)])"
 
       - name: Build Windows installer
         run: npm run dist
