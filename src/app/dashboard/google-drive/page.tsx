@@ -30,13 +30,15 @@ export default async function GoogleDrivePage({ searchParams }: Props) {
   const connected = !!connection?.refresh_token;
   const statusMessages: Record<string, string> = {
     connected: "Google hesabı bağlandı. Şimdi mevcut servis görselleri klasörünü seçin.",
-    
     disconnected: "Google Drive bağlantısı kaldırıldı.",
     denied: "Google izin ekranında bağlantı reddedildi.",
     invalid_state: "Güvenlik doğrulaması başarısız oldu. Bağlantıyı yeniden başlatın.",
     session_expired: "Oturum süresi doldu. Yeniden giriş yapıp deneyin.",
     configuration_error: "Google OAuth ayarları eksik.",
-    token_exchange_failed: "Google yetkilendirme kodu erişim anahtarına dönüştürülemedi.",
+    token_exchange_failed: "Google token işlemi başarısız oldu. OAuth istemcisinin ayarlarını kontrol edin.",
+    oauth_invalid_client: "Google OAuth istemcisi kabul edilmedi. GOOGLE_CLIENT_ID ile GOOGLE_CLIENT_SECRET aynı OAuth istemcisine ait olmalı.",
+    oauth_invalid_grant: "Google yetkilendirme kodunu kabul etmedi. Kod süresi dolmuş veya redirect URI eşleşmiyor olabilir. Bağlantıyı yeniden başlatın.",
+    oauth_unauthorized_client: "Google OAuth istemcisinin bu yetkilendirme işlemi için izni yok. OAuth istemci türünü ve kapsam ayarlarını kontrol edin.",
     missing_refresh_token: "Google yenileme anahtarı göndermedi. Bağlantıyı yeniden başlatıp izin ekranını onaylayın.",
   };
 
