@@ -16,6 +16,12 @@ export async function POST(request:Request){
    p_signature_path:body.signature_path||null
   });
   if(error)throw error;
+  const {error:intakeError}=await supabase.rpc("set_service_intake_details",{
+   p_service_record_id:id,
+   p_intake_odometer_km:body.intake_odometer_km===null||body.intake_odometer_km===undefined?null:Number(body.intake_odometer_km),
+   p_tc_identity_number:body.tc_identity_number||null
+  });
+  if(intakeError)throw intakeError;
   const {data:record,error:recordError}=await supabase.from("service_records").select("id,tracking_token,status,quote_total").eq("id",id).single();
   if(recordError)throw recordError;
   return NextResponse.json(record,{status:201});
