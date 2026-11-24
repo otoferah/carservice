@@ -1118,3 +1118,7 @@ tr:hover td{background:#1c2026!important}
     visibility: hidden !important;
   }
 }
+
+
+/* Desktop fallback: mobile-only bottom navigation must never appear on wide screens. */
+.mobile-bottom-nav{display:none}
