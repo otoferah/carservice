@@ -4,6 +4,7 @@ import {ArrowLeft} from "lucide-react";
 import {QRCodeSVG} from "qrcode.react";
 import StickerPrintButton from "./sticker-print-button";
 import {createClient} from "@/lib/supabase/server";
+import {publicTrackingUrl} from "@/lib/public-tracking";
 
 export default async function VehicleStickerPage({params}:{params:Promise<{id:string}>}) {
  const {id}=await params;
@@ -14,7 +15,7 @@ export default async function VehicleStickerPage({params}:{params:Promise<{id:st
  if(!profile?.is_active)redirect("/login");
  const {data:record}=await supabase.from("service_records").select("tracking_token").eq("id",id).maybeSingle();
  if(!record?.tracking_token)notFound();
- const trackingUrl="https://ferah-otomotiv-servis.vercel.app/tracking?token="+record.tracking_token;
+ const trackingUrl=publicTrackingUrl(record.tracking_token);
  return <main className="sticker-page sticker-plain-page">
   <header className="sticker-toolbar">
    <Link href={"/dashboard/service/"+id} className="back-link"><ArrowLeft size={16}/> Servis dosyasına dön</Link>

@@ -8,6 +8,7 @@ import TaskManager from "./task-manager";
 import PrintQuoteButton from "./print-button";
 import {QRCodeSVG} from "qrcode.react";
 import DeleteServiceButton from "./delete-service-button";
+import {publicTrackingUrl} from "@/lib/public-tracking";
 type Person={full_name:string;role:string};
 type Update={id:string;status:ServiceStatus;note:string;created_at:string;edited_at:string|null;profiles:Person|null};
 type Part={id:string;part_name:string;quantity:number;unit_price:number;line_total:number};
@@ -29,8 +30,8 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
  const photos=imageUrls.filter((image):image is {url:string;caption:string|null}=>!!image);
  const {data:signatureData}=record.customer_signature_path?await supabase.storage.from("service-media").createSignedUrl(record.customer_signature_path,3600):{data:null};
  const signatureUrl=signatureData?.signedUrl||null;
- const trackingUrl="/tracking?token="+record.tracking_token;
- const publicTrackingUrl="https://ferah-otomotiv-servis.vercel.app"+trackingUrl;
+ const trackingUrl=publicTrackingUrl(record.tracking_token);
+ const publicTrackingUrlValue=trackingUrl;
  const formattedDate=new Date(record.quote_date+"T12:00:00").toLocaleDateString("tr-TR");
  return <main className="form-page"><header className="form-top"><Link href="/dashboard" className="back-link"><ArrowLeft size={17}/> Panele dön</Link><span className="eyebrow">FERAH OTOMOTİV · SERVİS DOSYASI</span></header>
   <section className="detail-content"><div className="detail-heading"><div><p className="eyebrow">SERVİS KAYDI</p><h1>{record.vehicles?.plate||"Araç"} <span className="status-tag">{statusLabels[record.status]}</span></h1><p className="muted">{record.vehicles?.brand} {record.vehicles?.model} · {record.customers?.full_name||"Müşteri bilgisi"}</p></div><div className="detail-heading-actions">{manager&&<><Link className="outline-button" href={"/dashboard/service/"+id+"/edit"}>Servis kaydını düzenle</Link><DeleteServiceButton recordId={id} plate={record.vehicles?.plate||"Bu araç"}/></>}{manager&&<div className="detail-total"><small>TEKLİF TOPLAMI</small><b>{Number(record.quote_total).toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</b></div>}</div></div>
@@ -60,7 +61,7 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
     <section className="quote-total-panel"><div><small>TEKLİF GENEL TOPLAMI</small><span>Belirtilen işlemler için toplam tutar</span></div><strong>{Number(record.quote_total).toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</strong></section>
     <div className="quote-bottom-row">
      <div className="quote-signature-block"><div className="quote-approval-title">Müşteri onayı</div><p>Teklif kapsamını ve belirtilen tutarı onaylıyorum.</p>{signatureUrl?<img src={signatureUrl} alt="Müşteri imzası" className="quote-signature"/>:<div className="quote-signature-line"/>}<small>Müşteri imzası</small><div className="quote-provider-line">Teklifi hazırlayan: <b>{record.quote_provider||"Ferah Otomotiv"}</b></div></div>
-     <div className="quote-tracking-qr"><div className="quote-qr-frame"><QRCodeSVG value={publicTrackingUrl} size={200} level="M" includeMargin={true}/></div><b>Servis durumunu takip edin</b><small>Güncel servis bilgilerini görüntülemek için QR kodu telefonunuzla okutun.</small></div>
+     <div className="quote-tracking-qr"><div className="quote-qr-frame"><QRCodeSVG value={publicTrackingUrlValue} size={200} level="M" includeMargin={true}/></div><b>Servis durumunu takip edin</b><small>Güncel servis bilgilerini görüntülemek için QR kodu telefonunuzla okutun.</small></div>
     </div>
     <footer className="quote-document-footer"><span>FERAH OTOMOTİV · SERVİS YÖNETİMİ</span><span>Bu teklif, ilgili servis kaydı için hazırlanmıştır.</span></footer>
    </div>}
