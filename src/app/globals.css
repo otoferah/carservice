@@ -964,7 +964,7 @@ tr:hover td{background:#1c2026!important}
  .content-wrap .page-heading .hero-copy h1{font-size:25px!important;line-height:1.12!important}
  .content-wrap .page-heading .hero-copy .muted{font-size:11px!important;max-width:95%!important}
  .content-wrap .page-heading .hero-visual{width:82%!important;right:-10%!important;opacity:.42!important}
- .mobile-bottom-nav{position:fixed!important;z-index:900!important;left:0!important;right:0!important;bottom:0!important;display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;align-items:stretch!important;gap:0!important;min-height:64px!important;padding:7px 4px calc(7px + env(safe-area-inset-bottom))!important;background:linear-gradient(180deg,#171a20 0%,#0c0f13 100%)!important;border-top:1px solid #65502d!important;box-shadow:0 -10px 28px #0008!important}
+ .mobile-bottom-nav{position:fixed!important;z-index:900!important;left:0!important;right:0!important;bottom:0!important;display:grid!important;align-items:stretch!important;gap:0!important;min-height:64px!important;padding:7px 4px calc(7px + env(safe-area-inset-bottom))!important;background:linear-gradient(180deg,#171a20 0%,#0c0f13 100%)!important;border-top:1px solid #65502d!important;box-shadow:0 -10px 28px #0008!important}
  .mobile-bottom-nav a{display:flex!important;min-width:0!important;min-height:48px!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;padding:3px 1px!important;border:1px solid transparent!important;border-radius:9px!important;background:transparent!important;color:#9da4ad!important;text-decoration:none!important}
  .mobile-bottom-nav a svg{display:block!important;flex:0 0 auto!important;width:19px!important;height:19px!important;color:#b9a477!important}
  .mobile-bottom-nav a span{display:block!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:8px!important;line-height:1.1!important;font-weight:650!important;letter-spacing:-.1px!important}
@@ -1122,3 +1122,29 @@ tr:hover td{background:#1c2026!important}
 
 /* Desktop fallback: mobile-only bottom navigation must never appear on wide screens. */
 .mobile-bottom-nav{display:none}
+
+
+/* ===== Ferah Otomotiv · Depo stok yönetimi ===== */
+.stock-manager{display:grid;gap:18px}
+.stock-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.stock-forms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.stock-form-panel{min-width:0}
+.stock-form{display:grid;gap:13px;padding:0 20px 20px}
+.stock-form .field input,.stock-form .field select{width:100%;height:42px;border:1px solid #39414b;border-radius:8px;padding:0 11px;outline:none;color:inherit;font-size:12px;background:#1b2028}
+.stock-form .field input:focus,.stock-form .field select:focus{border-color:#c99a43;box-shadow:0 0 0 3px #c99a431c}
+.stock-form .field small{font-size:10px;font-weight:400;color:#8d98a4}
+.stock-field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.stock-cost-preview,.stock-selected-info{display:grid;gap:7px;border:1px solid #55452d;background:linear-gradient(135deg,#211d17,#171a20);border-radius:9px;padding:12px;color:#b7c0ca;font-size:11px}
+.stock-cost-preview span{display:flex;justify-content:space-between;gap:10px}
+.stock-cost-preview strong{color:#f1c86f;font-size:15px}
+.stock-selected-info b{color:#f4d28b;font-size:12px}
+.stock-selected-info span,.stock-selected-info small{color:#aab3bd;font-size:10px}
+.stock-table-panel{min-width:0}
+.stock-table-panel .panel-heading{padding-bottom:16px}
+.stock-table-panel th{white-space:nowrap}
+.stock-available{display:inline-block;border-radius:20px;padding:5px 9px;background:#173b2e;color:#7cdbab;font-weight:800}
+.stock-empty{display:inline-block;border-radius:20px;padding:5px 9px;background:#45271e;color:#ffad7a;font-weight:800}
+.stock-alert{margin:0;padding:10px 13px;border:1px solid #8b4b2b;background:#39251b;border-radius:8px}
+.stock-manager .success-message{margin:0;padding:10px 13px;border:1px solid #386b50;background:#172d23;border-radius:8px;color:#91dfb2;font-size:12px}
+@media(max-width:900px){.stock-forms-grid{grid-template-columns:1fr}.stock-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.stock-summary-grid{grid-template-columns:1fr}.stock-field-row{grid-template-columns:1fr}.stock-form{padding:0 14px 15px}.stock-table-panel .panel-heading{align-items:flex-start}}
