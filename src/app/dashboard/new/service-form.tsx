@@ -92,7 +92,7 @@ export default function ServiceForm({members}:{members:Member[]}){
    <div className="form-section"><h2>01 · Müşteri ve araç bilgileri</h2><div className="field-grid">
     <label className="field full">Araç sahibi adı ve soyadı<input required value={customer} onChange={e=>setCustomer(e.target.value)} placeholder="Müşteri adı soyadı"/></label>
     <label className="field">Telefon<input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Telefon numarası"/></label>
-    <label className="field">TC kimlik numarası<input inputMode="numeric" autoComplete="off" maxLength={11} pattern="[0-9]{11}" value={tcIdentity} onChange={e=>setTcIdentity(e.target.value.replace(/\\D/g,"").slice(0,11))} placeholder="11 haneli TC kimlik no"/><small>Yalnızca yönetici ve supervisor görüntüleyebilir.</small></label>
+    <label className="field">TC kimlik numarası<input inputMode="numeric" autoComplete="off" maxLength={11} pattern="[0-9]{11}" value={tcIdentity} onChange={e=>setTcIdentity(e.target.value.replace(/\D/g,"").slice(0,11))} placeholder="11 haneli TC kimlik no"/><small>Yalnızca yönetici ve supervisor görüntüleyebilir.</small></label>
     <label className="field">E-posta<input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="E-posta adresi"/></label>
     <label className="field">Plaka<input required value={plate} onChange={e=>setPlate(e.target.value.toLocaleUpperCase("tr-TR"))} placeholder="33 ABC 33"/></label>
     <label className="field">Marka<input required value={brand} onChange={e=>setBrand(e.target.value)} placeholder="Mercedes-Benz"/></label>
