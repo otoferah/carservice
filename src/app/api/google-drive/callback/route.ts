@@ -55,8 +55,17 @@ export async function GET(request: Request) {
     expires_in?: number;
     token_type?: string;
     scope?: string;
+    error?: string;
   };
-  if (!tokenResponse.ok || !tokens.access_token) return finish("token_exchange_failed");
+
+  if (!tokenResponse.ok || !tokens.access_token) {
+    // Expose only Google's non-sensitive error code, never the response body or credentials.
+    const safeError = tokens.error === "invalid_client" ? "oauth_invalid_client"
+      : tokens.error === "invalid_grant" ? "oauth_invalid_grant"
+      : tokens.error === "unauthorized_client" ? "oauth_unauthorized_client"
+      : "token_exchange_failed";
+    return finish(safeError);
+  }
 
   const previous = await getGoogleDriveConnection();
   const refreshToken = tokens.refresh_token || previous?.refresh_token;
@@ -70,7 +79,6 @@ export async function GET(request: Request) {
     expires_in: tokens.expires_in,
   });
 
-  // Touch the server-only client here to fail clearly if token storage is misconfigured.
   await getGoogleDriveAdminClient();
   return finish("connected");
 }
