@@ -32,7 +32,7 @@ class MainActivity : Activity() {
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
 
-    private val appHost = "feat-google-drive-oauth-ferah-otomotiv-servis.otoferah.workers.dev"
+    private val appHost = "ferah-otomotiv-servis.otoferah.workers.dev"
     private val appUrl = "https://$appHost/"
 
     @SuppressLint("SetJavaScriptEnabled")
