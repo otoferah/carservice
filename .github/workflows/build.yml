@@ -17,6 +17,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: build-placeholder
+          NEXT_PUBLIC_SUPABASE_URL: https://ozwdxxoekvsntdriyvkg.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_x9T5OgeHpDjbk7ClYh1nTA_-g93Q0eB
+          NEXT_PUBLIC_GOOGLE_API_KEY: AIzaSyBmJQKQ1oFSZHAccHLWjk_QvILAiG7V80U
+          NEXT_PUBLIC_GOOGLE_APP_ID: 264712238919
           SUPABASE_SECRET_KEY: build-placeholder
