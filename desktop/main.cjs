@@ -70,9 +70,9 @@ function createWindow() {
   mainWindow.loadURL(APP_URL);
 }
 
-ipcMain.handle("ferah:save-pdf", async (event) => {
+ipcMain.handle("ferah:save-pdf", async (event, customerName = "Müşteri") => {
   if (!mainWindow || event.sender !== mainWindow.webContents) throw new Error("Geçersiz PDF isteği.");
-  const result = await dialog.showSaveDialog(mainWindow, { title: "Ferah Otomotiv - PDF kaydet", defaultPath: "Ferah-Servis.pdf", buttonLabel: "PDF kaydet", filters: [{ name: "PDF Belgesi", extensions: ["pdf"] }] });
+  const safeCustomerName = String(customerName).normalize("NFKD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-+|-+$/g, "") || "Musteri";\n  const result = await dialog.showSaveDialog(mainWindow, { title: "Ferah Otomotiv - PDF kaydet", defaultPath: `${safeCustomerName}-Servis-Teklifi.pdf`, buttonLabel: "PDF kaydet", filters: [{ name: "PDF Belgesi", extensions: ["pdf"] }] });
   if (result.canceled || !result.filePath) return { canceled: true };
   const pdf = await mainWindow.webContents.printToPDF({ printBackground: true, preferCSSPageSize: true, pageSize: "A4", margins: { top: 0.35, bottom: 0.35, left: 0.35, right: 0.35 } });
   await fs.writeFile(result.filePath, pdf);
