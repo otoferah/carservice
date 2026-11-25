@@ -3,14 +3,17 @@
 import { useState } from "react";
 import { FileDown, MessageCircle, LoaderCircle } from "lucide-react";
 
+type PdfWorker = {
+  set: (options: Record<string, unknown>) => PdfWorker;
+  from: (element: HTMLElement) => PdfWorker;
+  toPdf: () => PdfWorker;
+  get: (key: string) => Promise<{ output: (type: string) => Promise<Blob> }>;
+};
+
 declare global {
   interface Window {
-    html2pdf?: () => {
-      set: (options: Record<string, unknown>) => ReturnType<Window["html2pdf"]>;
-      from: (element: HTMLElement) => ReturnType<Window["html2pdf"]>;
-      toPdf: () => ReturnType<Window["html2pdf"]>;
-      get: (key: string) => Promise<{ output: (type: string) => Promise<Blob> }>;
-    };
+    FerahAndroid?: { printPdf: () => void };
+    html2pdf?: () => PdfWorker;
   }
   interface Navigator {
     canShare?: (data?: ShareData) => boolean;
