@@ -1615,3 +1615,97 @@ tr:hover td{background:#1c2026!important}
     box-shadow: none !important;
   }
 }
+
+/* Final isolated print rules for the saved service quote PDF. */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+
+  html,
+  body,
+  #__next,
+  body > div,
+  main.form-page,
+  main.form-page > .detail-content,
+  .detail-content,
+  .print-only-quote {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+
+  html,
+  body,
+  #__next,
+  body > div,
+  main.form-page,
+  main.form-page > .detail-content,
+  .detail-content {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .print-only-quote {
+    display: flex !important;
+    flex-direction: column !important;
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    color: #17231d !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    zoom: 1 !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-only-quote::before,
+  .print-only-quote::after {
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .print-only-quote .quote-document-header,
+  .print-only-quote .quote-customer-grid,
+  .print-only-quote .quote-table-heading,
+  .print-only-quote .quote-premium-table,
+  .print-only-quote .quote-total-panel,
+  .print-only-quote .quote-bottom-row,
+  .print-only-quote .quote-document-footer {
+    box-shadow: none !important;
+    outline: 0 !important;
+  }
+
+  .print-only-quote .quote-document-footer {
+    margin-top: 4mm !important;
+  }
+}
+
