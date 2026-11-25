@@ -1,0 +1,18 @@
+{
+  "id": "/",
+  "name": "Ferah Otomotiv Servis",
+  "short_name": "Ferah Servis",
+  "description": "Ferah Otomotiv dijital servis, teklif ve araç takip sistemi.",
+  "lang": "tr-TR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#08090B",
+  "theme_color": "#08090B",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/ferah-app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
