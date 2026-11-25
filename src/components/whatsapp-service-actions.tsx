@@ -2,19 +2,7 @@
 import {useState} from "react";
 import {MessageCircle,FileDown} from "lucide-react";
 
-declare global {
-  interface Window {
-    FerahDesktop?: {
-  openWhatsApp: () => Promise<{opened:boolean}>;
-  openWhatsAppChat: (phone:string,message?:string) => Promise<{opened:boolean}>;
-  savePdf: (customerName?:string) => Promise<{canceled:boolean;filePath?:string}>;
-  revealFile: (filePath:string) => Promise<{opened:boolean}>;
-};>;
-      openWhatsAppChat:(phone:string,message?:string)=>Promise<{opened:boolean}>;
-      revealFile:(filePath:string)=>Promise<{opened:boolean}>;
-    };
-  }
-}
+declare global { interface Window { FerahDesktop?: { openWhatsApp: () => Promise<{opened:boolean}>; openWhatsAppChat: (phone:string,message?:string) => Promise<{opened:boolean}>; savePdf: (customerName?:string) => Promise<{canceled:boolean;filePath?:string}>; revealFile: (filePath:string) => Promise<{opened:boolean}>; } } }
 
 type Props={phone:string;customerName:string;plate:string;quoteTotal:number;trackingUrl:string};
 export default function WhatsAppServiceActions({phone,customerName,plate,quoteTotal,trackingUrl}:Props){
