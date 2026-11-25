@@ -96,3 +96,28 @@ app.on("window-all-closed", () => {
 app.on("web-contents-created", (_event, contents) => {
   contents.on("will-attach-webview", event => event.preventDefault());
 });
+
+
+ipcMain.handle("ferah:open-whatsapp", async (event) => {
+  if (!mainWindow || event.sender !== mainWindow.webContents) throw new Error("Geçersiz WhatsApp isteği.");
+  await shell.openExternal("whatsapp://");
+  return { opened: true };
+});
+
+ipcMain.handle("ferah:open-whatsapp-chat", async (event, phone, message = "") => {
+  if (!mainWindow || event.sender !== mainWindow.webContents) throw new Error("Geçersiz WhatsApp isteği.");
+  const digits = String(phone || "").replace(/\\D/g, "");
+  const normalized = digits.startsWith("0") ? "90" + digits.slice(1) : digits.startsWith("90") ? digits : digits.length === 10 ? "90" + digits : "";
+  if (!/^90[0-9]{10}$/.test(normalized)) throw new Error("Müşterinin telefon numarası geçerli bir Türkiye cep telefonu değil.");
+  const url = "whatsapp://send?phone=" + normalized + "&text=" + encodeURIComponent(String(message || ""));
+  await shell.openExternal(url);
+  return { opened: true };
+});
+
+ipcMain.handle("ferah:reveal-file", async (event, filePath) => {
+  if (!mainWindow || event.sender !== mainWindow.webContents) throw new Error("Geçersiz dosya isteği.");
+  const resolved = path.resolve(String(filePath || ""));
+  if (!resolved.toLowerCase().endsWith(".pdf")) throw new Error("Yalnızca PDF dosyaları açılabilir.");
+  shell.showItemInFolder(resolved);
+  return { opened: true };
+});
