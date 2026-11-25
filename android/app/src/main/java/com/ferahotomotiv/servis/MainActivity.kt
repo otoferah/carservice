@@ -5,6 +5,20 @@ import android.app.Activity
 import android.print.PrintAttributes
 import android.print.PrintManager
 import android.content.Intent
+
+import android.content.ContentValues
+import android.os.CancellationSignal
+import android.os.Environment
+import android.os.ParcelFileDescriptor
+import android.print.PrintDocumentAdapter
+import android.print.PrintDocumentInfo
+import android.provider.MediaStore
+import android.widget.Toast
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.net.URLEncoder
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -31,6 +45,8 @@ class MainActivity : Activity() {
     private var fileCallback: ValueCallback<Array<Uri>>? = null
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
+    private var pdfWebView: WebView? = null
+    private val pdfPrefs by lazy { getSharedPreferences("ferah_pdf", MODE_PRIVATE) }
 
     private val appHost = "ferah-otomotiv-servis.otoferah.workers.dev"
     private val appUrl = "https://$appHost/"
@@ -177,7 +193,164 @@ class MainActivity : Activity() {
                 printManager.print("Ferah Otomotiv - Servis Teklifi", adapter, attributes)
             }
         }
+
+        @JavascriptInterface
+        fun savePdfAndOpenWhatsApp(phone: String, message: String, html: String, fileName: String) {
+            runOnUiThread {
+                if (html.isBlank() || html.length > 8_000_000) {
+                    toast("PDF içeriği oluşturulamadı.")
+                    return@runOnUiThread
+                }
+                createPdfFile(html, fileName) { uri ->
+                    if (uri == null) toast("PDF kaydedilemedi. Tekrar deneyin.")
+                    else {
+                        pdfPrefs.edit().putString(KEY_LAST_PDF_URI, uri.toString()).apply()
+                        toast("PDF İndirilenler/Ferah Otomotiv klasörüne kaydedildi. WhatsApp sohbeti açılıyor.")
+                        openWhatsAppChatInternal(phone, message)
+                    }
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun shareLatestPdf(message: String) {
+            runOnUiThread { shareSavedPdf(message) }
+        }
+
+        @JavascriptInterface
+        fun openWhatsAppChat(phone: String, message: String) {
+            runOnUiThread { openWhatsAppChatInternal(phone, message) }
+        }
     }
+
+
+    private fun createPdfFile(html: String, fileName: String, onComplete: (Uri?) -> Unit) {
+        pdfWebView?.destroy()
+        val renderer = WebView(this)
+        pdfWebView = renderer
+        renderer.settings.javaScriptEnabled = true
+        renderer.settings.domStorageEnabled = true
+        renderer.settings.loadsImagesAutomatically = true
+        renderer.setBackgroundColor(Color.WHITE)
+        renderer.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                renderer.postDelayed({
+                    val adapter = renderer.createPrintDocumentAdapter("Ferah-Otomotiv-Teklif")
+                    val attrs = PrintAttributes.Builder()
+                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                        .setResolution(PrintAttributes.Resolution("ferah", "Ferah PDF", 300, 300))
+                        .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+                        .setColorMode(PrintAttributes.COLOR_MODE_COLOR)
+                        .build()
+                    adapter.onLayout(null, attrs, CancellationSignal(), object : PrintDocumentAdapter.LayoutResultCallback() {
+                        override fun onLayoutFinished(info: PrintDocumentInfo?, changed: Boolean) {
+                            val temp = File(cacheDir, "ferah-" + System.currentTimeMillis() + ".pdf")
+                            val descriptor = try {
+                                ParcelFileDescriptor.open(temp, ParcelFileDescriptor.MODE_CREATE or ParcelFileDescriptor.MODE_TRUNCATE or ParcelFileDescriptor.MODE_READ_WRITE)
+                            } catch (_: Exception) {
+                                finishPdfRenderer(renderer); onComplete(null); return
+                            }
+                            adapter.onWrite(arrayOf(android.print.PageRange.ALL_PAGES), descriptor, CancellationSignal(),
+                                object : PrintDocumentAdapter.WriteResultCallback() {
+                                    override fun onWriteFinished(pages: Array<android.print.PageRange>) {
+                                        try {
+                                            descriptor.close()
+                                            val saved = persistPdf(temp, fileName)
+                                            temp.delete()
+                                            finishPdfRenderer(renderer)
+                                            onComplete(saved)
+                                        } catch (_: Exception) {
+                                            temp.delete(); finishPdfRenderer(renderer); onComplete(null)
+                                        }
+                                    }
+                                    override fun onWriteFailed(error: CharSequence?) {
+                                        try { descriptor.close() } catch (_: Exception) {}
+                                        temp.delete(); finishPdfRenderer(renderer); onComplete(null)
+                                    }
+                                    override fun onWriteCancelled() {
+                                        try { descriptor.close() } catch (_: Exception) {}
+                                        temp.delete(); finishPdfRenderer(renderer); onComplete(null)
+                                    }
+                                })
+                        }
+                        override fun onLayoutFailed(error: CharSequence?) { finishPdfRenderer(renderer); onComplete(null) }
+                        override fun onLayoutCancelled() { finishPdfRenderer(renderer); onComplete(null) }
+                    }, null)
+                }, 400)
+            }
+        }
+        renderer.loadDataWithBaseURL(appUrl, html, "text/html", "UTF-8", null)
+    }
+
+    private fun persistPdf(source: File, requestedName: String): Uri {
+        val safeName = requestedName.replace(Regex("[^A-Za-z0-9._-]"), "_").trim('_')
+            .ifBlank { "Ferah-Otomotiv-Teklif" }.let { if (it.endsWith(".pdf", true)) it else it + ".pdf" }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            val values = ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, safeName)
+                put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
+                put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Ferah Otomotiv")
+                put(MediaStore.Downloads.IS_PENDING, 1)
+            }
+            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                ?: throw IllegalStateException("Downloads kaydı oluşturulamadı")
+            try {
+                contentResolver.openOutputStream(uri)?.use { output ->
+                    FileInputStream(source).use { input -> input.copyTo(output) }
+                } ?: throw IllegalStateException("PDF dosyası yazılamadı")
+                val done = ContentValues().apply { put(MediaStore.Downloads.IS_PENDING, 0) }
+                contentResolver.update(uri, done, null, null)
+                return uri
+            } catch (error: Exception) {
+                contentResolver.delete(uri, null, null)
+                throw error
+            }
+        }
+        val directory = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: cacheDir
+        if (!directory.exists()) directory.mkdirs()
+        val destination = File(directory, safeName)
+        FileInputStream(source).use { input -> FileOutputStream(destination).use { output -> input.copyTo(output) } }
+        return FileProvider.getUriForFile(this, packageName + ".fileprovider", destination)
+    }
+
+    private fun finishPdfRenderer(renderer: WebView) {
+        renderer.stopLoading()
+        renderer.destroy()
+        if (pdfWebView === renderer) pdfWebView = null
+    }
+
+    private fun openWhatsAppChatInternal(phone: String, message: String) {
+        val digits = phone.filter { it.isDigit() }
+        val normalized = when {
+            digits.startsWith("0") && digits.length == 11 -> "90" + digits.drop(1)
+            digits.startsWith("90") && digits.length == 12 -> digits
+            digits.length == 10 -> "90" + digits
+            else -> ""
+        }
+        if (!normalized.matches(Regex("90[0-9]{10}"))) {
+            toast("Müşteri telefon numarası geçerli değil.")
+            return
+        }
+        val url = "https://wa.me/" + normalized + "?text=" + URLEncoder.encode(message, "UTF-8")
+        try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+        catch (_: Exception) { toast("WhatsApp sohbeti açılamadı.") }
+    }
+
+    private fun shareSavedPdf(message: String) {
+        val uri = pdfPrefs.getString(KEY_LAST_PDF_URI, null)?.let(Uri::parse)
+        if (uri == null) { toast("Önce teklif PDF'sini kaydedin."); return }
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_TEXT, message)
+            clipData = android.content.ClipData.newUri(contentResolver, "Ferah Otomotiv Teklif PDF", uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        try { startActivity(Intent.createChooser(send, "Teklif PDF'sini paylaş")) }
+        catch (_: Exception) { toast("Paylaşım menüsü açılamadı.") }
+    }
+
+    private fun toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 
     private fun hideCustomView() {
         customView?.let { root.removeView(it) }
@@ -240,6 +413,7 @@ class MainActivity : Activity() {
 
     override fun onDestroy() {
         fileCallback?.onReceiveValue(null)
+        pdfWebView?.destroy()
         webView.stopLoading()
         webView.destroy()
         super.onDestroy()
@@ -247,5 +421,6 @@ class MainActivity : Activity() {
 
     companion object {
         private const val FILE_PICKER_REQUEST = 2048
+        private const val KEY_LAST_PDF_URI = "last_pdf_uri"
     }
 }
