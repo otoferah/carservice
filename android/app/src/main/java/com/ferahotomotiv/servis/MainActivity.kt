@@ -227,33 +227,79 @@ class MainActivity : Activity() {
         pdfWebView?.let { finishPdfRenderer(it) }
         val renderer = WebView(this)
         pdfWebView = renderer
-        renderer.settings.javaScriptEnabled = true
-        renderer.settings.domStorageEnabled = true
-        renderer.settings.loadsImagesAutomatically = true
+        renderer.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            loadsImagesAutomatically = true
+            useWideViewPort = true
+            loadWithOverviewMode = false
+        }
         renderer.setBackgroundColor(Color.WHITE)
         renderer.visibility = View.INVISIBLE
         root.addView(renderer, FrameLayout.LayoutParams(-1, -1))
         renderer.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
-                renderer.evaluateJavascript(
-                    "Promise.all(Array.from(document.images).map(i => i.decode().catch(() => null))).then(() => true)",
-                    ValueCallback {
-                        renderer.postDelayed({
-                            try {
-                                val width = root.width.takeIf { it > 0 } ?: resources.displayMetrics.widthPixels
-                                renderer.measure(
-                                    View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-                                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                                )
-                                val measuredHeight = renderer.measuredHeight.coerceAtLeast(1)
-                                renderer.layout(0, 0, width, measuredHeight)
+                // Render at a fixed A4 CSS viewport, never at the phone's screen width.
+                // 794 CSS px is the standard 210 mm A4 width at 96 CSS dpi.
+                val prepareA4 = """
+                    (function() {
+                      var meta = document.querySelector('meta[name="viewport"]');
+                      if (!meta) {
+                        meta = document.createElement('meta');
+                        meta.name = 'viewport';
+                        document.head.appendChild(meta);
+                      }
+                      meta.content = 'width=794, initial-scale=1';
+                      var style = document.createElement('style');
+                      style.id = 'ferah-native-a4-layout';
+                      style.textContent = `
+                        html, body {
+                          width: 210mm !important;
+                          min-width: 210mm !important;
+                          max-width: 210mm !important;
+                          margin: 0 !important;
+                          padding: 0 !important;
+                          box-sizing: border-box !important;
+                          overflow: visible !important;
+                          background: #fff !important;
+                        }
+                        body { padding: 7mm !important; }
+                        .print-only-quote {
+                          width: 196mm !important;
+                          min-width: 196mm !important;
+                          max-width: 196mm !important;
+                          margin: 0 !important;
+                          box-sizing: border-box !important;
+                        }
+                      `;
+                      document.head.appendChild(style);
+                      return Promise.all([
+                        document.fonts ? document.fonts.ready : Promise.resolve(),
+                        Promise.all(Array.from(document.images).map(function(img) {
+                          return img.decode().catch(function() {});
+                        }))
+                      ]);
+                    })()
+                """.trimIndent()
+                renderer.evaluateJavascript(prepareA4, ValueCallback {
+                    renderer.postDelayed({
+                        try {
+                            val density = resources.displayMetrics.density
+                            val width = (794f * density).toInt().coerceAtLeast(1)
+                            renderer.measure(
+                                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                            )
+                            val measuredHeight = renderer.measuredHeight.coerceAtLeast(1)
+                            renderer.layout(0, 0, width, measuredHeight)
 
-                                val pageWidth = 595
-                                val pageHeight = 842
-                                val scale = pageWidth.toFloat() / width.toFloat()
-                                val pageSliceHeight = pageHeight.toFloat() / scale
-                                val pageCount = kotlin.math.ceil(measuredHeight / pageSliceHeight).toInt().coerceAtLeast(1)
-                                val document = PdfDocument()
+                            val pageWidth = 595
+                            val pageHeight = 842
+                            val scale = pageWidth.toFloat() / width.toFloat()
+                            val pageSliceHeight = pageHeight.toFloat() / scale
+                            val pageCount = kotlin.math.ceil(measuredHeight / pageSliceHeight).toInt().coerceAtLeast(1)
+                            val document = PdfDocument()
+                            try {
                                 for (pageIndex in 0 until pageCount) {
                                     val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageIndex + 1).create()
                                     val page = document.startPage(pageInfo)
@@ -266,18 +312,19 @@ class MainActivity : Activity() {
                                 }
                                 val temp = File(cacheDir, "ferah-" + System.currentTimeMillis() + ".pdf")
                                 FileOutputStream(temp).use { document.writeTo(it) }
-                                document.close()
                                 val saved = persistPdf(temp, fileName)
                                 temp.delete()
                                 finishPdfRenderer(renderer)
                                 onComplete(saved)
-                            } catch (_: Exception) {
-                                finishPdfRenderer(renderer)
-                                onComplete(null)
+                            } finally {
+                                document.close()
                             }
-                        }, 250)
-                    }
-                )
+                        } catch (_: Exception) {
+                            finishPdfRenderer(renderer)
+                            onComplete(null)
+                        }
+                    }, 350)
+                })
             }
         }
         renderer.loadDataWithBaseURL(appUrl, html, "text/html", "UTF-8", null)
