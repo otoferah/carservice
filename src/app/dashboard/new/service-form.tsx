@@ -87,6 +87,18 @@ export default function ServiceForm({members}:{members:Member[]}){
   finally{setBusy(false);}
  }
  const qrUrl=saved?publicTrackingUrl(saved.tracking_token):"";
+ function printSavedQuote(){
+  const previousTitle=document.title;
+  const safeCustomer=customer.trim().replace(/[^\p{L}\p{N}]+/gu,"_").replace(/^_+|_+$/g,"");
+  const safePlate=plate.trim().replace(/[^\p{L}\p{N}]+/gu,"");
+  document.title=[safeCustomer||"MUSTERI",safePlate||"PLAKA","TEKLIF"].join("-");
+  if(window.FerahDesktop?.savePdf){
+   void window.FerahDesktop.savePdf(customer,plate).finally(()=>{document.title=previousTitle;});
+  }else{
+   window.print();
+   document.title=previousTitle;
+  }
+ }
  return <div className="service-form-layout">
   <form className="service-form" onSubmit={submit}>
    <div className="form-section"><h2>01 · Müşteri ve araç bilgileri</h2><div className="field-grid">
@@ -118,6 +130,6 @@ export default function ServiceForm({members}:{members:Member[]}){
   {saved&&<aside className="saved-card"><div className="saved-success"><CheckCircle2 size={18}/> Servis kaydı oluşturuldu</div><p className="muted">Araç otomatik olarak “Araç beklemede” durumuyla servis listesine alındı.</p><div className="qr-frame"><QRCodeSVG value={qrUrl} size={180} level="H" includeMargin/></div><b className="qr-caption">{plate.toLocaleUpperCase("tr-TR")}</b><small className="muted">Bu QR kod yalnızca bu servis kaydını temsil eder.</small>
    <div className="print-quote"><h2>FERAH OTOMOTİV · SERVİS TEKLİF FORMU</h2><p><b>Araç sahibi:</b> {customer}</p><p><b>Plaka:</b> {plate.toLocaleUpperCase("tr-TR")} &nbsp; <b>Marka / Model:</b> {brand} {model}</p><p><b>Teklif tarihi:</b> {new Date(quoteDate+"T12:00:00").toLocaleDateString("tr-TR")}</p>{photoUrls[0]&&<img className="quote-photo" src={photoUrls[0]} alt="Araç görseli"/>}<table><thead><tr><th>PARÇA / İŞLEM</th><th>ADET</th><th>BİRİM FİYAT</th><th>TOPLAM</th></tr></thead><tbody>{parts.filter(p=>p.part_name.trim()).map((p,i)=><tr key={i}><td>{p.part_name}</td><td>{p.quantity}</td><td>{Number(p.unit_price).toLocaleString("tr-TR")} ₺</td><td>{(p.quantity*p.unit_price).toLocaleString("tr-TR")} ₺</td></tr>)}</tbody></table><h3>Genel toplam: {total.toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</h3><p><b>Teklifi veren:</b> {provider||"Ferah Otomotiv"}</p><p><b>Müşteri imzası:</b></p>{signatureUrl?<img className="quote-signature" src={signatureUrl} alt="Müşteri imzası"/>:<p>__________________________</p>}</div>
    {uploadWarning&&<p className="form-error upload-warning">Kayıt oluşturuldu ancak bazı dosya işlemleri tamamlanamadı: {uploadWarning}</p>}
-   <button className="outline-button print-button" type="button" onClick={()=>{if(window.FerahDesktop?.savePdf){void window.FerahDesktop.savePdf();}else{window.print();}}}><Printer size={16}/> Teklif / QR yazdır · PDF kaydet</button><Link className="primary-button" href={"/dashboard/service/"+saved.id}>Servis kaydını aç</Link><Link className="text-link" href="/dashboard">Ana panele dön <span>→</span></Link></aside>}
+   <button className="outline-button print-button" type="button" onClick={printSavedQuote}><Printer size={16}/> Teklif / QR yazdır · PDF kaydet</button><Link className="primary-button" href={"/dashboard/service/"+saved.id}>Servis kaydını aç</Link><Link className="text-link" href="/dashboard">Ana panele dön <span>→</span></Link></aside>}
  </div>;
 }
