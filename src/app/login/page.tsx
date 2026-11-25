@@ -1,15 +1,37 @@
 "use client";
-import {useState,type FormEvent} from "react";
+import {useEffect,useState,type FormEvent} from "react";
 import {useRouter} from "next/navigation";
-import {ShieldCheck} from "lucide-react";
+import {ShieldCheck,UserRound,Trash2} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
 export default function LoginPage(){
  const router=useRouter();const [username,setUsername]=useState("");const [password,setPassword]=useState("");
- const [busy,setBusy]=useState(false);const [error,setError]=useState("");
+ const [busy,setBusy]=useState(false);const [error,setError]=useState("");const [remember,setRemember]=useState(true);
+ const [savedUsers,setSavedUsers]=useState<string[]>([]);const [resuming,setResuming]=useState("");
+ useEffect(()=>{
+  try{const stored=JSON.parse(localStorage.getItem("ferah-remembered-users")||"[]");if(Array.isArray(stored))setSavedUsers(stored.filter((v):v is string=>typeof v==="string").slice(0,8));}catch{setSavedUsers([]);}
+ },[]);
+ function saveRememberedUser(value:string){
+  const normalized=value.trim().toLowerCase();if(!normalized)return;
+  setSavedUsers(current=>{const next=[normalized,...current.filter(x=>x!==normalized)].slice(0,8);localStorage.setItem("ferah-remembered-users",JSON.stringify(next));return next;});
+ }
+ function forgetRememberedUser(value:string){
+  setSavedUsers(current=>{const next=current.filter(x=>x!==value);localStorage.setItem("ferah-remembered-users",JSON.stringify(next));return next;});
+ }
+ async function continueAsSavedUser(value:string){
+  setResuming(value);setError("");
+  try{
+   const supabase=createClient();const {data:{user},error}=await supabase.auth.getUser();
+   if(error||!user)throw new Error("Bu cihazda açık oturum bulunamadı. Devam etmek için şifrenizi girin.");
+   const email=(user.email||"").toLowerCase();const expected=value.includes("@")?value:value+"@staff.ferahotomotiv.com";
+   if(email!==expected)throw new Error("Açık oturum farklı bir kullanıcıya ait. Güvenlik için şifrenizi girerek hesap değiştirin.");
+   router.replace("/dashboard");router.refresh();
+  }catch(err){setUsername(value);setPassword("");setError(err instanceof Error?err.message:"Kayıtlı oturum devam ettirilemedi.");}
+  finally{setResuming("");}
+ }
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setError("");
   try{const supabase=createClient();const loginId=username.trim().toLowerCase();const email=loginId.includes("@")?loginId:loginId+"@staff.ferahotomotiv.com";const {error:authError}=await supabase.auth.signInWithPassword({email,password});
-   if(authError)throw authError;router.replace("/dashboard");router.refresh();
+   if(authError)throw authError;if(remember)saveRememberedUser(loginId);router.replace("/dashboard");router.refresh();
   }catch(err){setError(err instanceof Error?err.message:"Giriş yapılamadı.");}
   finally{setBusy(false);}
  }
@@ -20,6 +42,7 @@ export default function LoginPage(){
    <form onSubmit={submit} className="login-form">
     <label>Kullanıcı adı<input type="text" autoComplete="username" required value={username} onChange={e=>setUsername(e.target.value)} placeholder="kullanici.adi" autoCapitalize="none"/></label>
     <label>Şifre<input type="password" autoComplete="current-password" required value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••••"/></label>
+    <label className="remember-login-option"><input type="checkbox" checked={remember} onChange={e=>setRemember(e.target.checked)}/> Bu cihazda kullanıcı adımı hatırla</label>
     {error&&<p className="form-error">{error}</p>}
     <button className="primary-button" type="submit" disabled={busy}>{busy?"Giriş yapılıyor...":"Güvenli giriş yap"}</button>
    </form>
