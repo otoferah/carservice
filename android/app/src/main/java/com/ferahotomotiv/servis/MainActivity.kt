@@ -180,16 +180,20 @@ class MainActivity : Activity() {
 
     private inner class AndroidPdfBridge {
         @JavascriptInterface
-        fun printPdf() {
+        fun printPdf(html: String, fileName: String) {
             runOnUiThread {
-                val printManager = getSystemService(PRINT_SERVICE) as PrintManager
-                val adapter = webView.createPrintDocumentAdapter("Ferah-Otomotiv-Teklif")
-                val attributes = PrintAttributes.Builder()
-                    .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
-                    .setColorMode(PrintAttributes.COLOR_MODE_COLOR)
-                    .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
-                    .build()
-                printManager.print("Ferah Otomotiv - Servis Teklifi", adapter, attributes)
+                if (html.isBlank() || html.length > 8_000_000) {
+                    toast("PDF içeriği oluşturulamadı.")
+                    return@runOnUiThread
+                }
+                createPdfFile(html, fileName) { uri ->
+                    if (uri == null) {
+                        toast("PDF oluşturulamadı. Tekrar deneyin.")
+                    } else {
+                        pdfPrefs.edit().putString(KEY_LAST_PDF_URI, uri.toString()).apply()
+                        toast("Teklif PDF'si A4 ölçüsünde İndirilenler/Ferah Otomotiv klasörüne kaydedildi.")
+                    }
+                }
             }
         }
 
