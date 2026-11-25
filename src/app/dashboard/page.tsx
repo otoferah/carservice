@@ -2,6 +2,7 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {Activity,ArrowUpRight,CarFront,ClipboardList,HardDrive,LogOut,Plus,Search,ShieldCheck,Users,Wrench,Wallet,Warehouse} from "lucide-react";
 import {createClient} from "@/lib/supabase/server";
+import WhatsAppLauncher from "@/components/whatsapp-launcher";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
 type ServiceRow={id:string;status:ServiceStatus;quote_total:number;quote_date:string;created_at:string;customers:{full_name:string}|null;vehicles:{plate:string;brand:string;model:string}|null};
 export default async function DashboardPage(){
@@ -29,6 +30,8 @@ export default async function DashboardPage(){
    <div className="side-section">ÇALIŞMA ALANI</div>
    <Link className="side-link active" href="/dashboard"><Activity size={18}/> Genel Bakış</Link>
    <Link className="side-link" href="/tracking"><Search size={18}/> Araç Sorgulama</Link>
+   <div className="side-section">İLETİŞİM</div>
+   <WhatsAppLauncher />
    <div className="side-section">YÖNETİM</div>
    {["admin","supervisor"].includes(profile.role)&&<Link className="side-link" href="/dashboard/new"><ClipboardList size={18}/> Yeni Servis Kaydı</Link>}
    {profile.role==="admin"&&<><Link className="side-link" href="/dashboard/users"><Users size={18}/> Personel Yönetimi</Link><Link className="side-link" href="/dashboard/google-drive"><HardDrive size={18}/> Google Drive</Link></>}
