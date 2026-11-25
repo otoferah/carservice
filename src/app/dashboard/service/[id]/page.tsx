@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {notFound,redirect} from "next/navigation";
-import {ArrowLeft,CarFront,ClipboardList,Users,Wrench,Printer} from "lucide-react";
+import {ArrowLeft,CarFront,ClipboardList,Users,Wrench,Printer,PenLine} from "lucide-react";
 import {createClient} from "@/lib/supabase/server";
 import {statusLabels,type ServiceStatus} from "@/lib/types";
 import ServiceProgress from "./service-progress";
@@ -8,6 +8,7 @@ import TaskManager from "./task-manager";
 import PrintQuoteButton from "./print-button";
 import {QRCodeSVG} from "qrcode.react";
 import DeleteServiceButton from "./delete-service-button";
+import ServiceImageManager from "./service-image-manager";
 import WhatsAppServiceActions from "@/components/whatsapp-service-actions";
 import {publicTrackingUrl} from "@/lib/public-tracking";
 type Person={full_name:string;role:string};
@@ -29,8 +30,8 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
  const people=(peopleRows??[]) as {id:string;full_name:string}[];
  const assigned=record.service_team.some(m=>m.profile_id===user.id)||tasks.some(t=>t.assigned_to===user.id);
  const updates=[...record.service_updates].sort((a,b)=>b.created_at.localeCompare(a.created_at));
- const imageUrls=await Promise.all((record.service_images??[]).map(async image=>{const {data}=await supabase.storage.from("service-media").createSignedUrl(image.storage_path,3600);return data?.signedUrl?{url:data.signedUrl,caption:image.caption}:null;}));
- const photos=imageUrls.filter((image):image is {url:string;caption:string|null}=>!!image);
+ const imageUrls=await Promise.all((record.service_images??[]).map(async image=>{const {data}=await supabase.storage.from("service-media").createSignedUrl(image.storage_path,3600);return data?.signedUrl?{id:image.id,url:data.signedUrl,caption:image.caption}:null;}));
+ const photos=imageUrls.filter((image):image is {id:string;url:string;caption:string|null}=>!!image);
  const {data:signatureData}=record.customer_signature_path?await supabase.storage.from("service-media").createSignedUrl(record.customer_signature_path,3600):{data:null};
  const signatureUrl=signatureData?.signedUrl||null;
  const trackingUrl=publicTrackingUrl(record.tracking_token);
@@ -41,7 +42,8 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
    <div className="detail-grid"><div className="detail-main">
     <section className="detail-panel"><h2><ClipboardList size={17}/> Kullanılan parçalar / işlemler</h2><div className="table-scroll"><table><thead><tr><th>AÇIKLAMA</th><th>ADET</th>{manager&&<><th>BİRİM FİYAT</th><th>TOPLAM</th></>}</tr></thead><tbody>{record.service_parts.map(p=><tr key={p.id}><td>{p.part_name}</td><td>{p.quantity}</td>{manager&&<><td>{Number(p.unit_price).toLocaleString("tr-TR")} ₺</td><td>{Number(p.line_total).toLocaleString("tr-TR")} ₺</td></>}</tr>)}{!record.service_parts.length&&<tr><td colSpan={manager?4:2}>Parça kalemi eklenmemiş.</td></tr>}</tbody></table></div></section>
     {!!installedParts?.length&&<section className="detail-panel"><h2><CarFront size={17}/> Depodan bu araca takılan parçalar</h2><div className="table-scroll"><table><thead><tr><th>PARÇA</th><th>TEDARİKÇİ</th><th>ADET</th>{manager&&<><th>BİRİM MALİYET</th><th>TOPLAM</th></>}</tr></thead><tbody>{installedParts.map(p=><tr key={p.id}><td><b>{p.part_name}</b></td><td>{p.supplier_name}</td><td>{p.quantity}</td>{manager&&<><td>{Number(p.unit_landed_cost).toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</td><td>{(Number(p.quantity)*Number(p.unit_landed_cost)).toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</td></>}</tr>)}</tbody></table></div></section>}
-    {(photos.length>0||signatureUrl)&&<section className="detail-panel"><h2><CarFront size={17}/> Araç görselleri ve müşteri imzası</h2><div className="service-photo-grid">{photos.map((photo,i)=><a href={photo.url} target="_blank" rel="noreferrer" key={i}><img src={photo.url} alt={photo.caption||"Araç görseli"}/><small>{photo.caption||"Araç görseli"}</small></a>)}</div>{signatureUrl&&<div className="service-signature"><small>Müşteri imzası</small><img src={signatureUrl} alt="Müşteri imzası"/></div>}</section>}
+    {manager?<ServiceImageManager recordId={id} initialImages={photos}/>:photos.length>0&&<section className="detail-panel"><h2><CarFront size={17}/> Araç görselleri</h2><div className="service-photo-grid">{photos.map(photo=><a href={photo.url} target="_blank" rel="noreferrer" key={photo.id}><img src={photo.url} alt={photo.caption||"Araç görseli"}/><small>{photo.caption||"Araç görseli"}</small></a>)}</div></section>}
+    {signatureUrl&&<section className="detail-panel"><h2><PenLine size={17}/> Müşteri imzası</h2><div className="service-signature"><img src={signatureUrl} alt="Müşteri imzası"/></div></section>}
     <section className="detail-panel"><h2><Users size={17}/> İlgilenen ekip</h2><div className="detail-team">{record.service_team.map((m,i)=><div className="detail-team-item" key={i}><span className="avatar">{(m.profiles?.full_name||"P").slice(0,1)}</span><div><b>{m.profiles?.full_name||m.member_name||"Personel"}</b><small>{m.assignment_role==="admin"?"Yönetici":m.assignment_role==="supervisor"?"Supervisor":"Usta"}</small></div></div>)}</div></section>
     <TaskManager recordId={id} tasks={tasks} people={people} canManage={manager}/>
     <ServiceProgress recordId={id} currentStatus={record.status} updates={updates} canUpdate={manager||assigned} canDeliver={manager} canEditHistory={manager} viewerName={profile.full_name}/>
