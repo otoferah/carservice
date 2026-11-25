@@ -5,7 +5,7 @@ import {QRCodeSVG} from "qrcode.react";
 import {Plus,Trash2,Printer,CheckCircle2,PenLine,ImagePlus,RotateCcw} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
 import {publicTrackingUrl} from "@/lib/public-tracking";
-declare global { interface Window { FerahDesktop?: { openWhatsApp: () => Promise<{opened:boolean}>; openWhatsAppChat: (phone:string,message?:string) => Promise<{opened:boolean}>; savePdf: (customerName?:string) => Promise<{canceled:boolean;filePath?:string}>; revealFile: (filePath:string) => Promise<{opened:boolean}>; } } }
+declare global { interface Window { FerahDesktop?: { openWhatsApp: () => Promise<{opened:boolean}>; openWhatsAppChat: (phone:string,message?:string) => Promise<{opened:boolean}>; savePdf: (customerName?:string,plate?:string) => Promise<{canceled:boolean;filePath?:string}>; revealFile: (filePath:string) => Promise<{opened:boolean}>; } } }
 type Member={id:string;full_name:string;role:string};
 type Part={part_name:string;quantity:number;unit_price:number};
 type Saved={id:string;tracking_token:string;status:string;quote_total:number};
