@@ -6,6 +6,41 @@ const APP_URL = "https://ferah-otomotiv-servis.otoferah.workers.dev/";
 const APP_HOST = new URL(APP_URL).hostname;
 let mainWindow;
 
+let whatsappWindow;
+const WHATSAPP_PARTITION = "persist:ferah-whatsapp";
+
+function openWhatsAppWorkspace(targetUrl = "https://web.whatsapp.com/") {
+  if (whatsappWindow && !whatsappWindow.isDestroyed()) {
+    if (targetUrl !== "https://web.whatsapp.com/") whatsappWindow.loadURL(targetUrl);
+    whatsappWindow.show();
+    whatsappWindow.focus();
+    return whatsappWindow;
+  }
+  whatsappWindow = new BrowserWindow({
+    width: 1240, height: 820, minWidth: 900, minHeight: 620,
+    parent: mainWindow || undefined, modal: false, show: false,
+    autoHideMenuBar: true, backgroundColor: "#111318",
+    title: "Ferah Otomotiv · WhatsApp",
+    webPreferences: {
+      partition: WHATSAPP_PARTITION,
+      nodeIntegration: false, contextIsolation: true, sandbox: true, webSecurity: true
+    }
+  });
+  whatsappWindow.webContents.setWindowOpenHandler(({url}) => {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === "https:" && (parsed.hostname === "web.whatsapp.com" || parsed.hostname.endsWith(".whatsapp.com"))) return { action: "allow" };
+      if (parsed.protocol === "https:") shell.openExternal(url);
+    } catch {}
+    return { action: "deny" };
+  });
+  whatsappWindow.on("closed", () => { whatsappWindow = null; });
+  whatsappWindow.once("ready-to-show", () => whatsappWindow?.show());
+  whatsappWindow.loadURL(targetUrl);
+  return whatsappWindow;
+}
+
+
 function isTrustedAppUrl(rawUrl) {
   try {
     const url = new URL(rawUrl);
@@ -100,7 +135,7 @@ app.on("web-contents-created", (_event, contents) => {
 
 ipcMain.handle("ferah:open-whatsapp", async (event) => {
   if (!mainWindow || event.sender !== mainWindow.webContents) throw new Error("Geçersiz WhatsApp isteği.");
-  await shell.openExternal("whatsapp://");
+  openWhatsAppWorkspace();
   return { opened: true };
 });
 
@@ -109,8 +144,8 @@ ipcMain.handle("ferah:open-whatsapp-chat", async (event, phone, message = "") =>
   const digits = String(phone || "").replace(/\D/g, "");
   const normalized = digits.startsWith("0") ? "90" + digits.slice(1) : digits.startsWith("90") ? digits : digits.length === 10 ? "90" + digits : "";
   if (!/^90[0-9]{10}$/.test(normalized)) throw new Error("Müşterinin telefon numarası geçerli bir Türkiye cep telefonu değil.");
-  const url = "whatsapp://send?phone=" + normalized + "&text=" + encodeURIComponent(String(message || ""));
-  await shell.openExternal(url);
+  const url = "https://web.whatsapp.com/send?phone=" + normalized + "&text=" + encodeURIComponent(String(message || ""));
+  openWhatsAppWorkspace(url);
   return { opened: true };
 });
 
