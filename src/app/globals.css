@@ -1715,3 +1715,22 @@ tr:hover td{background:#1c2026!important}
 .stock-row-actions .outline-button{min-height:32px;padding:6px 9px;font-size:10px}
 .stock-edit-panel{margin-bottom:0}
 @media(max-width:560px){.stock-row-actions{align-items:stretch;flex-direction:column}.stock-row-actions .outline-button{width:100%}}
+
+/* Saved service vehicle image manager */
+.service-image-manager-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.service-image-manager-heading h2{margin:0}
+.service-image-add{position:relative;overflow:hidden;cursor:pointer}
+.service-image-add input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.service-image-item{min-width:0;border:1px solid #39414b;border-radius:9px;overflow:hidden;background:#171c23}
+.service-image-item>a{display:block;border:0!important;border-radius:0!important}
+.service-image-actions{display:flex;gap:6px;padding:7px}
+.service-image-actions .outline-button{flex:1;min-width:0;padding:7px 6px;font-size:10px}
+.service-image-hidden-input{display:none!important}
+.service-image-manager .empty-cell{display:block;padding:16px 0;color:#9aa5b0;font-size:11px}
+.service-image-manager .success-message,.service-image-manager .form-error{margin-top:12px}
+.service-image-manager .small-copy{margin:10px 0 14px}
+.service-image-manager .danger-button{color:#f29b9b!important;border-color:#8d4141!important}
+.service-image-manager .danger-button:hover{background:#8d24241c!important;border-color:#c45b5b!important}
+@keyframes service-image-spin{to{transform:rotate(360deg)}}
+.service-image-manager .spin{animation:service-image-spin 1s linear infinite}
+@media(max-width:560px){.service-image-manager-heading{align-items:flex-start;flex-wrap:wrap}.service-image-actions{flex-direction:column}}
