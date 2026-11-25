@@ -321,7 +321,7 @@ class MainActivity : Activity() {
 
         renderer.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
-                // evaluateJavascript does not await a Promise returned by an async IIFE:
+                // Android evaluates the height expression synchronously after the WebView has settled.
                 // it serializes the Promise as null. Wait natively, then return a plain number.
                 val measureContent = """
                     Math.max(
