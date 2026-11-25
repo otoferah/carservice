@@ -13,6 +13,7 @@ import android.os.ParcelFileDescriptor
 import android.graphics.pdf.PdfDocument
 import android.provider.MediaStore
 import android.widget.Toast
+import android.util.Log
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileInputStream
@@ -182,13 +183,15 @@ class MainActivity : Activity() {
         @JavascriptInterface
         fun printPdf(html: String, fileName: String) {
             runOnUiThread {
+                pdfPrefs.edit().remove(KEY_LAST_PDF_ERROR).apply()
                 if (html.isBlank() || html.length > 8_000_000) {
                     toast("PDF içeriği oluşturulamadı.")
                     return@runOnUiThread
                 }
                 createPdfFile(html, fileName) { uri ->
                     if (uri == null) {
-                        toast("PDF oluşturulamadı. Tekrar deneyin.")
+                        val detail = pdfPrefs.getString(KEY_LAST_PDF_ERROR, null)
+                        toast(if (detail.isNullOrBlank()) "PDF oluşturulamadı. Tekrar deneyin." else "PDF oluşturulamadı: $detail")
                     } else {
                         pdfPrefs.edit().putString(KEY_LAST_PDF_URI, uri.toString()).apply()
                         toast("Teklif PDF'si A4 ölçüsünde İndirilenler/Ferah Otomotiv klasörüne kaydedildi.")
@@ -320,17 +323,22 @@ class MainActivity : Activity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 val measureContent = """
                     (async function() {
-                      if (document.fonts && document.fonts.ready) await document.fonts.ready;
-                      await Promise.all(Array.from(document.images).map(function(img) {
-                        return img.decode().catch(function() {});
-                      }));
-                      await new Promise(function(resolve) {
-                        requestAnimationFrame(function() { requestAnimationFrame(resolve); });
-                      });
-                      return Math.max(
-                        document.documentElement.scrollHeight,
-                        document.body ? document.body.scrollHeight : 0
-                      );
+                      // Invisible WebViews can suspend requestAnimationFrame on Android.
+                      // Bound asset waits and measure directly to avoid a null height.
+                      var wait = function(promise, ms) {
+                        return Promise.race([promise, new Promise(function(resolve) { setTimeout(resolve, ms); })]);
+                      };
+                      if (document.fonts && document.fonts.ready) await wait(document.fonts.ready, 1800);
+                      await wait(Promise.all(Array.from(document.images).map(function(img) {
+                        if (img.complete) return Promise.resolve();
+                        return new Promise(function(resolve) {
+                          img.addEventListener('load', resolve, {once:true});
+                          img.addEventListener('error', resolve, {once:true});
+                        });
+                      })), 2500);
+                      await new Promise(function(resolve) { setTimeout(resolve, 120); });
+                      return Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0,
+                        document.documentElement.getBoundingClientRect().height, document.body ? document.body.getBoundingClientRect().height : 0);
                     })()
                 """.trimIndent()
                 renderer.evaluateJavascript(measureContent, ValueCallback { result ->
@@ -374,7 +382,9 @@ class MainActivity : Activity() {
                             } finally {
                                 document.close()
                             }
-                        } catch (_: Exception) {
+                        } catch (error: Exception) {
+                            Log.e("FerahPdf", "PDF oluşturma başarısız", error)
+                            pdfPrefs.edit().putString(KEY_LAST_PDF_ERROR, error.message ?: error.javaClass.simpleName).apply()
                             finishPdfRenderer(renderer)
                             onComplete(null)
                         }
@@ -527,5 +537,6 @@ class MainActivity : Activity() {
     companion object {
         private const val FILE_PICKER_REQUEST = 2048
         private const val KEY_LAST_PDF_URI = "last_pdf_uri"
+        private const val KEY_LAST_PDF_ERROR = "last_pdf_error"
     }
 }
