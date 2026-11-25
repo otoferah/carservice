@@ -4,14 +4,14 @@ import { FileDown } from "lucide-react";
 
 declare global {
   interface Window {
-    FerahDesktop?: { savePdf: () => Promise<{canceled:boolean;filePath?:string}> };
+    FerahDesktop?: { savePdf: (customerName?: string) => Promise<{canceled:boolean;filePath?:string}> };
     FerahAndroid?: {
       printPdf: () => void;
     };
   }
 }
 
-export default function PrintQuoteButton() {
+export default function PrintQuoteButton({customerName}:{customerName:string}) {
   const createPdf = () => {
     // Native Android WebView does not implement window.print().
     // The installed Ferah app exposes a native PrintManager bridge.
@@ -21,13 +21,13 @@ export default function PrintQuoteButton() {
     }
 
     if (window.FerahDesktop?.savePdf) {
-      void window.FerahDesktop.savePdf();
+      void window.FerahDesktop.savePdf(customerName);
       return;
     }
 
     // Chrome, including Android Chrome, opens the system print dialog.
     // Users can select "Save as PDF" to create the quote PDF.
-    window.print();
+    const previousTitle=document.title;\n    document.title=(customerName||"Müşteri").replace(/[^\\p{L}\\p{N} -]/gu,"").trim()+" - Servis Teklifi";\n    window.print();\n    document.title=previousTitle;
   };
 
   return (
