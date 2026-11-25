@@ -269,11 +269,60 @@ class MainActivity : Activity() {
                         }
                         body { padding: 7mm !important; }
                         .print-only-quote {
-                          width: 196mm !important;
-                          min-width: 196mm !important;
-                          max-width: 196mm !important;
+                          display: block !important;
+                          width: 100% !important;
+                          min-width: 0 !important;
+                          max-width: 100% !important;
                           margin: 0 !important;
+                          padding: 0 !important;
                           box-sizing: border-box !important;
+                          overflow: visible !important;
+                        }
+                        .print-only-quote *,
+                        .print-only-quote *::before,
+                        .print-only-quote *::after {
+                          box-sizing: border-box !important;
+                          min-width: 0 !important;
+                          max-width: 100% !important;
+                        }
+                        .print-only-quote img,
+                        .print-only-quote svg,
+                        .print-only-quote canvas {
+                          max-width: 100% !important;
+                          height: auto !important;
+                        }
+                        .print-only-quote table {
+                          width: 100% !important;
+                          max-width: 100% !important;
+                          min-width: 0 !important;
+                          table-layout: fixed !important;
+                          border-collapse: collapse !important;
+                        }
+                        .print-only-quote th,
+                        .print-only-quote td {
+                          min-width: 0 !important;
+                          max-width: 100% !important;
+                          overflow-wrap: anywhere !important;
+                          word-break: break-word !important;
+                          white-space: normal !important;
+                        }
+                        .print-only-quote [style*="width"],
+                        .print-only-quote [style*="min-width"] {
+                          max-width: 100% !important;
+                        }
+                        .print-only-quote > * {
+                          max-width: 100% !important;
+                        }
+                        .print-only-quote .quote-document-header,
+                        .print-only-quote .quote-customer-grid,
+                        .print-only-quote .quote-bottom-row {
+                          display: grid !important;
+                          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+                          gap: 2mm !important;
+                        }
+                        .print-only-quote .quote-document-title,
+                        .print-only-quote .quote-info-card {
+                          overflow-wrap: anywhere !important;
                         }
                       `;
                       document.head.appendChild(style);
