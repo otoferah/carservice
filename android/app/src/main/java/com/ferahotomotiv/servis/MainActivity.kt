@@ -10,8 +10,7 @@ import android.content.ContentValues
 import android.os.CancellationSignal
 import android.os.Environment
 import android.os.ParcelFileDescriptor
-import android.print.PrintDocumentAdapter
-import android.print.PrintDocumentInfo
+import android.graphics.pdf.PdfDocument
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -225,61 +224,70 @@ class MainActivity : Activity() {
 
 
     private fun createPdfFile(html: String, fileName: String, onComplete: (Uri?) -> Unit) {
-        pdfWebView?.destroy()
+        pdfWebView?.let { finishPdfRenderer(it) }
         val renderer = WebView(this)
         pdfWebView = renderer
         renderer.settings.javaScriptEnabled = true
         renderer.settings.domStorageEnabled = true
         renderer.settings.loadsImagesAutomatically = true
         renderer.setBackgroundColor(Color.WHITE)
+        renderer.visibility = View.INVISIBLE
+        root.addView(renderer, FrameLayout.LayoutParams(-1, -1))
         renderer.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
-                renderer.postDelayed({
-                    val adapter = renderer.createPrintDocumentAdapter("Ferah-Otomotiv-Teklif")
-                    val attrs = PrintAttributes.Builder()
-                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
-                        .setResolution(PrintAttributes.Resolution("ferah", "Ferah PDF", 300, 300))
-                        .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
-                        .setColorMode(PrintAttributes.COLOR_MODE_COLOR)
-                        .build()
-                    adapter.onLayout(null, attrs, CancellationSignal(), object : PrintDocumentAdapter.LayoutResultCallback() {
-                        override fun onLayoutFinished(info: PrintDocumentInfo?, changed: Boolean) {
-                            val temp = File(cacheDir, "ferah-" + System.currentTimeMillis() + ".pdf")
-                            val descriptor = try {
-                                ParcelFileDescriptor.open(temp, ParcelFileDescriptor.MODE_CREATE or ParcelFileDescriptor.MODE_TRUNCATE or ParcelFileDescriptor.MODE_READ_WRITE)
+                renderer.evaluateJavascript(
+                    "Promise.all(Array.from(document.images).map(i => i.decode().catch(() => null))).then(() => true)",
+                    ValueCallback {
+                        renderer.postDelayed({
+                            try {
+                                val width = root.width.takeIf { it > 0 } ?: resources.displayMetrics.widthPixels
+                                renderer.measure(
+                                    View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                                )
+                                val measuredHeight = renderer.measuredHeight.coerceAtLeast(1)
+                                renderer.layout(0, 0, width, measuredHeight)
+
+                                val pageWidth = 595
+                                val pageHeight = 842
+                                val scale = pageWidth.toFloat() / width.toFloat()
+                                val pageSliceHeight = pageHeight.toFloat() / scale
+                                val pageCount = kotlin.math.ceil(measuredHeight / pageSliceHeight).toInt().coerceAtLeast(1)
+                                val document = PdfDocument()
+                                for (pageIndex in 0 until pageCount) {
+                                    val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageIndex + 1).create()
+                                    val page = document.startPage(pageInfo)
+                                    page.canvas.save()
+                                    page.canvas.scale(scale, scale)
+                                    page.canvas.translate(0f, -pageIndex * pageSliceHeight)
+                                    renderer.draw(page.canvas)
+                                    page.canvas.restore()
+                                    document.finishPage(page)
+                                }
+                                val temp = File(cacheDir, "ferah-" + System.currentTimeMillis() + ".pdf")
+                                FileOutputStream(temp).use { document.writeTo(it) }
+                                document.close()
+                                val saved = persistPdf(temp, fileName)
+                                temp.delete()
+                                finishPdfRenderer(renderer)
+                                onComplete(saved)
                             } catch (_: Exception) {
-                                finishPdfRenderer(renderer); onComplete(null); return
+                                finishPdfRenderer(renderer)
+                                onComplete(null)
                             }
-                            adapter.onWrite(arrayOf(android.print.PageRange.ALL_PAGES), descriptor, CancellationSignal(),
-                                object : PrintDocumentAdapter.WriteResultCallback() {
-                                    override fun onWriteFinished(pages: Array<android.print.PageRange>) {
-                                        try {
-                                            descriptor.close()
-                                            val saved = persistPdf(temp, fileName)
-                                            temp.delete()
-                                            finishPdfRenderer(renderer)
-                                            onComplete(saved)
-                                        } catch (_: Exception) {
-                                            temp.delete(); finishPdfRenderer(renderer); onComplete(null)
-                                        }
-                                    }
-                                    override fun onWriteFailed(error: CharSequence?) {
-                                        try { descriptor.close() } catch (_: Exception) {}
-                                        temp.delete(); finishPdfRenderer(renderer); onComplete(null)
-                                    }
-                                    override fun onWriteCancelled() {
-                                        try { descriptor.close() } catch (_: Exception) {}
-                                        temp.delete(); finishPdfRenderer(renderer); onComplete(null)
-                                    }
-                                })
-                        }
-                        override fun onLayoutFailed(error: CharSequence?) { finishPdfRenderer(renderer); onComplete(null) }
-                        override fun onLayoutCancelled() { finishPdfRenderer(renderer); onComplete(null) }
-                    }, null)
-                }, 400)
+                        }, 250)
+                    }
+                )
             }
         }
         renderer.loadDataWithBaseURL(appUrl, html, "text/html", "UTF-8", null)
+    }
+
+    private fun finishPdfRenderer(renderer: WebView) {
+        renderer.stopLoading()
+        (renderer.parent as? android.view.ViewGroup)?.removeView(renderer)
+        renderer.destroy()
+        if (pdfWebView === renderer) pdfWebView = null
     }
 
     private fun persistPdf(source: File, requestedName: String): Uri {
