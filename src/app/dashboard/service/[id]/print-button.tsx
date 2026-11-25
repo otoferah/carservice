@@ -73,8 +73,6 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
       "box-sizing:border-box",
       "margin:0",
       "padding:7mm",
-      "border:1px solid #cfd9d1",
-      "outline:1px solid #cfd9d1",
       "background:#ffffff",
       "color:#17251e",
       "z-index:-1",
@@ -85,7 +83,7 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
     const exportStyle = document.createElement("style");
     exportStyle.textContent = `
       .ferah-pdf-export, .ferah-pdf-export * { box-sizing:border-box !important; }
-      .ferah-pdf-export { display:block !important; width:194mm !important; min-width:194mm !important; max-width:194mm !important; border:1px solid #cfd9d1 !important; background:#fff !important; color:#17251e !important; overflow:visible !important; }
+      .ferah-pdf-export { display:block !important; width:194mm !important; min-width:194mm !important; max-width:194mm !important; border:0 !important; outline:0 !important; box-shadow:none !important; background:#fff !important; color:#17251e !important; overflow:visible !important; }
       .ferah-pdf-export .quote-document-header { display:grid !important; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr) !important; gap:4mm !important; padding-bottom:5mm !important; border-bottom:1.2mm solid #176b4b !important; }
       .ferah-pdf-export .quote-document-header.has-vehicle-photo { grid-template-columns:27mm minmax(0,1fr) minmax(0,1.2fr) auto !important; }
       .ferah-pdf-export .quote-vehicle-photo { width:27mm !important; height:22mm !important; overflow:hidden !important; }
