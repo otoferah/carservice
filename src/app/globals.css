@@ -1437,3 +1437,125 @@ tr:hover td{background:#1c2026!important}
   .print-only-quote,.print-only-quote * { outline:0!important;box-shadow:none!important; }
   .mobile-bottom-nav,.mobile-app-nav,.mobile-drawer-layer,.mobile-menu-trigger,.topbar,.sidebar,.form-top,.detail-heading,.detail-heading-actions,.detail-main,.detail-aside,.quote-actions,.sticker-actions,.back-link,.progress-panel,.service-progress,button,.print-quote-button { display:none!important;visibility:hidden!important; }
 }
+
+
+/* Definitive PDF reset: remove inherited dark application surfaces from the printed page. */
+@media print {
+  @page { size: A4 portrait; margin: 8mm !important; }
+  html, body {
+    width: 194mm !important;
+    min-width: 0 !important;
+    max-width: 194mm !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+  }
+  body, body * {
+    background-image: none !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+  }
+  body *:not(.print-only-quote):not(.print-only-quote *) {
+    border-color: transparent !important;
+  }
+  body::before, body::after,
+  body *::before, body *::after {
+    content: none !important;
+    display: none !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  .form-page, .detail-content, .detail-grid, .detail-layout,
+  .detail-shell, .page-content, .dashboard-main, .content-wrap,
+  main, section, article {
+    background: #ffffff !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+  }
+  .print-only-quote {
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+    inset: auto !important;
+    width: 194mm !important;
+    max-width: 194mm !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #17231d !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    zoom: 1 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .print-only-quote .quote-document-header,
+  .print-only-quote .quote-customer-grid,
+  .print-only-quote .quote-table-heading,
+  .print-only-quote .quote-premium-table,
+  .print-only-quote .quote-total-panel,
+  .print-only-quote .quote-bottom-row,
+  .print-only-quote .quote-document-footer {
+    background-color: #ffffff !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+  }
+  .print-only-quote .quote-info-card {
+    background: #f4f6f4 !important;
+    border: .25mm solid #dfe5e0 !important;
+    border-radius: 1.5mm !important;
+  }
+  .print-only-quote .quote-premium-table {
+    border: .25mm solid #dfe5e0 !important;
+  }
+  .print-only-quote .quote-premium-table th {
+    background: #173b2d !important;
+    color: #ffffff !important;
+  }
+  .print-only-quote .quote-premium-table td {
+    background: #ffffff !important;
+    color: #17231d !important;
+  }
+  .print-only-quote .quote-total-panel {
+    background: #f0f5f1 !important;
+    border: 0 !important;
+    border-left: 1.2mm solid #176b4b !important;
+  }
+  .print-only-quote .quote-vehicle-photo-card {
+    background: #f1f3f1 !important;
+    border: .25mm solid #d8ded9 !important;
+  }
+  .print-only-quote .quote-qr-frame {
+    background: #ffffff !important;
+    border: .25mm solid #d7ded9 !important;
+  }
+  .print-only-quote .quote-document-footer {
+    border-top: .25mm solid #d9dfdb !important;
+  }
+  .mobile-bottom-nav,.mobile-app-nav,.mobile-drawer-layer,.mobile-menu-trigger,
+  .topbar,.sidebar,.form-top,.detail-heading,.detail-heading-actions,
+  .detail-main,.detail-aside,.quote-actions,.sticker-actions,.back-link,
+  .progress-panel,.service-progress,button,.print-quote-button {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
