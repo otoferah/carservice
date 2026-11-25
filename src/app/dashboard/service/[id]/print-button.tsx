@@ -2,19 +2,7 @@
 
 import { FileDown } from "lucide-react";
 
-declare global {
-  interface Window {
-    FerahDesktop?: {
-  openWhatsApp: () => Promise<{opened:boolean}>;
-  openWhatsAppChat: (phone:string,message?:string) => Promise<{opened:boolean}>;
-  savePdf: (customerName?:string) => Promise<{canceled:boolean;filePath?:string}>;
-  revealFile: (filePath:string) => Promise<{opened:boolean}>;
-};> };
-    FerahAndroid?: {
-      printPdf: () => void;
-    };
-  }
-}
+declare global { interface Window { FerahDesktop?: { openWhatsApp: () => Promise<{opened:boolean}>; openWhatsAppChat: (phone:string,message?:string) => Promise<{opened:boolean}>; savePdf: (customerName?:string) => Promise<{canceled:boolean;filePath?:string}>; revealFile: (filePath:string) => Promise<{opened:boolean}>; }; FerahAndroid?: { printPdf: () => void; }; } }
 
 export default function PrintQuoteButton({customerName}:{customerName:string}) {
   const createPdf = () => {
