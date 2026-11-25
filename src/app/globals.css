@@ -1709,3 +1709,9 @@ tr:hover td{background:#1c2026!important}
   }
 }
 
+
+/* Stock batch row actions */
+.stock-row-actions{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.stock-row-actions .outline-button{min-height:32px;padding:6px 9px;font-size:10px}
+.stock-edit-panel{margin-bottom:0}
+@media(max-width:560px){.stock-row-actions{align-items:stretch;flex-direction:column}.stock-row-actions .outline-button{width:100%}}
