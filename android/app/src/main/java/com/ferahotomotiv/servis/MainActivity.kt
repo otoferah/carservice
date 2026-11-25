@@ -381,6 +381,8 @@ class MainActivity : Activity() {
                         }
                     })
                 }, 700)
+            }
+        }
 
         renderer.loadDataWithBaseURL(appUrl, a4Html, "text/html", "UTF-8", null)
     }
