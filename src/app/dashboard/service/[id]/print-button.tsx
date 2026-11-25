@@ -15,9 +15,6 @@ declare global {
     FerahAndroid?: { printPdf: () => void };
     html2pdf?: () => PdfWorker;
   }
-  interface Navigator {
-    canShare?: (data?: ShareData) => boolean;
-  }
 }
 
 const PDF_LIBRARY_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.3/html2pdf.bundle.min.js";
@@ -123,7 +120,7 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
       window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
 
       const whatsappUrl = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message + " PDF dosyasını birazdan ekleyebilirsiniz.");
-      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+      window.location.assign(whatsappUrl);
       window.alert("PDF cihazınıza indirildi. WhatsApp sohbeti açıldığında indirilen PDF dosyasını mesaja ekleyip Gönder'e dokunun.");
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") return;
