@@ -26,6 +26,12 @@ function openWhatsAppWorkspace(targetUrl = "https://web.whatsapp.com/") {
       nodeIntegration: false, contextIsolation: true, sandbox: true, webSecurity: true
     }
   });
+  // WhatsApp rejects outdated/embedded-browser user-agent strings.
+  // Use the actual Chromium version bundled with this Electron build, without the Electron token.
+  const chromiumVersion = process.versions.chrome || "142.0.0.0";
+  const whatsappUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/" + chromiumVersion + " Safari/537.36";
+  whatsappWindow.webContents.setUserAgent(whatsappUserAgent);
+
   whatsappWindow.webContents.setWindowOpenHandler(({url}) => {
     try {
       const parsed = new URL(url);
