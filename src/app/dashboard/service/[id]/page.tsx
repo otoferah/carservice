@@ -8,6 +8,7 @@ import TaskManager from "./task-manager";
 import PrintQuoteButton from "./print-button";
 import {QRCodeSVG} from "qrcode.react";
 import DeleteServiceButton from "./delete-service-button";
+import WhatsAppServiceActions from "@/components/whatsapp-service-actions";
 import {publicTrackingUrl} from "@/lib/public-tracking";
 type Person={full_name:string;role:string};
 type Update={id:string;status:ServiceStatus;note:string;created_at:string;edited_at:string|null;profiles:Person|null};
@@ -45,6 +46,7 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
     <TaskManager recordId={id} tasks={tasks} people={people} canManage={manager}/>
     <ServiceProgress recordId={id} currentStatus={record.status} updates={updates} canUpdate={manager||assigned} canDeliver={manager} canEditHistory={manager} viewerName={profile.full_name}/>
    </div><aside className="detail-aside"><div className="detail-panel"><h2><CarFront size={17}/> Araç özeti</h2><dl><dt>Plaka</dt><dd>{record.vehicles?.plate}</dd><dt>Marka / Model</dt><dd>{record.vehicles?.brand} {record.vehicles?.model}</dd><dt>Müşteri</dt><dd>{record.customers?.full_name}</dd>{manager&&<><dt>TC kimlik numarası</dt><dd>{privateIdentity?.tc_identity_number||"—"}</dd></>}<dt>Teslim alınan KM</dt><dd>{record.intake_odometer_km===null?"—":Number(record.intake_odometer_km).toLocaleString("tr-TR")+" km"}</dd><dt>Telefon</dt><dd>{record.customers?.phone||"—"}</dd><dt>E-posta</dt><dd>{record.customers?.email||"—"}</dd>{manager&&<><dt>Teklif tarihi</dt><dd>{formattedDate}</dd><dt>Teklifi veren</dt><dd>{record.quote_provider||"—"}</dd></>}</dl></div>
+    <WhatsAppServiceActions phone={record.customers?.phone||""} customerName={record.customers?.full_name||"Müşteri"} plate={record.vehicles?.plate||""} quoteTotal={Number(record.quote_total)||0} trackingUrl={trackingUrl}/>
     <div className="detail-panel"><h2><Wrench size={17}/> Müşteri takip bağlantısı</h2><p className="muted small-copy">Bu kayıt için oluşturulmuş tekil takip bağlantısı.</p><Link className="outline-button" href={trackingUrl} target="_blank">Müşteri görünümünü aç ↗</Link><p className="token-text">{record.tracking_token}</p></div>
     {manager&&<div className="detail-panel quote-actions"><h2><Printer size={17}/> Teklif çıktısı</h2><p className="muted small-copy">Kaydedilmiş teklifin parça ve fiyatlarını düzenleyebilir, ardından güncel PDF çıktısını alabilirsiniz.</p><Link className="outline-button" href={"/dashboard/service/"+id+"/edit"}>Teklifi düzenle</Link><PrintQuoteButton customerName={record.customers?.full_name||"Müşteri"} /></div>}<div className="detail-panel sticker-actions"><h2><CarFront size={17}/> Araca özel QR sticker</h2><p className="muted small-copy">Bu servis kaydına özel QR kodu etiket olarak yazdırın veya PDF kaydedip sticker baskısına gönderin.</p><Link className="primary-button sticker-open-button" href={"/dashboard/service/"+id+"/sticker"}>QR sticker oluştur / yazdır ↗</Link></div>
    </aside></div>
