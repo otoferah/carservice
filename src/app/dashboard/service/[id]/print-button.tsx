@@ -27,7 +27,10 @@ export default function PrintQuoteButton({customerName}:{customerName:string}) {
 
     // Chrome, including Android Chrome, opens the system print dialog.
     // Users can select "Save as PDF" to create the quote PDF.
-    const previousTitle=document.title;\n    document.title=(customerName||"Müşteri").replace(/[^\\p{L}\\p{N} -]/gu,"").trim()+" - Servis Teklifi";\n    window.print();\n    document.title=previousTitle;
+    const previousTitle=document.title;
+    document.title=(customerName||"Müşteri").replace(/[^\p{L}\p{N} -]/gu,"").trim()+" - Servis Teklifi";
+    window.print();
+    document.title=previousTitle;
   };
 
   return (
