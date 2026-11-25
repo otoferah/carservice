@@ -18,7 +18,7 @@ export default async function VehicleStickerPage({params}:{params:Promise<{id:st
  const trackingUrl=publicTrackingUrl(record.tracking_token);
  return <main className="sticker-page sticker-plain-page">
   <header className="sticker-toolbar">
-   <Link href={"/dashboard/service/"+id} className="back-link"><ArrowLeft size={16}/> Servis dosyasına dön</Link>
+   <Link href={"/dashboard/service/"+id} className="back-link sticker-back-link" style={{color:"#111111"}}><ArrowLeft size={16}/> Servis dosyasına dön</Link>
    <StickerPrintButton/>
   </header>
   <section className="plain-qr-print" aria-label="Bu servis kaydına özel QR kod">
