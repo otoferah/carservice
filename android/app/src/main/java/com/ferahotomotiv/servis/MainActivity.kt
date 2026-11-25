@@ -321,32 +321,23 @@ class MainActivity : Activity() {
 
         renderer.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
+                // evaluateJavascript does not await a Promise returned by an async IIFE:
+                // it serializes the Promise as null. Wait natively, then return a plain number.
                 val measureContent = """
-                    (async function() {
-                      // Invisible WebViews can suspend requestAnimationFrame on Android.
-                      // Bound asset waits and measure directly to avoid a null height.
-                      var wait = function(promise, ms) {
-                        return Promise.race([promise, new Promise(function(resolve) { setTimeout(resolve, ms); })]);
-                      };
-                      if (document.fonts && document.fonts.ready) await wait(document.fonts.ready, 1800);
-                      await wait(Promise.all(Array.from(document.images).map(function(img) {
-                        if (img.complete) return Promise.resolve();
-                        return new Promise(function(resolve) {
-                          img.addEventListener('load', resolve, {once:true});
-                          img.addEventListener('error', resolve, {once:true});
-                        });
-                      })), 2500);
-                      await new Promise(function(resolve) { setTimeout(resolve, 120); });
-                      return Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0,
-                        document.documentElement.getBoundingClientRect().height, document.body ? document.body.getBoundingClientRect().height : 0);
-                    })()
+                    Math.max(
+                      document.documentElement ? document.documentElement.scrollHeight : 0,
+                      document.body ? document.body.scrollHeight : 0,
+                      document.documentElement ? document.documentElement.getBoundingClientRect().height : 0,
+                      document.body ? document.body.getBoundingClientRect().height : 0
+                    )
                 """.trimIndent()
-                renderer.evaluateJavascript(measureContent, ValueCallback { result ->
-                    renderer.postDelayed({
+                renderer.postDelayed({
+                    renderer.evaluateJavascript(measureContent, ValueCallback { result ->
                         try {
                             val density = resources.displayMetrics.density
                             val cssHeight = result?.trim()?.trim('"')?.toFloatOrNull()
-                                ?: throw IllegalStateException("Teklif sayfa yüksekliği ölçülemedi.")
+                                ?: throw IllegalStateException("Teklif sayfa yüksekliği ölçülemedi: WebView sayfa ölçüsü boş döndürdü.")
+                            if (cssHeight <= 0f) throw IllegalStateException("Teklif sayfa yüksekliği geçersiz: $cssHeight")
                             val width = (794f * density).toInt().coerceAtLeast(1)
                             val measuredHeight = (cssHeight * density).toInt().coerceAtLeast(1)
 
@@ -388,10 +379,9 @@ class MainActivity : Activity() {
                             finishPdfRenderer(renderer)
                             onComplete(null)
                         }
-                    }, 350)
-                })
-            }
-        }
+                    })
+                }, 700)
+
         renderer.loadDataWithBaseURL(appUrl, a4Html, "text/html", "UTF-8", null)
     }
 
