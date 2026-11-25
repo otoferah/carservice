@@ -1148,3 +1148,143 @@ tr:hover td{background:#1c2026!important}
 .stock-manager .success-message{margin:0;padding:10px 13px;border:1px solid #386b50;background:#172d23;border-radius:8px;color:#91dfb2;font-size:12px}
 @media(max-width:900px){.stock-forms-grid{grid-template-columns:1fr}.stock-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.stock-summary-grid{grid-template-columns:1fr}.stock-field-row{grid-template-columns:1fr}.stock-form{padding:0 14px 15px}.stock-table-panel .panel-heading{align-items:flex-start}}
+
+
+/* Final A4 print override: keep the complete quote on one clean page. */
+@media print {
+  @page { size: A4 portrait; margin: 7mm !important; }
+  html, body, body * {
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  html, body {
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    background: #fff !important;
+  }
+  body * { visibility: hidden !important; }
+  .print-only-quote, .print-only-quote * { visibility: visible !important; }
+  .print-only-quote {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    background: #fff !important;
+    color: #17231d !important;
+    font-size: 7.5pt !important;
+    line-height: 1.18 !important;
+    zoom: .86 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .print-only-quote * { box-sizing: border-box !important; }
+  .print-only-quote .quote-document-header {
+    display: grid !important;
+    grid-template-columns: 1fr 1.15fr 1fr !important;
+    gap: 3mm !important;
+    align-items: center !important;
+    padding: 0 0 2.5mm !important;
+    border: 0 !important;
+    border-bottom: 1mm solid #1b4938 !important;
+    break-inside: avoid !important;
+  }
+  .print-only-quote .quote-brand-lockup { min-width: 0 !important; }
+  .print-only-quote .quote-document-title { min-width: 0 !important; text-align: center !important; }
+  .print-only-quote .quote-document-title h2 { font-size: 16pt !important; margin: 0 !important; }
+  .print-only-quote .quote-document-date { min-width: 0 !important; text-align: right !important; }
+  .print-only-quote .quote-customer-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+    gap: 2mm !important;
+    margin: 3mm 0 !important;
+    break-inside: avoid !important;
+  }
+  .print-only-quote .quote-info-card {
+    min-width: 0 !important;
+    padding: 2.5mm !important;
+    overflow-wrap: anywhere !important;
+  }
+  .print-only-quote .quote-table-heading { margin: 2.5mm 0 1.5mm !important; break-after: avoid !important; }
+  .print-only-quote .quote-premium-table {
+    display: table !important;
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+    white-space: normal !important;
+    break-inside: auto !important;
+  }
+  .print-only-quote .quote-premium-table thead { display: table-header-group !important; }
+  .print-only-quote .quote-premium-table tr { break-inside: avoid !important; page-break-inside: avoid !important; }
+  .print-only-quote .quote-premium-table th,
+  .print-only-quote .quote-premium-table td {
+    padding: 1.25mm 1.5mm !important;
+    font-size: 7pt !important;
+    line-height: 1.12 !important;
+    overflow-wrap: anywhere !important;
+  }
+  .print-only-quote .quote-total-panel {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 3mm !important;
+    margin: 3mm 0 !important;
+    padding: 2.5mm 3mm !important;
+    border: 0 !important;
+    border-left: 1mm solid #1b4938 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .print-only-quote .quote-bottom-row {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) 37mm !important;
+    gap: 5mm !important;
+    align-items: end !important;
+    margin-top: 3mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .print-only-quote .quote-tracking-qr { width: 37mm !important; min-width: 0 !important; }
+  .print-only-quote .quote-qr-frame { max-width: 100% !important; padding: 1mm !important; }
+  .print-only-quote .quote-qr-frame svg { display: block !important; width: 27mm !important; height: 27mm !important; max-width: 100% !important; }
+  .print-only-quote .quote-signature { max-width: 48mm !important; height: 16mm !important; object-fit: contain !important; }
+  .print-only-quote .quote-document-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 3mm !important;
+    margin-top: 3mm !important;
+    padding-top: 1.5mm !important;
+    border-top: .25mm solid #d9dfdb !important;
+    font-size: 6pt !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .print-only-quote, .print-only-quote * {
+    border-radius: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+  }
+  .print-only-quote img { max-width: 100% !important; }
+  .mobile-bottom-nav,.mobile-app-nav,.mobile-drawer-layer,.mobile-menu-trigger,
+  .topbar,.sidebar,.form-top,.detail-heading,.detail-heading-actions,
+  .detail-main,.detail-aside,.quote-actions,.sticker-actions,.back-link,
+  .progress-panel,.service-progress,button,.print-quote-button {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
