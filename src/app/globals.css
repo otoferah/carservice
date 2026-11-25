@@ -1574,3 +1574,44 @@ tr:hover td{background:#1c2026!important}
   .saved-card, .saved-card * { visibility: visible !important; }
   .saved-card .print-quote { display: block !important; visibility: visible !important; }
 }
+
+
+/* Final print canvas reset: prevent the dark application shell from framing the A4 quote. */
+@media print {
+  @page { size: A4 portrait; margin: 8mm !important; }
+  html, body, #__next, .app-shell, .main-area, .content-wrap,
+  .detail-content, .detail-grid, .detail-layout, .detail-shell,
+  main, main > div, main > section {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+  }
+  .app-shell, .main-area, .content-wrap, .detail-content,
+  .detail-grid, .detail-layout, .detail-shell {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  .print-only-quote {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #17231d !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+  }
+}
