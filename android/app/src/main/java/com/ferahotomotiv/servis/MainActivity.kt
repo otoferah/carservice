@@ -241,109 +241,109 @@ class MainActivity : Activity() {
         renderer.setBackgroundColor(Color.WHITE)
         renderer.visibility = View.INVISIBLE
         root.addView(renderer, FrameLayout.LayoutParams(-1, -1))
+
+        // Set the A4 viewport BEFORE WebView parses the document. Changing the
+        // viewport after onPageFinished leaves Android WebView at its old wide layout.
+        val a4Css = """
+            <style id="ferah-native-a4-layout">
+              @page { size: A4 portrait; margin: 7mm; }
+              html, body {
+                width: 210mm !important;
+                min-width: 210mm !important;
+                max-width: 210mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+                background: #fff !important;
+              }
+              body { padding: 7mm !important; }
+              .print-only-quote {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 196mm !important;
+                min-width: 196mm !important;
+                max-width: 196mm !important;
+                height: auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+                position: static !important;
+              }
+              .print-only-quote, .print-only-quote * {
+                box-sizing: border-box !important;
+              }
+              .print-only-quote img, .print-only-quote svg, .print-only-quote canvas {
+                max-width: 100% !important;
+                height: auto !important;
+              }
+              .print-only-quote table {
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+              }
+              .print-only-quote th, .print-only-quote td {
+                min-width: 0 !important;
+                max-width: 100% !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                white-space: normal !important;
+              }
+              .print-only-quote .quote-document-header {
+                grid-template-columns: 39mm 25mm minmax(0,1fr) 23mm !important;
+              }
+              .print-only-quote .quote-customer-grid {
+                grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+              }
+            </style>
+        """.trimIndent()
+        val viewport = """<meta name="viewport" content="width=794, initial-scale=1, maximum-scale=1">"""
+        val viewportPattern = Regex("""<meta\\s+name=["']viewport["'][^>]*>""", RegexOption.IGNORE_CASE)
+        var a4Html = if (viewportPattern.containsMatchIn(html)) {
+            viewportPattern.replaceFirst(html, viewport)
+        } else {
+            html.replace("<head>", "<head>$viewport")
+        }
+        a4Html = if (a4Html.contains("</head>", ignoreCase = true)) {
+            a4Html.replaceFirst(Regex("</head>", RegexOption.IGNORE_CASE), a4Css + "</head>")
+        } else {
+            a4Html.replace("<body", a4Css + "<body")
+        }
+
         renderer.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
-                // Render at a fixed A4 CSS viewport, never at the phone's screen width.
-                // 794 CSS px is the standard 210 mm A4 width at 96 CSS dpi.
-                val prepareA4 = """
-                    (function() {
-                      var meta = document.querySelector('meta[name="viewport"]');
-                      if (!meta) {
-                        meta = document.createElement('meta');
-                        meta.name = 'viewport';
-                        document.head.appendChild(meta);
-                      }
-                      meta.content = 'width=794, initial-scale=1';
-                      var style = document.createElement('style');
-                      style.id = 'ferah-native-a4-layout';
-                      style.textContent = `
-                        html, body {
-                          width: 210mm !important;
-                          min-width: 210mm !important;
-                          max-width: 210mm !important;
-                          margin: 0 !important;
-                          padding: 0 !important;
-                          box-sizing: border-box !important;
-                          overflow: visible !important;
-                          background: #fff !important;
-                        }
-                        body { padding: 7mm !important; }
-                        .print-only-quote {
-                          display: block !important;
-                          width: 100% !important;
-                          min-width: 0 !important;
-                          max-width: 100% !important;
-                          margin: 0 !important;
-                          padding: 0 !important;
-                          box-sizing: border-box !important;
-                          overflow: visible !important;
-                        }
-                        .print-only-quote *,
-                        .print-only-quote *::before,
-                        .print-only-quote *::after {
-                          box-sizing: border-box !important;
-                          min-width: 0 !important;
-                          max-width: 100% !important;
-                        }
-                        .print-only-quote img,
-                        .print-only-quote svg,
-                        .print-only-quote canvas {
-                          max-width: 100% !important;
-                          height: auto !important;
-                        }
-                        .print-only-quote table {
-                          width: 100% !important;
-                          max-width: 100% !important;
-                          min-width: 0 !important;
-                          table-layout: fixed !important;
-                          border-collapse: collapse !important;
-                        }
-                        .print-only-quote th,
-                        .print-only-quote td {
-                          min-width: 0 !important;
-                          max-width: 100% !important;
-                          overflow-wrap: anywhere !important;
-                          word-break: break-word !important;
-                          white-space: normal !important;
-                        }
-                        .print-only-quote [style*="width"],
-                        .print-only-quote [style*="min-width"] {
-                          max-width: 100% !important;
-                        }
-                        .print-only-quote > * {
-                          max-width: 100% !important;
-                        }
-                        .print-only-quote .quote-document-header,
-                        .print-only-quote .quote-customer-grid,
-                        .print-only-quote .quote-bottom-row {
-                          display: grid !important;
-                          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-                          gap: 2mm !important;
-                        }
-                        .print-only-quote .quote-document-title,
-                        .print-only-quote .quote-info-card {
-                          overflow-wrap: anywhere !important;
-                        }
-                      `;
-                      document.head.appendChild(style);
-                      return Promise.all([
-                        document.fonts ? document.fonts.ready : Promise.resolve(),
-                        Promise.all(Array.from(document.images).map(function(img) {
-                          return img.decode().catch(function() {});
-                        }))
-                      ]);
+                val measureContent = """
+                    (async function() {
+                      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+                      await Promise.all(Array.from(document.images).map(function(img) {
+                        return img.decode().catch(function() {});
+                      }));
+                      await new Promise(function(resolve) {
+                        requestAnimationFrame(function() { requestAnimationFrame(resolve); });
+                      });
+                      return Math.max(
+                        document.documentElement.scrollHeight,
+                        document.body ? document.body.scrollHeight : 0
+                      );
                     })()
                 """.trimIndent()
-                renderer.evaluateJavascript(prepareA4, ValueCallback {
+                renderer.evaluateJavascript(measureContent, ValueCallback { result ->
                     renderer.postDelayed({
                         try {
                             val density = resources.displayMetrics.density
+                            val cssHeight = result?.trim()?.trim('"')?.toFloatOrNull()
+                                ?: throw IllegalStateException("Teklif sayfa yüksekliği ölçülemedi.")
                             val width = (794f * density).toInt().coerceAtLeast(1)
+                            val measuredHeight = (cssHeight * density).toInt().coerceAtLeast(1)
+
                             renderer.measure(
                                 View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-                                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                                View.MeasureSpec.makeMeasureSpec(measuredHeight, View.MeasureSpec.EXACTLY)
                             )
-                            val measuredHeight = renderer.measuredHeight.coerceAtLeast(1)
                             renderer.layout(0, 0, width, measuredHeight)
 
                             val pageWidth = 595
@@ -380,7 +380,7 @@ class MainActivity : Activity() {
                 })
             }
         }
-        renderer.loadDataWithBaseURL(appUrl, html, "text/html", "UTF-8", null)
+        renderer.loadDataWithBaseURL(appUrl, a4Html, "text/html", "UTF-8", null)
     }
 
     private fun finishPdfRenderer(renderer: WebView) {
