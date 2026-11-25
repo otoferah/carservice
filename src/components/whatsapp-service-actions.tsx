@@ -24,7 +24,7 @@ export default function WhatsAppServiceActions({phone,customerName,plate,quoteTo
       if(window.FerahDesktop?.openWhatsAppChat){
         await window.FerahDesktop.openWhatsAppChat(phone,message);
       }else{
-        const digits=phone.replace(/\\D/g,"");
+        const digits=phone.replace(/\D/g,"");
         const normalized=digits.startsWith("0")?"90"+digits.slice(1):digits.startsWith("90")?digits:digits.length===10?"90"+digits:"";
         if(!/^90[0-9]{10}$/.test(normalized))throw new Error("Müşterinin telefon numarası geçerli değil.");
         window.open("https://wa.me/"+normalized+"?text="+encodeURIComponent(message),"_blank","noopener,noreferrer");
