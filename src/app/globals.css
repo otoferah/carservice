@@ -1288,3 +1288,54 @@ tr:hover td{background:#1c2026!important}
     visibility: hidden !important;
   }
 }
+
+
+/* Ensure the vehicle tracking QR is visibly printed inside the A4 quote. */
+@media print {
+  .print-only-quote .quote-bottom-row {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) 39mm !important;
+    align-items: end !important;
+  }
+  .print-only-quote .quote-tracking-qr {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1.5mm !important;
+    width: 39mm !important;
+    min-height: 34mm !important;
+    visibility: visible !important;
+    color: #17231d !important;
+    background: #fff !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .print-only-quote .quote-tracking-qr * { visibility: visible !important; }
+  .print-only-quote .quote-tracking-qr .quote-qr-frame {
+    display: block !important;
+    width: 30mm !important;
+    height: 30mm !important;
+    padding: 1mm !important;
+    background: #fff !important;
+    border: .25mm solid #d7ded9 !important;
+  }
+  .print-only-quote .quote-tracking-qr svg {
+    display: block !important;
+    width: 28mm !important;
+    height: 28mm !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .print-only-quote .quote-tracking-qr b,
+  .print-only-quote .quote-tracking-qr small {
+    display: block !important;
+    color: #17231d !important;
+    text-align: center !important;
+  }
+}
+.sticker-toolbar .sticker-back-link,
+.sticker-toolbar .sticker-back-link:visited,
+.sticker-toolbar .sticker-back-link:hover {
+  color: #111111 !important;
+}
