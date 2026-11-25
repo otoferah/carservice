@@ -39,7 +39,7 @@ function loadPdfLibrary() {
 }
 
 function normalizePhone(phone: string) {
-  let digits = phone.replace(/\\D/g, "");
+  let digits = phone.replace(/\D/g, "");
   if (digits.startsWith("00")) digits = digits.slice(2);
   if (digits.startsWith("0")) digits = "90" + digits.slice(1);
   else if (digits.length === 10) digits = "90" + digits;
@@ -120,6 +120,7 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
       window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
 
       const whatsappUrl = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message + " PDF dosyasını birazdan ekleyebilirsiniz.");
+      window.alert("PDF indirildi. WhatsApp sohbetinde dosyayı ekleyip Gönder tuşuna dokunun.");
       window.location.assign(whatsappUrl);
       window.alert("PDF cihazınıza indirildi. WhatsApp sohbeti açıldığında indirilen PDF dosyasını mesaja ekleyip Gönder'e dokunun.");
     } catch (error) {
