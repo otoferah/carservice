@@ -60,10 +60,50 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
     clone.style.position = "fixed";
     clone.style.left = "-10000px";
     clone.style.top = "0";
-    clone.style.width = "794px";
-    clone.style.maxWidth = "794px";
-    clone.style.background = "#ffffff";
-    clone.style.zIndex = "-1";
+    clone.classList.add("ferah-pdf-export");
+    clone.style.cssText = [
+      "display:block",
+      "visibility:visible",
+      "position:fixed",
+      "left:-10000px",
+      "top:0",
+      "width:194mm",
+      "max-width:194mm",
+      "min-width:194mm",
+      "box-sizing:border-box",
+      "margin:0",
+      "padding:7mm",
+      "border:1px solid #cfd9d1",
+      "outline:1px solid #cfd9d1",
+      "background:#ffffff",
+      "color:#17251e",
+      "z-index:-1",
+      "font-family:Arial,Helvetica,sans-serif",
+      "font-size:9pt",
+      "line-height:1.3"
+    ].join(";");
+    const exportStyle = document.createElement("style");
+    exportStyle.textContent = `
+      .ferah-pdf-export, .ferah-pdf-export * { box-sizing:border-box !important; }
+      .ferah-pdf-export { display:block !important; width:194mm !important; min-width:194mm !important; max-width:194mm !important; border:1px solid #cfd9d1 !important; background:#fff !important; color:#17251e !important; overflow:visible !important; }
+      .ferah-pdf-export .quote-document-header { display:grid !important; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr) !important; gap:4mm !important; padding-bottom:5mm !important; border-bottom:1.2mm solid #176b4b !important; }
+      .ferah-pdf-export .quote-document-header.has-vehicle-photo { grid-template-columns:27mm minmax(0,1fr) minmax(0,1.2fr) auto !important; }
+      .ferah-pdf-export .quote-vehicle-photo { width:27mm !important; height:22mm !important; overflow:hidden !important; }
+      .ferah-pdf-export .quote-vehicle-photo img { width:100% !important; height:100% !important; object-fit:cover !important; }
+      .ferah-pdf-export .quote-customer-grid { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:3mm !important; margin:5mm 0 !important; }
+      .ferah-pdf-export .quote-info-card { min-width:0 !important; padding:3mm !important; overflow-wrap:anywhere !important; }
+      .ferah-pdf-export .quote-premium-table { display:table !important; width:100% !important; table-layout:fixed !important; border-collapse:collapse !important; margin:0 !important; }
+      .ferah-pdf-export .quote-premium-table th { background:#173b2d !important; color:#fff !important; padding:2.5mm 2mm !important; font-size:7pt !important; }
+      .ferah-pdf-export .quote-premium-table td { color:#27352d !important; padding:2.5mm 2mm !important; font-size:8pt !important; overflow-wrap:anywhere !important; }
+      .ferah-pdf-export .quote-total-panel { display:flex !important; justify-content:space-between !important; align-items:center !important; gap:4mm !important; margin:4mm 0 !important; padding:4mm !important; background:#f0f5f1 !important; }
+      .ferah-pdf-export .quote-bottom-row { display:grid !important; grid-template-columns:minmax(0,1fr) 42mm !important; gap:5mm !important; margin-top:5mm !important; padding-top:4mm !important; }
+      .ferah-pdf-export .quote-tracking-qr { display:flex !important; width:42mm !important; padding:2mm !important; }
+      .ferah-pdf-export .quote-qr-frame svg { width:30mm !important; height:30mm !important; }
+      .ferah-pdf-export .quote-document-footer { display:flex !important; justify-content:space-between !important; gap:3mm !important; margin-top:5mm !important; padding-top:2mm !important; border-top:.25mm solid #dce5df !important; }
+      .ferah-pdf-export img { max-width:100% !important; }
+      .ferah-pdf-export table, .ferah-pdf-export tr, .ferah-pdf-export .quote-customer-grid, .ferah-pdf-export .quote-total-panel, .ferah-pdf-export .quote-bottom-row { break-inside:avoid !important; page-break-inside:avoid !important; }
+    `;
+    clone.prepend(exportStyle);
     document.body.appendChild(clone);
 
     try {
@@ -78,12 +118,12 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
       }));
 
       const worker = window.html2pdf!().set({
-        margin: [8, 8, 8, 8],
+        margin: [8, 8, 8, 8],\n        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
         filename: "Ferah-Otomotiv-Teklif.pdf",
         image: { type: "jpeg", quality: 0.96 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"] }
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] }
       }).from(clone).toPdf();
       const pdf = await worker.get("pdf");
       return await pdf.output("blob");
