@@ -2,17 +2,7 @@
 import {useState} from "react";
 import {MessageCircle} from "lucide-react";
 
-declare global {
-  interface Window {
-    FerahDesktop?: {
-  openWhatsApp: () => Promise<{opened:boolean}>;
-  openWhatsAppChat: (phone:string,message?:string) => Promise<{opened:boolean}>;
-  savePdf: (customerName?:string) => Promise<{canceled:boolean;filePath?:string}>;
-  revealFile: (filePath:string) => Promise<{opened:boolean}>;
-};>;
-    };
-  }
-}
+declare global { interface Window { FerahDesktop?: { openWhatsApp: () => Promise<{opened:boolean}>; openWhatsAppChat: (phone:string,message?:string) => Promise<{opened:boolean}>; savePdf: (customerName?:string) => Promise<{canceled:boolean;filePath?:string}>; revealFile: (filePath:string) => Promise<{opened:boolean}>; } } }
 
 export default function WhatsAppLauncher(){
   const [busy,setBusy]=useState(false);
