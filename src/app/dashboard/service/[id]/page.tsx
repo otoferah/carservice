@@ -64,7 +64,7 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
     <section className="quote-total-panel"><div><small>TEKLİF GENEL TOPLAMI</small><span>Belirtilen işlemler için toplam tutar</span></div><strong>{Number(record.quote_total).toLocaleString("tr-TR",{minimumFractionDigits:2})} ₺</strong></section>
     <div className="quote-bottom-row">
      <div className="quote-signature-block"><div className="quote-approval-title">Müşteri onayı</div><p>Teklif kapsamını ve belirtilen tutarı onaylıyorum.</p>{signatureUrl?<img src={signatureUrl} alt="Müşteri imzası" className="quote-signature"/>:<div className="quote-signature-line"/>}<small>Müşteri imzası</small><div className="quote-provider-line">Teklifi hazırlayan: <b>{record.quote_provider||"Ferah Otomotiv"}</b></div></div>
-     <div className="quote-tracking-qr"><div className="quote-qr-frame"><QRCodeSVG value={publicTrackingUrlValue} size={200} level="M" includeMargin={true}/></div><b>Servis durumunu takip edin</b><small>Güncel servis bilgilerini görüntülemek için QR kodu telefonunuzla okutun.</small></div>
+     <div className="quote-tracking-qr"><div className="quote-qr-frame"><QRCodeSVG value={publicTrackingUrlValue} size={240} level="H" includeMargin={true} fgColor="#000000" bgColor="#ffffff" title="Aracın servis takip QR kodu"/></div><b>ARACA ÖZEL SERVİS TAKİP QR KODU</b><small>Bu kodu okutarak aracın güncel servis durumunu ve ilerlemesini görüntüleyebilirsiniz.</small></div>
     </div>
     <footer className="quote-document-footer"><span>FERAH OTOMOTİV · SERVİS YÖNETİMİ</span><span>Bu teklif, ilgili servis kaydı için hazırlanmıştır.</span></footer>
    </div>}
