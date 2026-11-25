@@ -106,7 +106,7 @@ ipcMain.handle("ferah:open-whatsapp", async (event) => {
 
 ipcMain.handle("ferah:open-whatsapp-chat", async (event, phone, message = "") => {
   if (!mainWindow || event.sender !== mainWindow.webContents) throw new Error("Geçersiz WhatsApp isteği.");
-  const digits = String(phone || "").replace(/\\D/g, "");
+  const digits = String(phone || "").replace(/\D/g, "");
   const normalized = digits.startsWith("0") ? "90" + digits.slice(1) : digits.startsWith("90") ? digits : digits.length === 10 ? "90" + digits : "";
   if (!/^90[0-9]{10}$/.test(normalized)) throw new Error("Müşterinin telefon numarası geçerli bir Türkiye cep telefonu değil.");
   const url = "whatsapp://send?phone=" + normalized + "&text=" + encodeURIComponent(String(message || ""));
