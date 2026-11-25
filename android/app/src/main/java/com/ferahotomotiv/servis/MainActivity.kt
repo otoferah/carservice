@@ -301,8 +301,64 @@ class MainActivity : Activity() {
               .print-only-quote .quote-document-header {
                 grid-template-columns: 39mm 25mm minmax(0,1fr) 23mm !important;
               }
+              .print-only-quote .quote-document-header {
+                display: grid !important;
+                grid-template-columns: 85mm 25mm minmax(0,1fr) 25mm !important;
+                gap: 2mm !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+              }
+              .print-only-quote .quote-document-header > *,
+              .print-only-quote .quote-brand-lockup,
+              .print-only-quote .quote-document-title,
+              .print-only-quote .quote-document-date {
+                min-width: 0 !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+              }
+              .print-only-quote .quote-document-title h2 {
+                font-size: 11pt !important;
+                line-height: 1.05 !important;
+                overflow-wrap: anywhere !important;
+                white-space: normal !important;
+              }
+              .print-only-quote .quote-document-title p {
+                font-size: 5.5pt !important;
+                line-height: 1.15 !important;
+                white-space: normal !important;
+                overflow-wrap: anywhere !important;
+              }
               .print-only-quote .quote-customer-grid {
+                display: grid !important;
                 grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+                gap: 2mm !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+              }
+              .print-only-quote .quote-info-card {
+                min-width: 0 !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+                padding: 3mm !important;
+              }
+              .print-only-quote .quote-info-card b,
+              .print-only-quote .quote-info-card span {
+                min-width: 0 !important;
+                max-width: 100% !important;
+                white-space: normal !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+              }
+              .print-only-quote .quote-table-heading,
+              .print-only-quote .quote-total-panel,
+              .print-only-quote .quote-bottom-row {
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
               }
             </style>
         """.trimIndent()
