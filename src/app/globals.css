@@ -1558,4 +1558,19 @@ tr:hover td{background:#1c2026!important}
     display: none !important;
     visibility: hidden !important;
   }
+
+  /* Saved quote form: restore its QR and printable quote after global print visibility reset. */
+  .saved-card {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #ffffff !important;
+    color: #17231d !important;
+  }
+  .saved-card, .saved-card * { visibility: visible !important; }
+  .saved-card .print-quote { display: block !important; visibility: visible !important; }
 }
