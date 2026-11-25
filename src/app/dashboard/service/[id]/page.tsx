@@ -46,7 +46,8 @@ export default async function ServiceDetailPage({params}:{params:Promise<{id:str
     {manager&&<div className="detail-panel quote-actions"><h2><Printer size={17}/> Teklif çıktısı</h2><p className="muted small-copy">Teklif formunu yazdırabilir veya PDF olarak bilgisayarınıza kaydedebilirsiniz.</p><PrintQuoteButton /></div>}<div className="detail-panel sticker-actions"><h2><CarFront size={17}/> Araca özel QR sticker</h2><p className="muted small-copy">Bu servis kaydına özel QR kodu etiket olarak yazdırın veya PDF kaydedip sticker baskısına gönderin.</p><Link className="primary-button sticker-open-button" href={"/dashboard/service/"+id+"/sticker"}>QR sticker oluştur / yazdır ↗</Link></div>
    </aside></div>
    {manager&&<div className="print-only-quote">
-    <header className="quote-document-header">
+    <header className={"quote-document-header"+(photos.length?" has-vehicle-photo":"")}>
+     {photos[0]&&<div className="quote-vehicle-photo"><img src={photos[0].url} alt={photos[0].caption||"Araç görseli"}/></div> }
      <div className="quote-brand-lockup"><span className="quote-brand-symbol">F</span><div><b>FERAH OTOMOTİV</b><small>SERVİS YÖNETİMİ</small></div></div>
      <div className="quote-document-title"><span>SERVİS TEKLİFİ</span><h2>Teklif Formu</h2><p>Servis işlemleri ve parça maliyetleri</p></div>
      <div className="quote-document-date"><small>TEKLİF TARİHİ</small><b>{formattedDate}</b></div>
