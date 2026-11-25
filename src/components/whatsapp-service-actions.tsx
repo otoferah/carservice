@@ -12,7 +12,7 @@ declare global {
       revealFile: (filePath:string) => Promise<{opened:boolean}>;
     };
     FerahAndroid?: {
-      printPdf: () => void;
+      printPdf: (html:string,fileName:string) => void;
       savePdfAndOpenWhatsApp: (phone:string,message:string,html:string,fileName:string) => void;
       shareLatestPdf: (message:string) => void;
       openWhatsAppChat: (phone:string,message:string) => void;
