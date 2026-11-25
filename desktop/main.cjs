@@ -111,15 +111,52 @@ function createWindow() {
   mainWindow.loadURL(APP_URL);
 }
 
-ipcMain.handle("ferah:save-pdf", async (event, customerName = "Müşteri", plate = "") => {
+ipcMain.handle("ferah:save-pdf", async (event, customerName = "Müşteri", plate = "", html = "") => {
   if (!mainWindow || event.sender !== mainWindow.webContents) throw new Error("Geçersiz PDF isteği.");
+  if (typeof html !== "string" || !html.startsWith("<!doctype html>") || html.length > 8_000_000) {
+    throw new Error("PDF içeriği geçersiz veya eksik.");
+  }
   const safePart = (value, fallback) => String(value || "").trim().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[ıİ]/g, "i").replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_+|_+$/g, "").toUpperCase() || fallback;
   const safeCustomerName = safePart(customerName, "MUSTERI");
   const safePlate = safePart(plate, "PLAKA");
-  const result = await dialog.showSaveDialog(mainWindow, { title: "Ferah Otomotiv - PDF kaydet", defaultPath: safeCustomerName + "-" + safePlate + "-TEKLIF.pdf", buttonLabel: "PDF kaydet", filters: [{ name: "PDF Belgesi", extensions: ["pdf"] }] });
-  const pdf = await mainWindow.webContents.printToPDF({ printBackground: true, preferCSSPageSize: true, pageSize: "A4", margins: { top: 0.35, bottom: 0.35, left: 0.35, right: 0.35 } });
-  await fs.writeFile(result.filePath, pdf);
-  return { canceled: false, filePath: result.filePath };
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: "Ferah Otomotiv - PDF kaydet",
+    defaultPath: safeCustomerName + "-" + safePlate + "-TEKLIF.pdf",
+    buttonLabel: "PDF kaydet",
+    filters: [{ name: "PDF Belgesi", extensions: ["pdf"] }]
+  });
+  if (result.canceled || !result.filePath) return { canceled: true };
+
+  const pdfWindow = new BrowserWindow({
+    show: false,
+    width: 1000,
+    height: 1400,
+    backgroundColor: "#ffffff",
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+      webSecurity: true
+    }
+  });
+
+  try {
+    await pdfWindow.loadURL("data:text/html;charset=utf-8," + encodeURIComponent(html));
+    await pdfWindow.webContents.executeJavaScript(
+      "Promise.all(Array.from(document.images).map(img => img.decode().catch(() => undefined)))"
+    );
+    const pdf = await pdfWindow.webContents.printToPDF({
+      printBackground: true,
+      preferCSSPageSize: true,
+      pageSize: "A4",
+      margins: { top: 0, bottom: 0, left: 0, right: 0 }
+    });
+    await fs.writeFile(result.filePath, pdf);
+    return { canceled: false, filePath: result.filePath };
+  } finally {
+    if (!pdfWindow.isDestroyed()) pdfWindow.close();
+  }
 });
 
 app.whenReady().then(() => {
