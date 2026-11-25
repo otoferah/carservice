@@ -1145,3 +1145,14 @@ tr:hover td{background:#1c2026!important}
 .photo-picker input{height:auto;padding:10px;background:#fff}
 .photo-picker small{font-size:10px;color:#87948b;font-weight:400}
 @media(max-width:600px){.edit-image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.edit-image-card img{height:110px}}
+
+
+/* Araç fotoğrafını teklif PDF başlığına dinamik olarak yerleştir. */
+.quote-document-header.has-vehicle-photo{grid-template-columns:32mm 1fr 1.2fr auto}
+.quote-vehicle-photo{width:32mm;height:25mm;overflow:hidden;border-radius:2mm;background:#f0f3f0}
+.quote-vehicle-photo img{display:block;width:100%;height:100%;object-fit:cover}
+@media print{
+ .print-only-quote .quote-document-header.has-vehicle-photo{grid-template-columns:32mm 1fr 1.2fr auto!important}
+ .print-only-quote .quote-vehicle-photo{display:block!important;width:32mm!important;height:25mm!important;overflow:hidden!important}
+ .print-only-quote .quote-vehicle-photo img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important}
+}
