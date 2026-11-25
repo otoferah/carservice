@@ -118,7 +118,7 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
       }));
 
       const worker = window.html2pdf!().set({
-        margin: [8, 8, 8, 8],\n        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        margin: [8, 8, 8, 8],
         filename: "Ferah-Otomotiv-Teklif.pdf",
         image: { type: "jpeg", quality: 0.96 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false },
