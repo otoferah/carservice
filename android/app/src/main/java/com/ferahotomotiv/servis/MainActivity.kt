@@ -321,11 +321,6 @@ class MainActivity : Activity() {
         return FileProvider.getUriForFile(this, packageName + ".fileprovider", destination)
     }
 
-    private fun finishPdfRenderer(renderer: WebView) {
-        renderer.stopLoading()
-        renderer.destroy()
-        if (pdfWebView === renderer) pdfWebView = null
-    }
 
     private fun openWhatsAppChatInternal(phone: String, message: String) {
         val digits = phone.filter { it.isDigit() }
