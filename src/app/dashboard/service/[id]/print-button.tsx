@@ -48,6 +48,7 @@ function normalizePhone(phone: string) {
 
 export default function PrintQuoteButton({ customerPhone }: { customerPhone: string | null }) {
   const [sharing, setSharing] = useState(false);
+  const [creatingPdf, setCreatingPdf] = useState(false);
 
   const createPdfBlob = async () => {
     const source = document.querySelector<HTMLElement>(".print-only-quote");
@@ -67,12 +68,12 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
       "position:fixed",
       "left:-10000px",
       "top:0",
-      "width:194mm",
-      "max-width:194mm",
-      "min-width:194mm",
+      "width:210mm",
+      "max-width:210mm",
+      "min-width:210mm",
       "box-sizing:border-box",
       "margin:0",
-      "padding:7mm",
+      "padding:10mm",
       "background:#ffffff",
       "color:#17251e",
       "z-index:-1",
@@ -83,7 +84,7 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
     const exportStyle = document.createElement("style");
     exportStyle.textContent = `
       .ferah-pdf-export, .ferah-pdf-export * { box-sizing:border-box !important; }
-      .ferah-pdf-export { display:block !important; width:194mm !important; min-width:194mm !important; max-width:194mm !important; border:0 !important; outline:0 !important; box-shadow:none !important; background:#fff !important; color:#17251e !important; overflow:visible !important; }
+      .ferah-pdf-export { display:block !important; width:210mm !important; min-width:210mm !important; max-width:210mm !important; min-height:0 !important; height:auto !important; margin:0 !important; padding:10mm !important; border:0 !important; outline:0 !important; box-shadow:none !important; background:#fff !important; color:#17251e !important; overflow:visible !important; }
       .ferah-pdf-export .quote-document-header { display:grid !important; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr) !important; gap:4mm !important; padding-bottom:5mm !important; border-bottom:1.2mm solid #176b4b !important; }
       .ferah-pdf-export .quote-document-header.has-vehicle-photo { grid-template-columns:27mm minmax(0,1fr) minmax(0,1.2fr) auto !important; }
       .ferah-pdf-export .quote-vehicle-photo { width:27mm !important; height:22mm !important; overflow:hidden !important; }
@@ -99,7 +100,9 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
       .ferah-pdf-export .quote-qr-frame svg { width:30mm !important; height:30mm !important; }
       .ferah-pdf-export .quote-document-footer { display:flex !important; justify-content:space-between !important; gap:3mm !important; margin-top:5mm !important; padding-top:2mm !important; border-top:.25mm solid #dce5df !important; }
       .ferah-pdf-export img { max-width:100% !important; }
-      .ferah-pdf-export table, .ferah-pdf-export tr, .ferah-pdf-export .quote-customer-grid, .ferah-pdf-export .quote-total-panel, .ferah-pdf-export .quote-bottom-row { break-inside:avoid !important; page-break-inside:avoid !important; }
+      .ferah-pdf-export .quote-premium-table { break-inside:auto !important; page-break-inside:auto !important; }
+      .ferah-pdf-export .quote-premium-table thead { display:table-header-group !important; }
+      .ferah-pdf-export .quote-premium-table tr, .ferah-pdf-export .quote-customer-grid, .ferah-pdf-export .quote-total-panel, .ferah-pdf-export .quote-bottom-row { break-inside:avoid !important; page-break-inside:avoid !important; }
     `;
     clone.prepend(exportStyle);
     document.body.appendChild(clone);
@@ -116,12 +119,12 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
       }));
 
       const worker = window.html2pdf!().set({
-        margin: [8, 8, 8, 8],
+        margin: [0, 0, 0, 0],
         filename: "Ferah-Otomotiv-Teklif.pdf",
         image: { type: "jpeg", quality: 0.96 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+        pagebreak: { mode: ["css", "legacy"] }
       }).from(clone).toPdf();
       const pdf = await worker.get("pdf");
       return await pdf.output("blob");
@@ -169,12 +172,28 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
     }
   };
 
-  const createPdf = () => {
+  const createPdf = async () => {
     if (window.FerahAndroid?.printPdf) {
       window.FerahAndroid.printPdf();
       return;
     }
-    window.print();
+
+    setCreatingPdf(true);
+    try {
+      const blob = await createPdfBlob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = "Ferah-Otomotiv-Teklif.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "PDF oluşturulurken bir hata oluştu.");
+    } finally {
+      setCreatingPdf(false);
+    }
   };
 
   return (
@@ -183,8 +202,9 @@ export default function PrintQuoteButton({ customerPhone }: { customerPhone: str
         {sharing ? <LoaderCircle size={16} className="spin" /> : <MessageCircle size={16} />}
         {sharing ? "PDF hazırlanıyor…" : "PDF'yi WhatsApp'ta gönder"}
       </button>
-      <button type="button" className="outline-button print-quote-button" onClick={createPdf}>
-        <FileDown size={16} /> PDF oluştur / yazdır
+      <button type="button" className="outline-button print-quote-button" onClick={createPdf} disabled={creatingPdf}>
+        {creatingPdf ? <LoaderCircle size={16} className="spin" /> : <FileDown size={16} />}
+        {creatingPdf ? "PDF hazırlanıyor…" : "PDF oluştur / indir"}
       </button>
     </div>
   );
