@@ -259,8 +259,10 @@ class MainActivity : Activity() {
               }
               body { padding: 7mm !important; }
               .print-only-quote {
-                display: flex !important;
-                flex-direction: column !important;
+                /* A flex root prevents Android WebView from fragmenting the long quote table
+                   correctly across A4 pages. Keep the document as a normal block flow. */
+                display: block !important;
+                flex-direction: initial !important;
                 width: 196mm !important;
                 min-width: 196mm !important;
                 max-width: 196mm !important;
