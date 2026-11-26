@@ -394,12 +394,15 @@ class MainActivity : Activity() {
                 // Android evaluates the height expression synchronously after the WebView has settled.
                 // it serializes the Promise as null. Wait natively, then return a plain number.
                 val measureContent = """
-                    Math.max(
-                      document.documentElement ? document.documentElement.scrollHeight : 0,
-                      document.body ? document.body.scrollHeight : 0,
-                      document.documentElement ? document.documentElement.getBoundingClientRect().height : 0,
-                      document.body ? document.body.getBoundingClientRect().height : 0
-                    )
+                    (() => {
+                      const quote = document.querySelector('.print-only-quote');
+                      if (!quote) return 0;
+                      return Math.ceil(Math.max(
+                        quote.scrollHeight || 0,
+                        quote.offsetHeight || 0,
+                        quote.getBoundingClientRect().height || 0
+                      ));
+                    })()
                 """.trimIndent()
                 renderer.postDelayed({
                     renderer.evaluateJavascript(measureContent, ValueCallback { result ->
@@ -421,7 +424,10 @@ class MainActivity : Activity() {
                             val pageHeight = 842
                             val scale = pageWidth.toFloat() / width.toFloat()
                             val pageSliceHeight = pageHeight.toFloat() / scale
-                            val pageCount = kotlin.math.ceil(measuredHeight / pageSliceHeight).toInt().coerceAtLeast(1)
+                            // Measure the quote element itself, not the document viewport.
+                            // Subtract a tiny rounding tolerance to avoid a blank/duplicate trailing page.
+                            val pageCount = kotlin.math.ceil((measuredHeight - 2f).coerceAtLeast(1f) / pageSliceHeight).toInt().coerceAtLeast(1)
+                            Log.d("FerahPdf", "A4 layout: cssHeight=$cssHeight, measuredHeight=$measuredHeight, pageSliceHeight=$pageSliceHeight, pages=$pageCount")
                             val document = PdfDocument()
                             try {
                                 for (pageIndex in 0 until pageCount) {
