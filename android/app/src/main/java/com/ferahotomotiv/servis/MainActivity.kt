@@ -422,24 +422,28 @@ class MainActivity : Activity() {
 
                             val pageWidth = 595
                             val pageHeight = 842
-                            val scale = pageWidth.toFloat() / width.toFloat()
-                            val pageSliceHeight = pageHeight.toFloat() / scale
-                            // Measure the quote element itself, not the document viewport.
-                            // Subtract a tiny rounding tolerance to avoid a blank/duplicate trailing page.
-                            val pageCount = kotlin.math.ceil((measuredHeight - 2f).coerceAtLeast(1f) / pageSliceHeight).toInt().coerceAtLeast(1)
-                            Log.d("FerahPdf", "A4 layout: cssHeight=$cssHeight, measuredHeight=$measuredHeight, pageSliceHeight=$pageSliceHeight, pages=$pageCount")
+                            // Browser PDF fits this quote onto one A4 sheet. Android WebView
+                            // was adding a second page containing a duplicate overflow slice.
+                            // Fit the complete quote to A4 and render it exactly once.
+                            val scale = minOf(
+                                pageWidth.toFloat() / width.toFloat(),
+                                pageHeight.toFloat() / measuredHeight.toFloat()
+                            )
+                            val renderedWidth = width * scale
+                            val renderedHeight = measuredHeight * scale
+                            val offsetX = (pageWidth - renderedWidth) / 2f
+                            val offsetY = (pageHeight - renderedHeight) / 2f
+                            Log.d("FerahPdf", "A4 fit: cssHeight=" + cssHeight + ", measuredHeight=" + measuredHeight + ", scale=" + scale)
                             val document = PdfDocument()
                             try {
-                                for (pageIndex in 0 until pageCount) {
-                                    val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageIndex + 1).create()
-                                    val page = document.startPage(pageInfo)
-                                    page.canvas.save()
-                                    page.canvas.scale(scale, scale)
-                                    page.canvas.translate(0f, -pageIndex * pageSliceHeight)
-                                    renderer.draw(page.canvas)
-                                    page.canvas.restore()
-                                    document.finishPage(page)
-                                }
+                                val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
+                                val page = document.startPage(pageInfo)
+                                page.canvas.save()
+                                page.canvas.translate(offsetX, offsetY)
+                                page.canvas.scale(scale, scale)
+                                renderer.draw(page.canvas)
+                                page.canvas.restore()
+                                document.finishPage(page)
                                 val temp = File(cacheDir, "ferah-" + System.currentTimeMillis() + ".pdf")
                                 FileOutputStream(temp).use { document.writeTo(it) }
                                 val saved = persistPdf(temp, fileName)
