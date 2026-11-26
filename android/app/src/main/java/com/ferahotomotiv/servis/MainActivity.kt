@@ -188,15 +188,7 @@ class MainActivity : Activity() {
                     toast("PDF içeriği oluşturulamadı.")
                     return@runOnUiThread
                 }
-                createPdfFile(html, fileName) { uri ->
-                    if (uri == null) {
-                        val detail = pdfPrefs.getString(KEY_LAST_PDF_ERROR, null)
-                        toast(if (detail.isNullOrBlank()) "PDF oluşturulamadı. Tekrar deneyin." else "PDF oluşturulamadı: $detail")
-                    } else {
-                        pdfPrefs.edit().putString(KEY_LAST_PDF_URI, uri.toString()).apply()
-                        toast("Teklif PDF'si A4 ölçüsünde İndirilenler/Ferah Otomotiv klasörüne kaydedildi.")
-                    }
-                }
+                showPdfPrintDialog(html, fileName)
             }
         }
 
@@ -229,6 +221,66 @@ class MainActivity : Activity() {
         }
     }
 
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun showPdfPrintDialog(html: String, fileName: String) {
+        // Use Android's Chromium print pipeline, the same engine used by Chrome.
+        // This opens the system print preview instead of silently writing a
+        // manually sliced PDF into Downloads.
+        pdfWebView?.let { finishPdfRenderer(it) }
+        val renderer = WebView(this)
+        pdfWebView = renderer
+        renderer.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            loadsImagesAutomatically = true
+            useWideViewPort = true
+            loadWithOverviewMode = false
+        }
+        renderer.setBackgroundColor(Color.WHITE)
+        renderer.visibility = View.INVISIBLE
+        root.addView(renderer, FrameLayout.LayoutParams(-1, -1))
+
+        var printStarted = false
+        renderer.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                if (printStarted) return
+                printStarted = true
+                renderer.postDelayed({
+                    try {
+                        val jobName = fileName.removeSuffix(".pdf").removeSuffix(".PDF")
+                            .ifBlank { "Ferah Otomotiv Teklif" }
+                        val adapter = renderer.createPrintDocumentAdapter(jobName)
+                        val attributes = PrintAttributes.Builder()
+                            .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                            .setResolution(PrintAttributes.Resolution("ferah_pdf", "Ferah PDF", 300, 300))
+                            .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+                            .build()
+                        val printManager = getSystemService(PRINT_SERVICE) as PrintManager
+                        val job = printManager.print(jobName, adapter, attributes)
+                        toast("PDF önizlemesi açıldı. Kaydetmek için PDF yazıcısını seçin; dosya adı: $jobName")
+                        val handler = android.os.Handler(mainLooper)
+                        val cleanup = object : Runnable {
+                            override fun run() {
+                                if (job.isCompleted || job.isCancelled || job.isFailed) {
+                                    finishPdfRenderer(renderer)
+                                } else {
+                                    handler.postDelayed(this, 1000)
+                                }
+                            }
+                        }
+                        handler.postDelayed(cleanup, 1000)
+                    } catch (error: Exception) {
+                        Log.e("FerahPdf", "Android yazdırma önizlemesi açılamadı", error)
+                        pdfPrefs.edit().putString(KEY_LAST_PDF_ERROR, error.message ?: error.javaClass.simpleName).apply()
+                        toast("PDF önizlemesi açılamadı: " + (error.message ?: "Bilinmeyen hata"))
+                        finishPdfRenderer(renderer)
+                    }
+                }, 700)
+            }
+        }
+        renderer.loadDataWithBaseURL(appUrl, html, "text/html", "UTF-8", null)
+    }
 
     private fun createPdfFile(html: String, fileName: String, onComplete: (Uri?) -> Unit) {
         pdfWebView?.let { finishPdfRenderer(it) }
