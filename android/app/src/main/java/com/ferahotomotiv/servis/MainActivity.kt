@@ -299,16 +299,30 @@ class MainActivity : Activity() {
                 white-space: normal !important;
               }
               .print-only-quote .quote-document-header {
-                grid-template-columns: 39mm 25mm minmax(0,1fr) 23mm !important;
-              }
-              .print-only-quote .quote-document-header {
                 display: grid !important;
-                grid-template-columns: 85mm 25mm minmax(0,1fr) 25mm !important;
-                gap: 2mm !important;
+                /* Match the working browser/PDF layout: compact vehicle photo,
+                   normal brand block, flexible title and date columns. */
+                grid-template-columns: 39mm 25mm minmax(0,1fr) 23mm !important;
+                gap: 2.5mm !important;
+                align-items: center !important;
                 width: 100% !important;
                 min-width: 0 !important;
                 max-width: 100% !important;
                 overflow: hidden !important;
+              }
+              .print-only-quote .quote-vehicle-photo-card {
+                display: flex !important;
+                width: 39mm !important;
+                height: 27mm !important;
+                min-width: 0 !important;
+                max-width: 39mm !important;
+                overflow: hidden !important;
+              }
+              .print-only-quote .quote-vehicle-photo-card img {
+                display: block !important;
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
               }
               .print-only-quote .quote-document-header > *,
               .print-only-quote .quote-brand-lockup,
@@ -319,13 +333,13 @@ class MainActivity : Activity() {
                 overflow: hidden !important;
               }
               .print-only-quote .quote-document-title h2 {
-                font-size: 11pt !important;
+                font-size: 16pt !important;
                 line-height: 1.05 !important;
                 overflow-wrap: anywhere !important;
                 white-space: normal !important;
               }
               .print-only-quote .quote-document-title p {
-                font-size: 5.5pt !important;
+                font-size: 6pt !important;
                 line-height: 1.15 !important;
                 white-space: normal !important;
                 overflow-wrap: anywhere !important;
